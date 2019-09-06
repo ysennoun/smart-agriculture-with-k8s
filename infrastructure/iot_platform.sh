@@ -1,31 +1,39 @@
 #!/usr/bin/env bash
 
+set -e
+
 # PARAMETERS
-CURRENT_PATH=$(pwd)
+SCRIPT_PATH=$(realpath $0)
+SCRIPT_DIR=$(dirname $SCRIPT_PATH)
+BASE_PATH=$(realpath $SCRIPT_DIR/../)
+
 
 # IMPORTS
-source ${CURRENT_PATH}/configurations/scripts/kubernetes_script.sh
-source ${CURRENT_PATH}/configurations/scripts/kafka_script.sh
+. ${BASE_PATH}/infrastructure/script/kubernetes_script.sh
+. ${BASE_PATH}/infrastructure/script/vernemq_script.sh
 
 
 ######## FUNCTIONS ########
 
 function install_iot_platform(){
+    # Enable APIs
+    #enable_apis
     # Activate billing and enable APIs
-    activate_billing ${PROJECT_ID}
-    enable_apis
+    #activate_billing ${PROJECT_ID}
+    #enable_apis
 
     # Create Kubernetes Cluster
-    create_k8s_cluster
+    #create_k8s_cluster
 
     # Deploy Knative
-    deploy_knative
-    visualize_knative_deployment
+    #deploy_knative
+    #visualize_knative_deployment
 
-    # Deploy Confluent Operator, Zookeeper and Kafka brokers
-    install_confluent_operator
-    install_zookeeper
-    install_kafka_brokers
+    # Deploy VerneMQ
+    #add_helm_vernemq_repo
+    install_vernemq
+    #delete_vernemq
+
 }
 
 function delete_iot_platform(){

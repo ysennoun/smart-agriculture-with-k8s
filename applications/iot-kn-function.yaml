@@ -1,0 +1,19 @@
+ apiVersion: serving.knative.dev/v1alpha1
+ kind: Service
+ metadata:
+   name: iot-kn-function
+   namespace: default
+ spec:
+   template:
+     spec:
+       containers:
+         - image: eu.gcr.io/ysennoun-iot/iot-kn-function:0.0.1
+           env:
+             - name: THRESHOLD_TEMPERATURE
+               value: "36"
+             - name: THRESHOLD_HUMIDITY
+               value: "22"
+             - name: THRESHOLD_MOISTURE
+               value: "12"
+             - name: WEB_PORT
+               value: "80"

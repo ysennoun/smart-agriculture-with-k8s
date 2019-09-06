@@ -47,11 +47,21 @@ Make the following configuration changes:
 
 Run the following script to install this IoT platform on your GCP Account:
 
-    ./configurations/iot_platform.sh install
+    ./infrastructure/iot_platform.sh install
     
 
 ### Delete IoT Platform
 
 Run the following script to delete the IoT platform on your GCP Account:
 
-    ./configurations/iot_platform.sh delete
+    ./infrastructure/iot_platform.sh delete
+    
+    
+    
+### Container Registry
+
+    gcloud auth configure-docker
+    docker build -f <dockerfile> -t <image:version> .
+    docker tag <image:version> eu.gcr.io/ysennoun-iot/<image:version>
+    docker tag iot-kn-function eu.gcr.io/ysennoun-iot/iot-kn-function
+

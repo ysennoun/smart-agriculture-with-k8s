@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
 ## PARAMETERS
-CURRENT_PATH=$(pwd)
-GCP_YAML_PATH=${CURRENT_PATH}/"confluent-operator-20190726-v0.65.0/helm/providers/gcp.yaml"
-CONFLUENT_OPERATOR_PATH=${CURRENT_PATH}/"confluent-operator-20190726-v0.65.0/helm/confluent-operator"
+SCRIPT_PATH=$(realpath $0)
+SCRIPT_DIR=$(dirname $SCRIPT_PATH)
+BASE_PATH=$(realpath $SCRIPT_DIR/../)
+
+
+GCP_YAML_PATH=${BASE_PATH}/"confluent-operator-20190726-v0.65.0/helm/providers/gcp.yaml"
+CONFLUENT_OPERATOR_PATH=${BASE_PATH}/"confluent-operator-20190726-v0.65.0/helm/confluent-operator"
 
 ## FUNCTIONS
 function install_confluent_operator(){

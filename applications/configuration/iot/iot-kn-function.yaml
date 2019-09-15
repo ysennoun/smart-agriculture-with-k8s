@@ -7,7 +7,7 @@
    template:
      spec:
        containers:
-         - image: eu.gcr.io/ysennoun-iot/iot-kn-function:0.0.1
+         - image: eu.gcr.io/ysennoun-iot/iot-kn-function:0.0.3
            env:
              - name: THRESHOLD_TEMPERATURE
                value: "36"
@@ -15,5 +15,3 @@
                value: "22"
              - name: THRESHOLD_MOISTURE
                value: "12"
-             - name: WEB_PORT
-               value: "80"

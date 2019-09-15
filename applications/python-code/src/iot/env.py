@@ -2,7 +2,7 @@ import os
 
 
 def get_port():
-    return int(os.environ.get('WEB_PORT', 8080))
+    return int(os.environ.get('PORT', 8080))
 
 
 def get_threshold_temperature():

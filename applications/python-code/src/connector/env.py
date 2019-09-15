@@ -25,5 +25,7 @@ def get_keep_alive():
     return int(os.getenv("KEEP_ALIVE", 60)) #in seconds
 
 
-def get_kn_function_name():
-    return os.environ["KN_FUNCTION_NAME"]    
+def get_brokers_url():
+    print(os.environ["BROKERS_URL"])
+    print(os.environ["BROKERS_URL"].split(","))
+    return os.environ["BROKERS_URL"].split(",") #brokers are seperated by ','

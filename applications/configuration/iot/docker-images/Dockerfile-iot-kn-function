@@ -2,6 +2,8 @@ FROM python:3.7
 
 WORKDIR /app
 ENV PYTHONPATH /app
+ENV PORT 8080
+EXPOSE $PORT
 
 COPY applications/python-code/requirements.txt ./
 COPY applications/python-code/src /app
@@ -9,4 +11,4 @@ COPY applications/python-code/src /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD [ "python", "connector/mqtt_client.py" ]
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 iot.kn_function_main:app

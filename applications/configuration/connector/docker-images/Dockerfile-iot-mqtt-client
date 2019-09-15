@@ -9,4 +9,4 @@ COPY applications/python-code/src /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD [ "python", "iot/kn_function_main.py" ]
+CMD [ "python", "connector/mqtt_client.py" ]

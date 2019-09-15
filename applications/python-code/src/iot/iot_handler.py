@@ -3,24 +3,25 @@ from jsonschema import ValidationError
 from iot.env import get_threshold_temperature
 from iot.env import get_threshold_humidity
 from iot.env import get_threshold_moisture
-from common.logger import get_logger
+from common.utils.logger import Logger
 
-logger = get_logger()
+logger = Logger().get_logger()
 
 DATA_SCHEMA = {
-    "type" : "object",
-    "properties" : {
-        "device" : {"type" : "string"},
-        "timestamp" : {"type" : "number"},
-        "temperature" : {"type" : "number"},
-        "humidity" : {"type" : "number"},
-        "moisture" : {"type" : "number"},
+    "type": "object",
+    "properties":  {
+        "device": {"type": "string"},
+        "timestamp": {"type": "number"},
+        "temperature": {"type": "number"},
+        "humidity": {"type": "number"},
+        "moisture": {"type": "number"},
     },
 }
 
 
 def handler(data):
     try:
+        logger.info(f"handler, data: {data}")
         validate(instance=data, schema=DATA_SCHEMA)
         trigger_alert(data)
         save(data)
@@ -31,6 +32,7 @@ def handler(data):
 
 
 def trigger_alert(data):
+    logger.info(f"trigger_alert, data: {data}")
     temperature = data["temperature"]
     humidity = data["humidity"]
     moisture = data["moisture"]

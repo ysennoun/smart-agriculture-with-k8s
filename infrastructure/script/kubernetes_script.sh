@@ -20,13 +20,15 @@ function enable_apis(){
     echo "Activate APIs"
     gcloud services enable \
          cloudapis.googleapis.com \
+         cloudbuild.googleapis.com \
          container.googleapis.com \
          containerregistry.googleapis.com
 }
 
 function create_k8s_cluster() {
     echo "Let's create k8s cluster"
-    gcloud container clusters create ${CLUSTER_NAME} \
+    gcloud beta container clusters create ${CLUSTER_NAME} \
+       --addons=HorizontalPodAutoscaling,HttpLoadBalancing,Istio,CloudRun \
        --cluster-version=latest \
        --enable-stackdriver-kubernetes\
        --enable-ip-alias \
@@ -51,7 +53,7 @@ function create_k8s_cluster() {
 
 function delete_k8s_cluster() {
     echo "Let's delete k8s cluster"
-    gcloud container clusters delete ${CLUSTER_NAME} --zone ${COMPUTE_ZONE}
+    gcloud beta container clusters delete ${CLUSTER_NAME} --zone ${COMPUTE_ZONE}
     echo "End deletion"
 }
 

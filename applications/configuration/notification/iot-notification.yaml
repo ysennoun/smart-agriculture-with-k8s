@@ -1,0 +1,36 @@
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Broker
+metadata:
+  name: iot-broker-notification
+  namespace: default
+
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+ name: iot-kn-function-notification
+ namespace: default
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            image: eu.gcr.io/ysennoun-iot/iot-kn-function-notification:latest
+
+---
+
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: iot-trigger-notification
+  namespace: default
+spec:
+  filter:
+    attributes:
+      type: dev.knative.notification
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
+      name: iot-kn-function-notification

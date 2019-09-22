@@ -40,7 +40,7 @@ class TestKnFunctionMain(unittest.TestCase):
         }
         from storage.last_value.kn_function_main import handler
         result = handler(data)
-        self.assertEquals(result, "inserted")
+        self.assertEqual(str(result.get_data().decode("utf-8")), '{"status": "inserted"}')
 
     def test_update_last_value_for_higher_timestamp(self):
         from storage.last_value.model.last_value_model import LastValueModel
@@ -62,7 +62,7 @@ class TestKnFunctionMain(unittest.TestCase):
             "moisture": 9.21
         }
         result = handler(new_data)
-        self.assertEquals(result, "updated")
+        self.assertEqual(str(result.get_data().decode("utf-8")), '{"status": "updated"}')
 
     def test_no_update_last_value_for_lower_timestamp(self):
         from storage.last_value.model.last_value_model import LastValueModel
@@ -84,6 +84,6 @@ class TestKnFunctionMain(unittest.TestCase):
             "moisture": 9.21
         }
         result = handler(new_data)
-        self.assertEquals(result, None)
+        self.assertEqual(str(result.get_data().decode("utf-8")), '{"status": "no action"}')
 
 

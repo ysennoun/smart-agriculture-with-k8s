@@ -18,21 +18,21 @@ BASE_PATH=$(realpath $SCRIPT_DIR/../)
 
 function install_iot_platform(){
     # Enable APIs
-    #enable_apis
+    enable_apis
     # Activate billing and enable APIs
-    #activate_billing ${PROJECT_ID}
-    #enable_apis
+    activate_billing ${PROJECT_ID}
+    enable_apis
 
     # Create Kubernetes Cluster
-    #create_k8s_cluster
+    create_k8s_cluster
 
     # Deploy Knative
-    #deploy_knative
+    deploy_knative
     visualize_knative_deployment
 
     # Deploy VerneMQ
-    #add_helm_vernemq_repo
-    #install_vernemq
+    add_helm_vernemq_repo
+    install_vernemq
 
     # Deploy PostgreSQL
     install_postgresql
@@ -40,14 +40,8 @@ function install_iot_platform(){
 }
 
 function delete_iot_platform(){
-    # Delete PostgreSQL
-    delete_postgresql
-
-    # Delete VerneMQ
-    #delete_vernemq
-
     # Delete Kubernetes Cluster
-    #delete_k8s_cluster
+    delete_k8s_cluster
 }
 
 

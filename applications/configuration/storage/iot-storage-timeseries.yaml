@@ -34,3 +34,6 @@ spec:
       apiVersion: serving.knative.dev/v1alpha1
       kind: Service
       name: iot-kn-function-timeseries
+
+
+

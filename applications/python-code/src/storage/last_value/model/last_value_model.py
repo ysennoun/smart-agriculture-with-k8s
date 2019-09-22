@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from common.storage.postgresql_client import PostgreSQLClient
@@ -19,6 +20,19 @@ class LastValueModel(Base):
     created_by = Column(String(250), default=None)
     updated_at = Column(DateTime, default=datetime.utcnow)
     updated_by = Column(String(250), default=None)
+
+    def get(self):
+        return json.dumps({
+            "device": self.device,
+            "timestamp": str(self.timestamp),
+            "temperature": self.temperature,
+            "humidity": self.humidity,
+            "moisture": self.moisture,
+            "created_at": str(self.created_at) if self.created_at else None,
+            "created_by": self.created_by,
+            "updated_at": str(self.updated_at) if self.updated_at else None,
+            "updated_by": self.updated_by
+        })
 
 
 

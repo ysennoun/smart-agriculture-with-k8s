@@ -1,0 +1,10 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+ name: iot-kn-function-api-historical
+ namespace: default
+spec:
+ template:
+   spec:
+     containers:
+       - image: eu.gcr.io/ysennoun-iot/iot-kn-function-api-historical:latest

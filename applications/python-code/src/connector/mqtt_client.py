@@ -9,17 +9,20 @@ logger = Logger().get_logger()
 
 class MqttClient:
 
+    def handle_on_message(self, payload: str, topic: str):
+        logger.info(f"message {str(payload)} from topic {topic}")
+        data = json.loads(payload)#.decode('UTF-8'))  # TODO decode hexadecimal to json
+        brokers_url = env.get_brokers_url()
+        for broker_url in brokers_url:
+            send_to_broker(broker_url, data)
+        logger.info("end on_message")
+
     def on_connect(self, client, userdata, flags, rc):
         logger.info(f"Connected with result code {str(rc)}")
         client.subscribe(env.get_topic_name())
 
     def on_message(self, client, userdata, msg):
-        logger.info(f"message {str(msg.payload)} from topic {msg.topic}")
-        data = json.loads(msg.payload.decode('UTF-8'))  # TODO decode hexadecimal to json
-        brokers_url = env.get_brokers_url()
-        for broker_url in brokers_url:
-            send_to_broker(broker_url, data)
-        logger.info("end on_message")
+        self.handle_on_message(msg.payload, msg.topic)
 
     def run(self):
         client = mqtt.Client()

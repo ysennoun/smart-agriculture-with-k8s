@@ -1,8 +1,7 @@
+import json
 from datetime import datetime
-from flask import Flask
-from flask import request
-from iot.iot_handler import handler
-from iot.env import get_port
+from flask import Flask, request, Response
+from common.env import get_port
 from common.utils.logger import Logger
 from common.storage.postgresql_client import PostgreSQLClient
 from storage.last_value.model.last_value_model import LastValueModel
@@ -15,6 +14,14 @@ HOST = '0.0.0.0'
 PORT = get_port()
 
 
+def _get_status_response(status):
+    return Response(
+        json.dumps({"status": status}),
+        status=200,
+        mimetype="application/json"
+    )
+
+
 @app.route('/', methods=['POST'])
 def handle_post():
     data = request.form
@@ -22,7 +29,7 @@ def handle_post():
     return handler(data)
 
 
-def handler(data):
+def handler(data: dict) -> Response:
     session = PostgreSQLClient().get_session()
     device = data["device"]
     timestamp = data["timestamp"]
@@ -34,14 +41,14 @@ def handler(data):
         LastValueModel.device == device).first()
     if last_value_found:
         if last_value_found.timestamp >= datetime.fromtimestamp(timestamp):
-            return
+            return _get_status_response("no action")
         else:
             last_value_found.timestamp = datetime.fromtimestamp(timestamp)
             last_value_found.temperature = temperature
             last_value_found.humidity = humidity
             last_value_found.moisture = moisture
             session.commit()
-            return "updated"
+            return _get_status_response("updated")
     else:
         last_value = LastValueModel(
             device=device,
@@ -52,7 +59,7 @@ def handler(data):
         )
         session.add(last_value)
         session.commit()
-        return "inserted"
+        return _get_status_response("inserted")
 
 
 if __name__ == "__main__":

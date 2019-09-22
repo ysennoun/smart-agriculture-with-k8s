@@ -1,8 +1,6 @@
-from jsonschema import validate
-from jsonschema import ValidationError
-from iot.env import get_threshold_temperature
-from iot.env import get_threshold_humidity
-from iot.env import get_threshold_moisture
+from common.env import get_threshold_temperature
+from common.env import get_threshold_humidity
+from common.env import get_threshold_moisture
 from common.utils.logger import Logger
 
 logger = Logger().get_logger()
@@ -17,18 +15,6 @@ DATA_SCHEMA = {
         "moisture": {"type": "number"},
     },
 }
-
-
-def handler(data):
-    try:
-        logger.info(f"handler, data: {data}")
-        validate(instance=data, schema=DATA_SCHEMA)
-        trigger_alert(data)
-        save(data)
-    except ValidationError as err:
-        logger.error(f"WRONG ERROR FORMAT: {err}")
-    except Exception as ex:
-        logger.error(f"ERROR: {ex}")
 
 
 def trigger_alert(data):

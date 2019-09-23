@@ -14,6 +14,7 @@ NUM_NODES=8
 MACHINE_TYPE=n1-standard-2
 VERNEMQ_RELEASE="vernemq-cluster"
 POSTGRES_RELEASE="iot-last-value"
+INFLUXDB_RELEASE="iot-timeseries"
 K8S_RELEASEE="vernemq-cluster"
 
 ## FUNCTIONS
@@ -123,4 +124,14 @@ function install_postgresql(){
 function delete_postgresql(){
     echo "Delete PostgreSQL"
     helm del --purge ${POSTGRES_RELEASE}
+}
+
+function install_influxdb(){
+    echo "Install Influxdb"
+    helm install --name ${INFLUXDB_RELEASE} stable/influxdb
+}
+
+function delete_influxdb(){
+    echo "Install Influxdb"
+    helm install --name ${INFLUXDB_RELEASE} stable/influxdb
 }

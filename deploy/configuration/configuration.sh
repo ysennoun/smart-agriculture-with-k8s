@@ -10,8 +10,8 @@ CONNECTOR_IMAGE="iot-mqtt-client"
 NOTIFICATION_IMAGE="iot-mqtt-client"
 CONNECTOR_IMAGE="iot-mqtt-client"
 VERSION="latest"
-REPOSITORY=$(REPOSITORY)
-PROJECT_NAME=$(PROJECT_NAME)
+REPOSITORY=${REPOSITORY}
+PROJECT_NAME=${PROJECT_NAME}
 
 function deploy_api_image(){
     for ix in ${!STORAGES[*]}

@@ -47,6 +47,20 @@ function deploy-all(){
     # Deploy PostgreSQL
     install_postgresql
 
+    # Deploy Influxdb
+    install_influxdb
+
+    # Deploy docker images
+    deploy_api_image
+    deploy_storage_image
+    deploy_connector_image
+    deploy_notification_image
+
+    # Deploy applications
+    deploy_api_application
+    deploy_storage_application
+    deploy_connector_application
+    deploy_notification_application
 }
 
 function delete-all(){
@@ -54,8 +68,13 @@ function delete-all(){
     delete_k8s_cluster
 }
 
-
-######## MAIN ########
+function test-unit(){
+    # Run unit tests
+    cd ${BASE_PATH}/code/serverless/
+    pip install -r requirements.txt
+    python setup.py test
+    cd ../../
+}
 
 fn_exists() {
   [[ `type -t $1`"" == 'function' ]]

@@ -7,7 +7,7 @@ spec:
  template:
    spec:
      containers:
-       - image: eu.gcr.io/ysennoun-iot/iot-kn-function-api-timeseries:latest
+       - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/ot-kn-function-api-timeseries:latest
 
 
 

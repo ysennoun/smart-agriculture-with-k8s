@@ -16,7 +16,7 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: eu.gcr.io/ysennoun-iot/iot-kn-function-historical:latest
+            image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/ot-kn-function-historical:latest
 
 ---
 

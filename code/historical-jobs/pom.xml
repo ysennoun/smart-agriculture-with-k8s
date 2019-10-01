@@ -17,13 +17,6 @@
             <url>http://scala-tools.org/repo-releases</url>
         </repository>
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>scala-tools.org</id>
-            <name>Scala-tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </pluginRepository>
-    </pluginRepositories>
 
   <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -138,7 +131,7 @@
                   </descriptorRefs>
                   <archive>
                       <manifest>
-                          <mainClass>com.xebia.iot.job.HistoricalJob</mainClass>
+                          <mainClass>com.xebia.iot.main.Main</mainClass>
                       </manifest>
                   </archive>
               </configuration>

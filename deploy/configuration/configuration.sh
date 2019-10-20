@@ -13,6 +13,11 @@ VERSION="latest"
 CONTAINER_REPOSITORY=${CONTAINER_REPOSITORY}
 PROJECT_NAME=${PROJECT_NAME}
 
+function get_template(){
+    template_file=$1
+    echo $(envsubst < ${template_file})
+}
+
 function deploy_api_image(){
     for ix in ${!STORAGES[*]}
     do
@@ -27,7 +32,7 @@ function deploy_api_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="iot-api-"${STORAGES[$ix]}
-        template=$(envsubst < ${BASE_PATH}/deploy/configuration/api/${API_IMAGE}.yaml)
+        template=$(get_template ${BASE_PATH}/deploy/configuration/api/${API_IMAGE}.yaml)
         kubectl apply --template="'"${template}"'"
     done
 }
@@ -36,7 +41,7 @@ function delete_api_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="iot-api-"${STORAGES[$ix]}
-        template=$(envsubst < ${BASE_PATH}/deploy/configuration/api/${API_IMAGE}.yaml)
+        template=$(get_template ${BASE_PATH}/deploy/configuration/api/${API_IMAGE}.yaml)
         kubectl delete --template="'"${template}"'"
     done
 }
@@ -55,7 +60,7 @@ function deploy_storage_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="iot-storage-"${STORAGES[$ix]}
-        template=$(envsubst < ${BASE_PATH}/deploy/configuration/storage/${API_IMAGE}.yaml)
+        template=$(get_template ${BASE_PATH}/deploy/configuration/storage/${API_IMAGE}.yaml)
         kubectl apply --template="'"${template}"'"
     done
 }
@@ -64,7 +69,7 @@ function delete_storage_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="iot-storage-"${STORAGES[$ix]}
-        template=$(envsubst < ${BASE_PATH}/deploy/configuration/storage/${API_IMAGE}.yaml)
+        template=$(get_template ${BASE_PATH}/deploy/configuration/storage/${API_IMAGE}.yaml)
         kubectl delete --template="'"${template}"'"
     done
 }
@@ -77,12 +82,12 @@ function deploy_connector_image(){
 
 function deploy_connector_application(){
     kubectl apply -f
-    template=$(envsubst < ${BASE_PATH}/deploy/configuration/connector/${CONNECTOR_IMAGE}.yaml)
+    template=$(get_template ${BASE_PATH}/deploy/configuration/connector/${CONNECTOR_IMAGE}.yaml)
     kubectl apply --template="'"${template}"'"
 }
 
 function delete_connector_application(){
-    template=$(envsubst < ${BASE_PATH}/deploy/configuration/connector/${CONNECTOR_IMAGE}.yaml)
+    template=$(get_template ${BASE_PATH}/deploy/configuration/connector/${CONNECTOR_IMAGE}.yaml)
     kubectl delete --template="'"${template}"'"
 }
 
@@ -93,11 +98,11 @@ function deploy_notification_image(){
 }
 
 function deploy_notification_application(){
-    template=$(envsubst < ${BASE_PATH}/deploy/configuration/notification/${NOTIFICATION_IMAGE}.yaml)
+    template=$(get_template ${BASE_PATH}/deploy/configuration/notification/${NOTIFICATION_IMAGE}.yaml)
     kubectl apply --template="'"${template}"'"
 }
 
 function delete_notification_application(){
-    template=$(envsubst < ${BASE_PATH}/deploy/configuration/notification/${NOTIFICATION_IMAGE}.yaml)
+    template=$(get_template ${BASE_PATH}/deploy/configuration/notification/${NOTIFICATION_IMAGE}.yaml)
     kubectl delete --template="'"${template}"'"
 }

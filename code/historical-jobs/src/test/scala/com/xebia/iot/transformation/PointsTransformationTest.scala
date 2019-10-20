@@ -34,7 +34,6 @@ class PointsTransformationTest extends FlatSpec with Matchers with SparkTestUtil
     val outputDataFrame = PointsTransformation.getDataSetAsMeanOfPoint(dataSet)
 
     // Then
-
     val expectedResult = Seq(
       MeanOfPoints(device="device1", hour=1, timestampFrom=timestampFrom, timestampTo=timestampTo, meanTemperature=1.5, meanHumidity=1.5, meanMoisture=1.5, year=dateInfo.year, month=dateInfo.month, day=dateInfo.day),
       MeanOfPoints(device="device2", hour=14, timestampFrom=timestampFrom, timestampTo=timestampTo, meanTemperature=1.5, meanHumidity=1.5, meanMoisture=1.5, year=dateInfo.year, month=dateInfo.month, day=dateInfo.day),

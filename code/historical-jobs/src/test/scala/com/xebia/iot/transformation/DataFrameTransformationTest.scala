@@ -1,8 +1,8 @@
 package com.xebia.iot.transformation
 
-import java.io.{File, PrintWriter}
+import java.io.File
 import java.nio.file.{Files, Paths}
-import java.net.{URI, URL}
+import java.net.URI
 
 import com.xebia.iot.utils.SparkTestUtils
 import org.apache.hadoop.fs.FileSystem

@@ -18,6 +18,16 @@ First you have to:
 - Configure Docker for a specific repository
     - Here we used GCP Container Repository: `gcloud auth configure-docker`
 
+## Architecture of IoT platform 
+
+First we divide our plateform into microservices, here below the representation:
+
+![Architecture of IoT Project](documents/microservices.png)
+
+The corresponding architecture we build to solve the previous representation:
+
+![Architecture of IoT Project](documents/architecture.png)
+
 ## Configure IoT platform 
 
 ### Configure gcloud

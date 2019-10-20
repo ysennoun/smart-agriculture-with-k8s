@@ -30,7 +30,7 @@ class TestKnFunctionMain(unittest.TestCase):
         os.system(f"docker container stop {container_ids}")
         os.system(f"docker container rm {container_ids}")
 
-    def tests_validate_data(self):
+    def test_validate_data(self):
         wrong_data = {"devicefake": "wrong"}
         from api.last_value.kn_function_main import device_handler
 

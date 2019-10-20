@@ -20,7 +20,7 @@ spec:
     - name: KN_FUNCTION_NAME
       value: "iot-kn-function"
     - name: ISTIO_INGRESS_GATEWAY_IP_ADDRESS
-      value: "10.64.3.62" #"${ISTIO_INGRESS_GATEWAY_IP_ADDRESS}"
+      value: ${ISTIO_INGRESS_GATEWAY_IP_ADDRESS} #TODO
     - name: BROKERS_URL
       value: "http://iot-broker-last-value-broker.default.svc.cluster.local/"
     - name: CE-Type

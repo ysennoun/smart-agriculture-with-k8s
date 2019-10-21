@@ -16,7 +16,7 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/ot-kn-function-timeseries:latest
+            image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/iot-kn-function-timeseries:latest
 
 ---
 

@@ -15,6 +15,7 @@ MACHINE_TYPE=n1-standard-2
 VERNEMQ_RELEASE="vernemq-cluster"
 POSTGRES_RELEASE="iot-last-value"
 INFLUXDB_RELEASE="iot-timeseries"
+REDIS_RELEASE="iot-historical"
 K8S_RELEASEE="vernemq-cluster"
 
 ## FUNCTIONS
@@ -132,6 +133,16 @@ function install_influxdb(){
 }
 
 function delete_influxdb(){
-    echo "Install Influxdb"
+    echo "Delete Influxdb"
     helm install --name ${INFLUXDB_RELEASE} stable/influxdb
+}
+
+function install_redis(){
+    echo "Install Redis"
+    helm install --name ${REDIS_RELEASE} stable/redis
+}
+
+function delete_redis(){
+    echo "Delete Redis"
+    helm install --name ${REDIS_RELEASE} stable/redis
 }

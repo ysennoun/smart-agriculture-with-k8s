@@ -7,7 +7,7 @@ spec:
  template:
    spec:
      containers:
-       - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/ot-kn-function-api-timeseries:latest
+       - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/iot-kn-function-api-timeseries:latest
 
 
 

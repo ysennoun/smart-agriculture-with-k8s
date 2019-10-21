@@ -7,7 +7,7 @@ spec:
  template:
    spec:
      containers:
-       - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/ot-kn-function:0.0.3
+       - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/iot-kn-function:0.0.3
          env:
            - name: THRESHOLD_TEMPERATURE
              value: "36"

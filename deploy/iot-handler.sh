@@ -50,6 +50,9 @@ function deploy-all(){
     # Deploy Influxdb
     install_influxdb
 
+    # Deploy Redis
+    install_redis
+
     # Deploy docker images
     deploy_api_image
     deploy_storage_image

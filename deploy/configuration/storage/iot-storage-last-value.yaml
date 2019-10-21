@@ -16,7 +16,7 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/ot-kn-function-last-value:latest
+            image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/iot-kn-function-last-value:latest
 
 ---
 

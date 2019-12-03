@@ -14,7 +14,7 @@ object Main {
     implicit val sc = spark.sparkContext
       
     sc.hadoopConfiguration.set("fs.s3a.endpoint", "http://localhost:9000")
-    RunJob.runJob(arguments.job, arguments.path)
+    RunJob.runner(arguments.job, arguments.path)
     spark.stop()
   }
 

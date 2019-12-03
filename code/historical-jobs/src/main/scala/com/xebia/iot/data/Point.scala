@@ -10,14 +10,3 @@ case class Point(device: String,
                  year: Int,
                  month: Int,
                  day: Int)
-
-case class MeanOfPoints(device: String,
-                        timestampFrom: Timestamp,
-                        timestampTo: Timestamp,
-                        hour: Int,
-                        meanTemperature: Double,
-                        meanHumidity: Double,
-                        meanMoisture: Double,
-                        year: Int,
-                        month: Int,
-                        day: Int)

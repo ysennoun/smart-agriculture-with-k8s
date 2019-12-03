@@ -14,6 +14,7 @@ BASE_PATH=$(realpath $SCRIPT_DIR/../)
 
 
 ACTION=$1
+ENVIRONMENT=$2
 export PROJECT_ID="your-project-id"
 export COMPUTE_ZONE="your-selected-zone"
 export COMPUTE_REGION="your-selected-region"
@@ -25,13 +26,13 @@ export VERSION="latest"
 ######## FUNCTIONS ########
 usage() {
     echo "Run the script in current shell with . (dot) before. Usage:"
-    echo " ." `basename "$0"` "<ACTION> "
+    echo " ." `basename "$0"` "<ACTION> <ENVIRONMENT> "
     echo ""
     echo "ACTION:"
-    echo "  - deploy-all: deploy all modules (infrastructure, docker images, applications)"
-    echo "  - delete-all: delete all modules"
-    echo "  - test-unit: launch unit tests"
-    echo "  - test-e2e: launch e2e tests"
+    echo "  - deploy-all <ENVIRONMENT>: deploy all modules (infrastructure, docker images, applications)"
+    echo "  - delete-all <ENVIRONMENT>: delete all modules"
+    echo "  - test-unit <ENVIRONMENT>: launch unit tests"
+    echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
 }
 
 function deploy-all(){

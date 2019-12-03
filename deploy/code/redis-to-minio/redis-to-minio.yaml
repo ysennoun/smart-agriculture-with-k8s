@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${ENVIRONMENT}-sinker-historical
+  labels:
+    purpose: demonstrate-sinker-historical
+spec:
+  containers:
+    - name: ${ENVIRONMENT}-sinker-historical
+      image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-sinker-historical:${VERSION}
+      env:
+        - name: REDIS_HOST
+          value: ${REDIS_HOST}
+        - name: REDIS_PORT
+          value: "6379"

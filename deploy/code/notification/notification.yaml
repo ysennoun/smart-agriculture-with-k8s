@@ -1,0 +1,36 @@
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Broker
+metadata:
+  name: ${ENVIRONMENT}-broker-notification
+  namespace: default
+
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: ${ENVIRONMENT}-kn-function-notification
+  namespace: default
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-kn-function-notification:${VERSION}
+
+---
+
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: ${ENVIRONMENT}-trigger-notification
+  namespace: default
+spec:
+  filter:
+    attributes:
+      type: dev.knative.notification
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
+      name: ${ENVIRONMENT}-kn-function-notification

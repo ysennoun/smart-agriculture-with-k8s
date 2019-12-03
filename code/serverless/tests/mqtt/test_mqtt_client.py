@@ -2,7 +2,7 @@ import os
 import json
 import unittest
 import requests_mock
-from connector.mqtt_client import MqttClient
+from mqtt.mqtt_client import MqttClient
 
 
 class TestMqttClient(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestMqttClient(unittest.TestCase):
         os.system(f"docker container stop {container_ids}")
         os.system(f"docker container rm {container_ids}")
 
-    def test_connector_to_read_topic_and_sned_to_broker(self):
+    def test_consumer_to_read_topic_and_send_to_broker(self):
         topic = "test/test"
         payload = json.dumps({
             "payload": json.dumps({

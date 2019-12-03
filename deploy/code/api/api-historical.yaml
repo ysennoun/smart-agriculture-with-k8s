@@ -1,0 +1,10 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: ${ENVIRONMENT}-kn-function-api-historical
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+        - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-kn-function-api-historical:${VERSION}

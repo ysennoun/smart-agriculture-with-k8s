@@ -7,11 +7,17 @@ BASE_PATH=$(realpath $SCRIPT_DIR/../)
 
 STORAGES=("last-value" "timeseries" "historical")
 MQTT_IMAGE="mqtt-client"
-NOTIFICATION_IMAGE="mqtt-client"
+NOTIFICATION_IMAGE="notification"
+INCOMING_DATA_PATH="s3://bucket/incoming/"
+RAW_DATA_PATH="s3://bucket/raw-data/"
+PREPARED_DATA_PATH="s3://bucket/prepared/"
+
 ENVIRONMENT=${ENVIRONMENT}
 VERSION=${VERSION}
 CONTAINER_REPOSITORY=${CONTAINER_REPOSITORY}
 PROJECT_NAME=${PROJECT_NAME}
+K8S_APISERVER_HOST=${K8S_APISERVER_HOST}
+K8S_APISERVER_PORT=${K8S_APISERVER_PORT}
 
 function get_template(){
     template_file=$1
@@ -104,5 +110,27 @@ function deploy_notification_application(){
 
 function delete_notification_application(){
     template=$(get_template ${BASE_PATH}/deploy/code/serverless/notification/${NOTIFICATION_IMAGE}.yaml)
+    kubectl delete --template="'"${template}"'"
+}
+
+function deploy_historical_job_json_to_parquet_image(){
+    wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
+    tar -zxvf spark-2.4.4.tgz
+    ./bin/docker-image-tool.sh -r ${CONTAINER_REPOSITORY} -t ${ENVIRONMENT}-spark-on-docker:2.4.4 build
+    ./bin/docker-image-tool.sh -r ${CONTAINER_REPOSITORY} -t ${ENVIRONMENT}-spark-on-docker:2.4.4 push
+    rm -f spark-2.4.4.tgz
+    rm -rf spark-2.4.4/
+    docker build -f ${BASE_PATH}/deploy/code/historical-jobs/docker-images/Dockerfile-json-to-parquet -t ${ENVIRONMENT}-spark-json-to-parquet:${VERSION} .
+    docker tag ${ENVIRONMENT}-spark-json-to-parquet:${VERSION} ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-spark-json-to-parquet:${VERSION}
+    docker push ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-spark-json-to-parquet:${VERSION}
+}
+
+function deploy_historical_job_json_to_parquet_application(){
+    template=$(get_template ${BASE_PATH}/deploy/code/historical-jobs/${ENVIRONMENT}-spark-json-to-parquet.yaml)
+    kubectl apply --template="'"${template}"'"
+}
+
+function delete_historical_job_json_to_parquet_application(){
+    template=$(get_template ${BASE_PATH}/deploy/code/historical-jobs/${ENVIRONMENT}-spark-json-to-parquet.yaml)
     kubectl delete --template="'"${template}"'"
 }

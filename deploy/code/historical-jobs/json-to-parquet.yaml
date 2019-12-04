@@ -1,0 +1,24 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ${ENVIRONMENT}-json-to-parquet
+  labels:
+    purpose: demonstrate-json-to-parquet
+spec:
+  template:
+    spec:
+      containers:
+        - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-json-to-parquet:${VERSION}
+
+---
+
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: CronJobSource
+metadata:
+  name: ${ENVIRONMENT}-cronjob-json-to-parquet
+spec:
+  schedule: "0 * * * *" # every hour
+  sink:
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    name: ${ENVIRONMENT}-json-to-parquet

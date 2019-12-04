@@ -3,7 +3,7 @@ import json
 import unittest
 from influxdb import InfluxDBClient
 from common.storage.influxdb_client import InfluxDBIoTClient
-from api.timeseries.kn_function_main import device_handler
+from api.timeseries_handler import get
 
 
 class TestKnFunctionMain(unittest.TestCase):
@@ -44,7 +44,7 @@ class TestKnFunctionMain(unittest.TestCase):
     def tests_validate_data(self):
         wrong_data = {"devicefake": "wrong"}
 
-        result = device_handler(wrong_data)
+        result = get(wrong_data)
         self.assertEqual(result.status_code, 400)
 
     def test_insert_new_timeseries(self):
@@ -74,7 +74,7 @@ class TestKnFunctionMain(unittest.TestCase):
             "endAt": 1568559675
         }
 
-        result = device_handler(data)
+        result = get(data)
         expected_result = [{
             "device": "devicetest1234",
             "host": "server01",

@@ -36,3 +36,6 @@ object RunJob {
     moveObjects(listOfObjects, path.rawDataPath)
   }
 }
+
+https://spark.apache.org/docs/latest/sql-data-sources-parquet.html
+https://stackoverflow.com/questions/21510360/how-to-get-the-output-from-jar-execution-in-python-codes

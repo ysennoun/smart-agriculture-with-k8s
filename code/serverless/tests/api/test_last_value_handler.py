@@ -18,7 +18,7 @@ class TestKnFunctionMain(unittest.TestCase):
         os.environ["POSTGRES_DATABASE"] = "postgres"
         os.system("docker run --name some-postgres -p 5432:5432 -e POSTGRES_PASSWORD=mysecretpassword -d postgres")
         os.system("sleep 3")  # wait container to be available
-        from storage.last_value.model.last_value_model import Base, LastValueModel
+        from storage.last_value.model.last_value_model import Base
         client = PostgreSQLClient()
         engine = client.get_engine()
         engine.connect()
@@ -32,9 +32,9 @@ class TestKnFunctionMain(unittest.TestCase):
 
     def test_validate_data(self):
         wrong_data = {"devicefake": "wrong"}
-        from api.last_value.kn_function_main import device_handler
+        from api.last_value_handler import get
 
-        result = device_handler(wrong_data)
+        result = get(wrong_data)
         self.assertEqual(result.status_code, 400)
 
     def test_get_last_value_for_device(self):
@@ -61,9 +61,9 @@ class TestKnFunctionMain(unittest.TestCase):
         data = {
             "device": "devicetest1"
         }
-        from api.last_value.kn_function_main import device_handler
+        from api.last_value_handler import get
 
-        result = json.loads(device_handler(data).get_json())
+        result = json.loads(get(data).get_json())
         self.assertEqual(result["device"], "devicetest1")
         self.assertEqual(result["temperature"], 15)
         self.assertEqual(result["humidity"], 25)

@@ -24,6 +24,36 @@ function get_template(){
     echo $(envsubst < ${template_file})
 }
 
+function install_python_requirements(){
+    cd ${BASE_PATH}/code/serverless/
+    pip install -r requirements.txt
+    pip install -r test_requirements.txt
+    cd ../../
+
+    cd ${BASE_PATH}/code/redis-to-minio/
+    pip install -r requirements.txt
+    pip install -r test_requirements.txt
+    cd ../../
+}
+
+function launch_python_unit_tests(){
+    # Run unit tests (for python)
+    cd ${BASE_PATH}/code/serverless/
+    python setup.py test
+    cd ../../
+
+    cd ${BASE_PATH}/code/redis-to-minio/
+    python setup.py test
+    cd ../../
+}
+
+function launch_spark_unit_tests(){
+    # Run unit tests (for spark scala)
+    cd ${BASE_PATH}/code/historical-jobs/
+    mvn clean test
+    cd ../../
+}
+
 function deploy_api_image(){
     for ix in ${!STORAGES[*]}
     do

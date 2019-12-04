@@ -81,11 +81,12 @@ function delete-all(){
 }
 
 function test-unit(){
-    # Run unit tests
-    cd ${BASE_PATH}/code/serverless/
-    pip install -r requirements.txt
-    python setup.py test
-    cd ../../
+    # Install python requirements
+    install_python_requirements
+
+    # Run python and spark unit tests
+    launch_python_unit_tests
+    launch_spark_unit_tests
 }
 
 function test-2e2(){

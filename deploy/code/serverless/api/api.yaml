@@ -1,0 +1,17 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: ${ENVIRONMENT}-kn-function-api
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+        - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-kn-function-api:${VERSION}
+          env:
+            - name: DOCKER_IMAGE
+              value: ${PROJECT_NAME}/${ENVIRONMENT}-spark-imited-number-of-data-selected:${VERSION}
+            - name: DOCKER_HOST
+              value: ${CONTAINER_REPOSITORY}
+            - name: PREFIX_SPARK_JOB_RESULT
+              value: "LimitedNumberOfDataSelected: "

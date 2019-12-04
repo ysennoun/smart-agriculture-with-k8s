@@ -1,12 +1,15 @@
-#https://spark.apache.org/docs/latest/sql-data-sources-parquet.html
-#https://stackoverflow.com/questions/21510360/how-to-get-the-output-from-jar-execution-in-python-codes
-from subprocess import Popen, PIPE, STDOUT
+import os
+import docker
 
-p = Popen(['java', '-jar', './GET_DB_DATA.jar'], stdout=PIPE, stderr=STDOUT)
+DOCKER_IMAGE = os.environ["DOCKER_IMAGE"]
+DOCKER_HOST = os.environ["DOCKER_HOST"]
+PREFIX_SPARK_JOB_RESULT = os.environ["PREFIX_SPARK_JOB_RESULT"]
 
-if p.stderr:
-    print(p.stderr)
 
-if p.stdout:
-    for line in p.stdout:
-        print(line)
+def get():
+    client = docker.from_env()
+    container = client.containers.run(DOCKER_IMAGE)
+    for log in container.logs(stream=True):
+        if log.startswith(PREFIX_SPARK_JOB_RESULT):
+            return log.strip(PREFIX_SPARK_JOB_RESULT)
+    return None

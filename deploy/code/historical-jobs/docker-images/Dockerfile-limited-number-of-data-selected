@@ -6,8 +6,8 @@ RUN mvn clean package
 CMD bin/spark-submit \
     --master k8s://https://${K8S_APISERVER_HOST}:${K8S_APISERVER_PORT} \
     --deploy-mode cluster \
-    --name ${ENVIRONMENT}-spark-json-to-parquet \
+    --name ${ENVIRONMENT}-spark-limited-number-of-data-selected \
     --class com.xebia.iot.main.Main \
     --conf spark.executor.instances=2 \
     --conf spark.kubernetes.container.image=${PROJECT_NAME}/${ENVIRONMENT}-spark-on-docker:2.4.4 \
-    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${INCOMING_DATA_PATH} ${RAW_DATA_PATH} ${PREPARED_DATA_PATH} "JsonToParquet"
+    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${INCOMING_DATA_PATH} ${RAW_DATA_PATH} ${PREPARED_DATA_PATH} "LimitedNumberOfDataSelected"

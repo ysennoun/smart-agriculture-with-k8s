@@ -1,7 +1,7 @@
 from flask import Flask, request
 from common.env import get_port
 from common.utils.logger import Logger
-from api import last_value_handler, timeseries_handler
+from api import last_value_handler, timeseries_handler, historical_handler
 
 logger = Logger().get_logger()
 
@@ -22,6 +22,12 @@ def handle_get_timeseries():
     data = request.args
     logger.info(f"GET request, data: {data}")
     return timeseries_handler.get(data)
+
+
+@app.route('/device/historical', methods=['GET'])
+def handle_get_historical():
+    logger.info(f"GET request")
+    return historical_handler.get()
 
 
 if __name__ == "__main__":

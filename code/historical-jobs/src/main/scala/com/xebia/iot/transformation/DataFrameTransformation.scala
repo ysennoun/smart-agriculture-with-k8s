@@ -6,9 +6,12 @@ import com.xebia.iot.utils.CustomFile.getFilePath
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, LocatedFileStatus, Path, RemoteIterator}
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
 object DataFrameTransformation {
+
+  val LIMIT_NUMBER_ELEMENTS = 20
 
   def getDataFrameFromJson(jsonPaths: Seq[String])(implicit spark: SparkSession): DataFrame ={
     spark.read.json(jsonPaths.mkString(","))
@@ -27,31 +30,20 @@ object DataFrameTransformation {
       .parquet(outputParquetPath)
   }
 
-  def moveObjects(listOfObjects: Seq[String], rawDataPath: String)(implicit spark: SparkSession, sc: SparkContext) ={
+  def moveObjects(listOfObjects: Seq[String], outputParquetPath: String)(implicit spark: SparkSession, sc: SparkContext) ={
     val configuration: Configuration = sc.hadoopConfiguration
     listOfObjects.foreach(objectPath => {
-      val newObjectPath = getFilePath(objectPath, rawDataPath)
+      val newObjectPath = getFilePath(objectPath, outputParquetPath)
       spark.sparkContext.textFile(objectPath).saveAsObjectFile(newObjectPath)
       val fileSystem = FileSystem.get(URI.create(objectPath), configuration)
       fileSystem.delete(new Path(objectPath), true)
     })
   }
 
-  def getListOfObjects(path: String)(implicit sc: SparkContext): Seq[String]={
-    val configuration: Configuration = sc.hadoopConfiguration
-    val fileSystem = FileSystem.get(URI.create(path), configuration) //new Configuration())
-    val it: RemoteIterator[LocatedFileStatus] = fileSystem.listFiles(new Path(path), true)
-    val iterator: Iterator[LocatedFileStatus] = convertToScalaIterator(it)
-    iterator.map(_.getPath.toString).toSeq
-  }
-
-  def convertToScalaIterator[T](underlying: RemoteIterator[T]): Iterator[T] = {
-    case class wrapper(underlying: RemoteIterator[T]) extends Iterator[T] {
-      override def hasNext = underlying.hasNext
-
-      override def next = underlying.next
-    }
-    wrapper(underlying)
+  def getLimitedNumberOfDataAsJsonString(inputParquetPath: String, columnNameToOrder: String)(implicit spark: SparkSession): String = {
+    val parquetFileDF = spark.read.parquet(inputParquetPath)
+    val limitedNumberOfDataAsJson = parquetFileDF.orderBy(asc(columnNameToOrder)).toJSON.take(LIMIT_NUMBER_ELEMENTS)
+    val limitedNumberOfDataAsJsonString = "[" + limitedNumberOfDataAsJson.mkString(",") + "]"
+    limitedNumberOfDataAsJsonString
   }
 }
-

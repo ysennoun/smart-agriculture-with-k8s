@@ -12,19 +12,6 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class DataFrameTransformationTest extends FlatSpec with Matchers with SparkTestUtils {
 
-  "From a directory" should "get list of objects" in {
-
-    // Given
-    val incoming: String = getClass.getResource("/incoming").toURI.toString
-
-    // When
-    val listOfObjects = DataFrameTransformation.getListOfObjects(incoming)
-
-    // Then
-    val expectedListOfObjects = Seq(incoming + "/file1.json", incoming + "/file2.json")
-    listOfObjects should contain theSameElementsAs expectedListOfObjects
-  }
-
   it should "move files from  source to a destination" in {
 
     // Given
@@ -54,5 +41,34 @@ class DataFrameTransformationTest extends FlatSpec with Matchers with SparkTestU
     // Then
     val expectedIterator = Seq(hdfsPath)
     iterator.map(_.getPath.toString).toSeq should contain theSameElementsAs expectedIterator
+  }
+
+  it should "get a limited number of data as json string" in {
+
+    // Given
+    /**
+     * Data store in file resources/prepared-data/data.parquet contains the following lines
+     * +------+---+
+     * |  name|age|
+     * +------+---+
+     * |  Andy| 32|
+     * | Marie| 24|
+     * | Nadia| 21|
+     * |   Ana| 24|
+     * |Laurie| 24|
+     * |Mariam| 24|
+     * |Hakima| 24|
+     * +------+---+
+     **/
+    val preparedData = getClass.getResource("/prepared-data").getPath
+    columnNameToOrder = "name"
+
+    // When
+    val limitedNumberOfDataAsJsonString = DataFrameTransformation.getLimitedNumberOfDataAsJsonString(preparedData, columnNameToOrder)
+
+    //Then
+    expectedLimitedNumberOfDataAsJsonString = "[{"name":"Ana","age":24},{"name":"Andy","age":32},{"name":"Hakima","age":24},{"name":"Laurie","age":24},{"name":"Mariam","age":24},{"name":"Marie","age":24},{"name":"Nadia","age":21}][{"name":"Ana","age":24},{"name":"Andy","age":32},{"name":"Hakima","age":24},{"name":"Laurie","age":24},{"name":"Mariam","age":24},{"name":"Marie","age":24},{"name":"Nadia","age":21}]"
+
+    limitedNumberOfDataAsJsonString shouldBe expectedLimitedNumberOfDataAsJsonString
   }
 }

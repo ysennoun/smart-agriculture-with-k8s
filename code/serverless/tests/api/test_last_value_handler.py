@@ -5,7 +5,7 @@ from datetime import datetime
 from common.storage.postgresql_client import PostgreSQLClient
 
 
-class TestKnFunctionMain(unittest.TestCase):
+class TestLastValueHandler(unittest.TestCase):
 
     session = None
 

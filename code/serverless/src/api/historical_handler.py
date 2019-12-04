@@ -6,7 +6,7 @@ DOCKER_HOST = os.environ["DOCKER_HOST"]
 PREFIX_SPARK_JOB_RESULT = os.environ["PREFIX_SPARK_JOB_RESULT"]
 
 
-def get():
+def get() -> str:
     client = docker.from_env()
     container = client.containers.run(DOCKER_IMAGE)
     for log in container.logs(stream=True):

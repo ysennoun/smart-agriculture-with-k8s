@@ -6,7 +6,7 @@ from common.storage.influxdb_client import InfluxDBIoTClient
 from api.timeseries_handler import get
 
 
-class TestKnFunctionMain(unittest.TestCase):
+class TestTimeseriesHandler(unittest.TestCase):
 
     session = None
 

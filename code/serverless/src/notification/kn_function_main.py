@@ -1,17 +1,22 @@
 import json
-from flask import Flask, Response
-from flask import request
+from flask import Flask, request, Response
 from common.env import get_port
 from common.utils.logger import Logger
-from common.storage.influxdb_client import InfluxDBIoTClient
-from storage.timeseries.model.timeseries_model import get_points_to_insert
-
+from notification.notification_by_email import is_notification_activated, send_email
 
 logger = Logger().get_logger()
 
 app = Flask(__name__)
 HOST = '0.0.0.0'
 PORT = get_port()
+
+
+def _get_status_response(status):
+    return Response(
+        json.dumps({"status": status}),
+        status=200,
+        mimetype="application/json"
+    )
 
 
 @app.route('/', methods=['POST'])
@@ -22,10 +27,9 @@ def handle_post():
 
 
 def handler(data: dict) -> Response:
-    client = InfluxDBIoTClient().get_client()
-    points = get_points_to_insert(data)
-    client.write_points(points)
-    return Response('{"status": "inserted"}', status=200, mimetype="application/json")
+    if is_notification_activated(data):
+        send_email(data)
+    return _get_status_response("inserted")
 
 
 if __name__ == "__main__":
@@ -35,6 +39,3 @@ if __name__ == "__main__":
         host=HOST,
         port=PORT
     )
-
-
-

@@ -24,7 +24,7 @@ def _get_status_response(status):
 
 @app.route('/', methods=['POST'])
 def handle_post():
-    data = request.form
+    data = json.loads(request.form)
     logger.info(f"POST request, data: {data}")
     return handler(data)
 

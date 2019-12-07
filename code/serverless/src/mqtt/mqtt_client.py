@@ -1,7 +1,6 @@
-import json
-from connector import env
+from mqtt import env
 import paho.mqtt.client as mqtt
-from common.serverless.kn_broker_client import send_to_broker
+from common.kn_client.kn_broker_client import send_to_broker
 from common.utils.logger import Logger
 
 logger = Logger().get_logger()
@@ -9,12 +8,11 @@ logger = Logger().get_logger()
 
 class MqttClient:
 
-    def handle_on_message(self, payload: str, topic: str):
+    def handle_on_message(self, payload: str, topic):
         logger.info(f"message {str(payload)} from topic {topic}")
-        data = json.loads(payload)#.decode('UTF-8'))  # TODO decode hexadecimal to json
         brokers_url = env.get_brokers_url()
         for broker_url in brokers_url:
-            send_to_broker(broker_url, data)
+            send_to_broker(broker_url, payload)
         logger.info("end on_message")
 
     def on_connect(self, client, userdata, flags, rc):
@@ -22,7 +20,8 @@ class MqttClient:
         client.subscribe(env.get_topic_name())
 
     def on_message(self, client, userdata, msg):
-        self.handle_on_message(msg.payload, msg.topic)
+        payload = str(msg.payload.decode("utf-8"))
+        self.handle_on_message(payload, msg.topic)
 
     def run(self):
         client = mqtt.Client()

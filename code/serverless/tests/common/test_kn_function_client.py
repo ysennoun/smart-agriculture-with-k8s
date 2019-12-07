@@ -2,7 +2,7 @@ import os
 import unittest
  
 import requests_mock
-from common.serverless.kn_function_client import invoke_kn_function
+from common.kn_client.kn_function_client import invoke_kn_function
 
 
 class TestKnFunctionClient(unittest.TestCase):

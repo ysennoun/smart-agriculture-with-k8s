@@ -85,6 +85,10 @@ function visualize_knative_deployment(){
     kubectl get pods --namespace knative-monitoring
 }
 
+function export_istio_ingress_gateway_ip(){
+    export ISTIO_INGRESS_GATEWAY_IP_ADDRESS=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+}
+
 function add_helm_vernemq_repo(){
     echo "Add Helm VerneMQ repo"
     URL="https://vernemq.github.io/docker-vernemq"

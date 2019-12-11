@@ -5,18 +5,14 @@ SCRIPT_PATH=$(realpath $0)
 SCRIPT_DIR=$(dirname $SCRIPT_PATH)
 BASE_PATH=$(realpath $SCRIPT_DIR/../)
 
-CLUSTER_NAME="k8s-cluster"
 ENVIRONMENT=${ENVIRONMENT}
 COMPUTE_ZONE=${COMPUTE_ZONE}
 MIN_NODES=1
-MAX_NODES=15
-NUM_NODES=8
+MAX_NODES=5
+NUM_NODES=3
 MACHINE_TYPE=n1-standard-2
-VERNEMQ_RELEASE="vernemq-cluster"
-POSTGRES_RELEASE="iot-last-value"
-INFLUXDB_RELEASE="iot-timeseries"
-REDIS_RELEASE="iot-historical"
-K8S_RELEASEE="vernemq-cluster"
+CLUSTER_NAME="$ENVIRONMENT-smart-agriculture-cluster"
+INFRASTRUCTURE_RELEASE="$ENVIRONMENT-smart-agriculture-infrastructure"
 
 ## FUNCTIONS
 function activate_billing(){
@@ -98,12 +94,12 @@ function add_helm_vernemq_repo(){
 
 function install_vernemq(){
     echo "Install VerneMQ"
-    helm install vernemq/vernemq --name ${VERNEMQ_RELEASE}  -f ${BASE_PATH}/deploy/infrastructure/vernemq/${VERNEMQ_RELEASE}.yaml
+    helm install vernemq/vernemq --name "$INFRASTRUCTURE_RELEASE-vernemq"
 }
 
 function delete_vernemq(){
     echo "Delete VerneMQ"
-    helm del --purge ${VERNEMQ_RELEASE}
+    helm del --purge "$INFRASTRUCTURE_RELEASE-vernemq"
 }
 
 function get_vernemq_status(){
@@ -117,32 +113,42 @@ function install_postgresql(){
     DATABASE_NAME="dbiotlastvalue"
     DATABASE_PASSWORD="iotlastvalue1234"
     helm install \
-        --name ${POSTGRES_RELEASE} \
+        --name "$INFRASTRUCTURE_RELEASE-postgresql" \
         --set global.postgresql.postgresqlPassword=${DATABASE_PASSWORD},global.postgresql.postgresqlUsername=${DATABASE_USER},global.postgresql.postgresqlDatabase=${DATABASE_NAME} \
          stable/postgresql
 }
 
 function delete_postgresql(){
     echo "Delete PostgreSQL"
-    helm del --purge ${POSTGRES_RELEASE}
+    helm del --purge "$INFRASTRUCTURE_RELEASE-postgresql"
 }
 
 function install_influxdb(){
     echo "Install Influxdb"
-    helm install --name ${INFLUXDB_RELEASE} stable/influxdb
+    helm install --name "$INFRASTRUCTURE_RELEASE-influxdb" stable/influxdb
 }
 
 function delete_influxdb(){
     echo "Delete Influxdb"
-    helm install --name ${INFLUXDB_RELEASE} stable/influxdb
+    helm del --purge "$INFRASTRUCTURE_RELEASE-influxdb"
+}
+
+function install_minio(){
+    echo "Install Minio"
+    helm install --name "$INFRASTRUCTURE_RELEASE-minio" stable/minio
+}
+
+function delete_minio(){
+    echo "Delete Minio"
+    helm del --purge "$INFRASTRUCTURE_RELEASE-minio"
 }
 
 function install_redis(){
     echo "Install Redis"
-    helm install --name ${REDIS_RELEASE} stable/redis
+    helm install --name "$INFRASTRUCTURE_RELEASE-redis" stable/redis
 }
 
 function delete_redis(){
     echo "Delete Redis"
-    helm install --name ${REDIS_RELEASE} stable/redis
+    helm del --purge "$INFRASTRUCTURE_RELEASE-redis"
 }

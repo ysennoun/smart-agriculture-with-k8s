@@ -17,6 +17,23 @@ spec:
         spec:
           container:
             image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-kn-function-notification:${VERSION}
+            env:
+              - name: THRESHOLD_TEMPERATURE
+                value: "35"
+              - name: THRESHOLD_HUMIDITY
+                value: "10"
+              - name: THRESHOLD_MOISTURE
+                value: "70"
+              - name: SMTP_PORT
+                value: "465"
+              - name: SMTP_SERVER
+                value: "smtp.gmail.com"
+              - name: SENDER_EMAIL
+                value: "smartagriculturewithk8s@gmail.com"
+              - name: RECEIVER_EMAIL
+                value: "ysennoun@xebia.fr"
+              - name: SENDER_PASSWORD
+                value: "SmartAgricultureWithK8S"
 
 ---
 

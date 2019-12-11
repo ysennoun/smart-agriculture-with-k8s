@@ -19,9 +19,11 @@ PROJECT_NAME=${PROJECT_NAME}
 K8S_APISERVER_HOST=${K8S_APISERVER_HOST}
 K8S_APISERVER_PORT=${K8S_APISERVER_PORT}
 
-function get_template(){
+function get_yaml_file(){
     template_file=$1
-    echo $(envsubst < ${template_file})
+    yaml_file=${template_file%.template}.template
+    envsubst < ${template_file} > ${yaml_file}
+    echo ${yaml_file}
 }
 
 function install_python_requirements(){
@@ -68,8 +70,8 @@ function deploy_api_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="api-"${STORAGES[$ix]}
-        template=$(get_template ${BASE_PATH}/deploy/code/serverless/api/${API_IMAGE}.yaml)
-        kubectl apply --template="'"${template}"'"
+        yaml_file=$(get.template_file ${BASE_PATH}/deploy/code/serverless/api/${API_IMAGE}.template)
+        kubectl apply --filename="'"${yaml_file}"'"
     done
 }
 
@@ -77,8 +79,8 @@ function delete_api_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="api-"${STORAGES[$ix]}
-        template=$(get_template ${BASE_PATH}/deploy/code/serverless/api/${API_IMAGE}.yaml)
-        kubectl delete --template="'"${template}"'"
+        yaml_file=$(get_template ${BASE_PATH}/deploy/code/serverless/api/${API_IMAGE}.template)
+        kubectl delete --filename="'"${yaml_file}"'"
     done
 }
 
@@ -96,8 +98,8 @@ function deploy_storage_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="storage-"${STORAGES[$ix]}
-        template=$(get_template ${BASE_PATH}/deploy/code/serverless/storage/${API_IMAGE}.yaml)
-        kubectl apply --template="'"${template}"'"
+        yaml_file=$(get_yaml_file ${BASE_PATH}/deploy/code/serverless/storage/${API_IMAGE}.template)
+        kubectl apply --filename="'"${yaml_file}"'"
     done
 }
 
@@ -105,8 +107,8 @@ function delete_storage_application(){
     for ix in ${!STORAGES[*]}
     do
         API_IMAGE="storage-"${STORAGES[$ix]}
-        template=$(get_template ${BASE_PATH}/deploy/code/serverless/storage/${API_IMAGE}.yaml)
-        kubectl delete --template="'"${template}"'"
+        template=$(get_template ${BASE_PATH}/deploy/code/serverless/storage/${API_IMAGE}.template)
+        kubectl delete --filename=${template}
     done
 }
 
@@ -118,13 +120,13 @@ function deploy_mqtt_image(){
 
 function deploy_mqtt_consumer(){
     kubectl apply -f
-    template=$(get_template ${BASE_PATH}/deploy/code/serverless/mqtt/${MQTT_IMAGE}.yaml)
-    kubectl apply --template="'"${template}"'"
+    yaml_file=$(get_yaml_file ${BASE_PATH}/deploy/code/serverless/mqtt/${MQTT_IMAGE}.template)
+    kubectl apply --filename=${template}
 }
 
 function delete_mqtt_consumer(){
-    template=$(get_template ${BASE_PATH}/deploy/code/serverless/mqtt/${MQTT_IMAGE}.yaml)
-    kubectl delete --template="'"${template}"'"
+    yaml_file=$(get_yaml_file ${BASE_PATH}/deploy/code/serverless/mqtt/${MQTT_IMAGE}.template)
+    kubectl delete --filename=${yaml_file}
 }
 
 function deploy_notification_image(){
@@ -134,13 +136,13 @@ function deploy_notification_image(){
 }
 
 function deploy_notification_application(){
-    template=$(get_template ${BASE_PATH}/deploy/code/serverless/notification/${NOTIFICATION_IMAGE}.yaml)
-    kubectl apply --template="'"${template}"'"
+    yaml_file=$(get_yaml_file ${BASE_PATH}/deploy/code/serverless/notification/${NOTIFICATION_IMAGE}.template)
+    kubectl apply --filename=${template}
 }
 
 function delete_notification_application(){
-    template=$(get_template ${BASE_PATH}/deploy/code/serverless/notification/${NOTIFICATION_IMAGE}.yaml)
-    kubectl delete --template="'"${template}"'"
+    yaml_file=$(get_yaml_file ${BASE_PATH}/deploy/code/serverless/notification/${NOTIFICATION_IMAGE}.template)
+    kubectl delete --filename=${template}
 }
 
 function deploy_spark_on_docker_image(){
@@ -159,13 +161,13 @@ function deploy_historical_job_json_to_parquet_image(){
 }
 
 function deploy_historical_job_json_to_parquet_application(){
-    template=$(get_template ${BASE_PATH}/deploy/code/historical-jobs/${ENVIRONMENT}-spark-json-to-parquet.yaml)
-    kubectl apply --template="'"${template}"'"
+    yaml_file=$(get_yaml_file ${BASE_PATH}/deploy/code/historical-jobs/${ENVIRONMENT}-spark-json-to-parquet.template)
+    kubectl apply --filename=${template}
 }
 
 function delete_historical_job_json_to_parquet_application(){
-    template=$(get_template ${BASE_PATH}/deploy/code/historical-jobs/${ENVIRONMENT}-spark-json-to-parquet.yaml)
-    kubectl delete --template="'"${template}"'"
+    yaml_file=$(get_yaml_file ${BASE_PATH}/deploy/code/historical-jobs/${ENVIRONMENT}-spark-json-to-parquet.template)
+    kubectl delete --filename=${template}
 }
 
 function deploy_historical_limited_number_of_data_selected_image(){

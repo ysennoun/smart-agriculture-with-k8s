@@ -13,8 +13,6 @@ class TestMqttClient(unittest.TestCase):
 
     def tearDown(self):
         container_ids = "$(docker ps -a -q  --filter ancestor=ecli-mosquitto)"
-        print(os.system(container_ids))
-        print("eee")
         os.system(f"docker container stop {container_ids}")
         os.system(f"docker container rm {container_ids}")
 

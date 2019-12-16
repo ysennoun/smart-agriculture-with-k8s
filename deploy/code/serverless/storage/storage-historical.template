@@ -17,6 +17,11 @@ spec:
         spec:
           container:
             image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-kn-function-historical:${VERSION}
+            env:
+              - name: PREFIX_SPARK_JOB_RESULT
+                value: "LimitedNumberOfDataSelected: "
+              - name: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-spark-limited-number-of-data-selected:${VERSION}
+                value: "LimitedNumberOfDataSelected: "
 
 ---
 

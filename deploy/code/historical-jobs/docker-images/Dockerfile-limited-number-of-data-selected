@@ -3,7 +3,9 @@ FROM maven:3.3-jdk-8
 WORKDIR /app
 COPY code/historical-jobs/ /app
 RUN mvn clean package
-CMD bin/spark-submit \
+RUN wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
+RUN tar -zxvf spark-2.4.4.tgz
+CMD spark-2.4.4/bin/spark-submit \
     --master k8s://https://${K8S_APISERVER_HOST}:${K8S_APISERVER_PORT} \
     --deploy-mode cluster \
     --name ${ENVIRONMENT}-spark-limited-number-of-data-selected \

@@ -48,6 +48,7 @@ function deploy-all(){
     # Deploy Knative
     deploy_knative
     visualize_knative_deployment
+    export_istio_ingress_gateway_ip
 
     # Deploy VerneMQ
     add_helm_vernemq_repo

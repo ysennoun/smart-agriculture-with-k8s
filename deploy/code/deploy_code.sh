@@ -148,8 +148,10 @@ function delete_notification_application(){
 function deploy_spark_on_docker_image(){
     wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
     tar -zxvf spark-2.4.4.tgz
+    cd spark-2.4.4/
     ./bin/docker-image-tool.sh -r ${CONTAINER_REPOSITORY} -t ${ENVIRONMENT}-spark-on-docker:2.4.4 build
-    ./bin/docker-image-tool.sh -r ${CONTAINER_REPOSITORY} -t ${ENVIRONMENT}-spark-on-docker:2.4.4 push
+    ./ls a-lbin/docker-image-tool.sh -r ${CONTAINER_REPOSITORY} -t ${ENVIRONMENT}-spark-on-docker:2.4.4 push
+    cd ..
     rm -f spark-2.4.4.tgz
     rm -rf spark-2.4.4/
 }
@@ -171,7 +173,7 @@ function delete_historical_job_json_to_parquet_application(){
 }
 
 function deploy_historical_limited_number_of_data_selected_image(){
-    docker build -f ${BASE_PATH}/deploy/code/historical-jobs/docker-images/Dockerfile-limited-number-of-data-selected -t ${ENVIRONMENT}-spark-imited-number-of-data-selected:${VERSION} .
-    docker tag ${ENVIRONMENT}-spark-imited-number-of-data-selected:${VERSION} ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-spark-imited-number-of-data-selected:${VERSION}
-    docker push ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-spark-imited-number-of-data-selected:${VERSION}
+    docker build -f ${BASE_PATH}/deploy/code/historical-jobs/docker-images/Dockerfile-limited-number-of-data-selected -t ${ENVIRONMENT}-spark-limited-number-of-data-selected:${VERSION} .
+    docker tag ${ENVIRONMENT}-spark-limited-number-of-data-selected:${VERSION} ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-spark-limited-number-of-data-selected:${VERSION}
+    docker push ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-spark-limited-number-of-data-selected:${VERSION}
 }

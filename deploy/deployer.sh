@@ -3,14 +3,14 @@
 set -e
 
 # PARAMETERS
-SCRIPT_PATH=$(realpath $0)
-SCRIPT_DIR=$(dirname $SCRIPT_PATH)
-BASE_PATH=$(realpath $SCRIPT_DIR/../)
+SCRIPT_PATH=$(realpath "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
+BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 
 # IMPORTS
-. ${BASE_PATH}/deploy/infrastructure/infrastructure.sh
-. ${BASE_PATH}/deploy/configuration/configuration.sh
+. "$BASE_PATH/deploy/infrastructure/infrastructure.sh"
+. "$BASE_PATH/deploy/configuration/configuration.sh"
 
 
 ACTION=$1
@@ -74,6 +74,7 @@ function deploy-all(){
     deploy_storage_application
     deploy_connector_application
     deploy_notification_application
+    deploy_ingress_for_kn_function_api
 }
 
 function delete-all(){
@@ -92,7 +93,7 @@ function test-unit(){
 
 function test-2e2(){
     # Run e2e tests
-    cd ${BASE_PATH}/code/features/
+    cd "$BASE_PATH/code/features/"
     behave
     cd ../../
 }
@@ -103,15 +104,15 @@ fn_exists() {
 
 main() {
 
-    if [[ -n "${ACTION}" ]]; then
+    if [[ -n "$ACTION" ]]; then
         echo
     else
         usage
         exit 1
     fi
 
-    if ! fn_exists ${ACTION}; then
-        echo "Error: ${ACTION} is not a valid ACTION"
+    if ! fn_exists "$ACTION"; then
+        echo "Error: $ACTION is not a valid ACTION"
         usage
         exit 2
     fi

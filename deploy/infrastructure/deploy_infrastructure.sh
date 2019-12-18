@@ -1,12 +1,12 @@
 #!/bin/bash
 
 ## PARAMETERS
-SCRIPT_PATH=$(realpath $0)
-SCRIPT_DIR=$(dirname $SCRIPT_PATH)
-BASE_PATH=$(realpath $SCRIPT_DIR/../)
+SCRIPT_PATH=$(realpath "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
+BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
-ENVIRONMENT=${ENVIRONMENT}
-COMPUTE_ZONE=${COMPUTE_ZONE}
+ENVIRONMENT="$ENVIRONMENT"
+COMPUTE_ZONE="$COMPUTE_ZONE"
 MIN_NODES=1
 MAX_NODES=5
 NUM_NODES=3
@@ -18,7 +18,7 @@ INFRASTRUCTURE_RELEASE="$ENVIRONMENT-smart-agriculture-infrastructure"
 function activate_billing(){
     PROJECT=$1
     echo "Activate billing"
-    gcloud config set core/project ${PROJECT}
+    gcloud config set core/project "$PROJECT"
 }
 
 function enable_apis(){
@@ -32,19 +32,19 @@ function enable_apis(){
 
 function create_k8s_cluster() {
     echo "Let's create k8s cluster"
-    gcloud beta container clusters create ${CLUSTER_NAME} \
+    gcloud beta container clusters create "$CLUSTER_NAME" \
        --addons=HorizontalPodAutoscaling,HttpLoadBalancing,Istio,CloudRun \
        --cluster-version=latest \
        --enable-stackdriver-kubernetes\
        --enable-ip-alias \
        --enable-autorepair \
        --scopes cloud-platform \
-       --zone ${COMPUTE_ZONE}  \
-       --num-nodes ${NUM_NODES} \
-       --machine-type ${MACHINE_TYPE} \
+       --zone "$COMPUTE_ZONE"  \
+       --num-nodes "$NUM_NODES" \
+       --machine-type "$MACHINE_TYPE" \
        --enable-autoscaling \
-       --min-nodes=${MIN_NODES} \
-       --max-nodes=${MAX_NODES}
+       --min-nodes="$MIN_NODES" \
+       --max-nodes="$MAX_NODES"
     # Create an RBAC service account
     kubectl create serviceaccount tiller -n kube-system
     # Bind the cluster-admin role to the service account
@@ -58,7 +58,7 @@ function create_k8s_cluster() {
 
 function delete_k8s_cluster() {
     echo "Let's delete k8s cluster"
-    gcloud beta container clusters delete ${CLUSTER_NAME} --zone ${COMPUTE_ZONE}
+    gcloud beta container clusters delete "$CLUSTER_NAME" --zone "$COMPUTE_ZONE"
     echo "End deletion"
 }
 

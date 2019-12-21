@@ -4,6 +4,7 @@ metadata:
   name: ${ENVIRONMENT}-sinker-historical
   labels:
     purpose: demonstrate-sinker-historical
+    serving.knative.dev/visibility: cluster-local
 spec:
   containers:
     - name: ${ENVIRONMENT}-sinker-historical

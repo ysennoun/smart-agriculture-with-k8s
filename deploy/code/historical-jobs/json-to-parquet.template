@@ -4,6 +4,7 @@ metadata:
   name: ${ENVIRONMENT}-json-to-parquet
   labels:
     purpose: demonstrate-json-to-parquet
+    serving.knative.dev/visibility: cluster-local
 spec:
   template:
     spec:

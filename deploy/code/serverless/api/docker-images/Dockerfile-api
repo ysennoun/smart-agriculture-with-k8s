@@ -1,4 +1,6 @@
-FROM python:3.7
+FROM docker:stable
+
+RUN apk add --no-cache curl python py-pip
 
 WORKDIR /app
 ENV PYTHONPATH /app

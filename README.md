@@ -9,6 +9,7 @@ First you have to:
 - Create a [GCP account](https://console.cloud.google.com/)
 - Create a gcp project by given a project-id (example: my-iot-project)
 - Install [Google Cloud SDK](https://cloud.google.com/sdk/docs/downloads-interactive)
+- Login to your gcp account: `gcloud auth login`
 - Install `envsubst`
     - MacOS: brew install gettext && brew link --force gettext
     - Ubuntu: apt-get -y install gettext-devel 

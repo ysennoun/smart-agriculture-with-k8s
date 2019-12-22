@@ -25,9 +25,10 @@ def step_impl(context, device, temperature):
 
 
 @then('For device "{device}", timeseries should contain "{number_of_elements}" elements '
-      'and temperatures should be "{temperatures}"')
-def step_impl(context, device, number_of_elements, temperatures):
+      'and temperatures should be in')
+def step_impl(context, device, number_of_elements):
     api_url = utils.get_service_url(environment.API_SERVICE_NAME)
     timeseries = utils.get_timeseries(api_url, device)
-    temperatures = timeseries["temperature"]
-    assert context is temperatures
+    temperatures = [timeserie["temperature"] for timeserie in timeseries]
+    assert number_of_elements is len(timeseries)
+    assert temperatures is context.table

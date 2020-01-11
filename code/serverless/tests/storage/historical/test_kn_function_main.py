@@ -1,22 +1,30 @@
 import os
 import unittest
+import time
+import docker
 
 
 class TestKnFunctionMain(unittest.TestCase):
 
     session = None
+    __es_container = None
 
     def setUp(self):
-        # run a Redis broker within a docker container
-        os.environ["REDIS_HOST"] = "localhost"
-        os.environ["REDIS_PORT"] = "6379"
-        os.system("docker run -d -p 6379:6379 redis")
-        os.system("sleep 3")  # wait container to be available
+        # run an Elasticsearch broker within a docker container
+        os.environ["ELASTICSEARCH_ENDPOINT"] = "localhost:9200"
+        client = docker.from_env()
+        self.__es_container = client.containers.run(
+            image="docker.elastic.co/elasticsearch/elasticsearch:7.5.1",
+            ports={"9200/tcp": 9200, "9300/tcp": 9300},
+            environment={"discovery.type": "single-node"},
+            detach=True
+        )
+        time.sleep(20)  # wait container to be available
 
     def tearDown(self):
-        container_ids = "$(docker ps -a -q  --filter ancestor=redis)"
-        os.system(f"docker container stop {container_ids}")
-        os.system(f"docker container rm {container_ids}")
+        if self.__es_container:
+            self.__es_container.stop()
+            self.__es_container.remove()
 
     def test_insert_new_historical(self):
 

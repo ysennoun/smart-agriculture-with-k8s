@@ -64,11 +64,14 @@ def handler(data: dict) -> Response:
 
 if __name__ == "__main__":
     logger.info("main run")
-    app.run(
-        debug=True,
-        host=HOST,
-        port=PORT
-    )
+    try:
+        app.run(
+            debug=True,
+            host=HOST,
+            port=PORT
+        )
+    except Exception as ex:
+        logger.error(str(ex))
 
 
 

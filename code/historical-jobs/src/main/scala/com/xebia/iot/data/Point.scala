@@ -7,6 +7,7 @@ case class Point(device: String,
                  temperature: Double,
                  humidity: Double,
                  moisture: Double,
+                 historicalJobDone: Boolean,
                  year: Int,
                  month: Int,
                  day: Int)

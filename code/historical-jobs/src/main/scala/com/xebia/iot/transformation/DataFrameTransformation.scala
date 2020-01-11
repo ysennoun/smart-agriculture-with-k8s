@@ -1,27 +1,22 @@
 package com.xebia.iot.transformation
 
-import java.net.URI
-
-import com.xebia.iot.utils.CustomFile.getFilePath
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.spark.SparkContext
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
+import org.elasticsearch.spark.sql._
 
 object DataFrameTransformation {
 
   val LIMIT_NUMBER_ELEMENTS = 20
 
-  def getDataFrameFromJson(jsonPaths: Seq[String])(implicit spark: SparkSession): DataFrame ={
-    spark.read.json(jsonPaths.mkString(","))
+  def getDataFrameFromElasticsearch(index: String, filter: String)(implicit spark: SparkSession): DataFrame ={
+    spark.sqlContext.esDF(index, filter)
   }
 
   def getDataFrameFromParquet(parquetPath: String)(implicit spark: SparkSession): DataFrame={
     spark.read.parquet(parquetPath)
   }
 
-  def saveDataFrame(dataFrame: DataFrame, outputParquetPath: String)(implicit spark: SparkSession)={
+  def saveDataFrameInObjectStore(dataFrame: DataFrame, outputParquetPath: String)(implicit spark: SparkSession)={
     dataFrame
       .coalesce(10)
       .write
@@ -30,14 +25,12 @@ object DataFrameTransformation {
       .parquet(outputParquetPath)
   }
 
-  def moveObjects(listOfObjects: Seq[String], outputParquetPath: String)(implicit spark: SparkSession, sc: SparkContext) ={
-    val configuration: Configuration = sc.hadoopConfiguration
-    listOfObjects.foreach(objectPath => {
-      val newObjectPath = getFilePath(objectPath, outputParquetPath)
-      spark.sparkContext.textFile(objectPath).saveAsObjectFile(newObjectPath)
-      val fileSystem = FileSystem.get(URI.create(objectPath), configuration)
-      fileSystem.delete(new Path(objectPath), true)
-    })
+  def saveDataFrameInElasticsearch(dataFrame: DataFrame, index: String)(implicit spark: SparkSession)={
+    dataFrame.saveToEs(index)
+  }
+
+  def updateColumnValueInDataFrame(dataFrame: DataFrame, columnName: String, columnValue: Any)(implicit spark: SparkSession) ={
+    dataFrame.withColumn(columnName, lit(columnValue))
   }
 
   def getLimitedNumberOfDataAsJsonString(inputParquetPath: String, columnNameToOrder: String)(implicit spark: SparkSession): String = {

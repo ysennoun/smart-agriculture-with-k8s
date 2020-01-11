@@ -2,9 +2,8 @@ package com.xebia.iot.job
 
 import com.xebia.iot.data.{DataPath, Point}
 import com.xebia.iot.exception.JobException.WrongJobException
-import com.xebia.iot.transformation.DataFrameTransformation.{getDataFrameFromJson, moveObjects, saveDataFrame, getLimitedNumberOfDataAsJsonString}
+import com.xebia.iot.transformation.DataFrameTransformation.{getDataFrameFromElasticsearch, updateColumnValueInDataFrame, saveDataFrameInObjectStore, saveDataFrameInElasticsearch}
 import com.xebia.iot.transformation.PointsTransformation.getDatSetAsPoint
-import com.xebia.iot.transformation.PathTransformation.getListOfObjects
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Dataset, SparkSession}
 
@@ -13,7 +12,7 @@ object RunJob {
   def runner(job: String, path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
     job match {
       case "JsonToParquet" => runJsonToParquet(path)
-      case "LimitedNumberOfDataSelected" => runLimitedNumberOfDataSelected(path)
+      case "LimitedNumberOfDataSelected" => ""
       case _ =>
         val message = s"Job $job is not recognized, failed to run spark job!"
         println(message)
@@ -22,16 +21,11 @@ object RunJob {
   }
 
   def runJsonToParquet(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
-    val listOfObjects = getListOfObjects(path.incomingDataPath)
-    val dataFrame = getDataFrameFromJson(listOfObjects)
+    val dataFrame = getDataFrameFromElasticsearch(path.incomingIndex, "?q=historicalJobDone:false")
     val dataSetAsPoint: Dataset[Point] = getDatSetAsPoint(dataFrame)
-    saveDataFrame(dataSetAsPoint.toDF(), path.preparedDataPath)
-    moveObjects(listOfObjects, path.rawDataPath)
-  }
-
-  def runLimitedNumberOfDataSelected(path: DataPath)(implicit spark: SparkSession, sc: SparkContext) ={
-    val limitedNumberOfDataAsJsonString = getLimitedNumberOfDataAsJsonString(path.preparedDataPath, "timestamp")
-    println("LimitedNumberOfDataSelected: " + limitedNumberOfDataAsJsonString)
+    saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.preparedDataPath)
+    val updatedDataFrame = updateColumnValueInDataFrame(dataFrame, "historicalJobDone", true)
+    saveDataFrameInElasticsearch(updatedDataFrame, path.incomingIndex)
   }
 }
 

@@ -10,10 +10,6 @@ trait SparkTestUtils {
       .setAppName("RawDataToPreparedData")
       .setMaster("local[*]")
 
-
-
-
-
   implicit lazy val sc: SparkContext = SparkContext.getOrCreate(sparkConf)
 
   implicit lazy val spark: SparkSession = SparkSession.builder().config(sparkConf).getOrCreate()

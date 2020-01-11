@@ -19,18 +19,17 @@ object Main {
   }
 
   def getArguments(args: Array[String]): Arguments={
-    if (args.length != 4){
-      val errorMessage = "Wrong number of arguments, it should be 4"
+    if (args.length != 3){
+      val errorMessage = "Wrong number of arguments, it should be 3"
       println(errorMessage)
       throw WrongNumberOfArgumentsException(errorMessage)
     }
     Arguments(
       path=DataPath(
-        incomingDataPath=args.apply(0),
-        rawDataPath=args.apply(1),
-        preparedDataPath=args.apply(2)
+        incomingIndex=args.apply(0),
+        preparedDataPath=args.apply(1)
       ),
-      job=args.apply(3)
+      job=args.apply(2)
     )
   }
 }

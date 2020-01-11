@@ -1,25 +1,43 @@
 package com.xebia.iot.transformation
 
-import java.io.File
-import java.nio.file.{Files, Paths}
 import com.xebia.iot.utils.SparkTestUtils
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.types.{BooleanType, StringType, StructField, StructType}
 import org.scalatest.{FlatSpec, Matchers}
 
-class DataFrameTransformationTest extends FlatSpec with Matchers with SparkTestUtils {
+class DataFrameTransformationTest extends FlatSpec with Matchers with SparkTestUtils  {
 
-  it should "move files from  source to a destination" in {
+  it should "update column valmue of a dataframe" in {
 
     // Given
-    val rawData = getClass.getResource("/raw-data").getPath
-    val newFilePath = "new-file-" + scala.util.Random.nextInt(100000).toString
-    new File(newFilePath).createNewFile()
-    val fileInRawDataPath = rawData + "/" + newFilePath
+    import spark.implicits._
+    val data = Seq(
+      Row("bat", false),
+      Row("mouse", false),
+      Row("horse", false)
+    )
+
+    val someSchema = List(
+      StructField("word", StringType, true),
+      StructField("value", BooleanType, true)
+    )
+
+    val df = spark.createDataFrame(
+      spark.sparkContext.parallelize(data),
+      StructType(someSchema)
+    )
 
     // When
-    val listOfObjects = Seq(newFilePath)
-    DataFrameTransformation.moveObjects(listOfObjects, rawData)
+    val updateDf = DataFrameTransformation.updateColumnValueInDataFrame(df, "value", true)
 
-    Files.exists(Paths.get(fileInRawDataPath)) shouldBe true
+    //Then
+    val expectedData = Seq(
+      Row("bat", true),
+      Row("mouse", true),
+      Row("horse", true)
+    )
+
+    updateDf.collect().toSeq shouldBe expectedData
   }
 
   it should "get a limited number of data as json string" in {

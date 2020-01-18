@@ -12,7 +12,8 @@ object Main {
     val arguments = getArguments(args)
     implicit val spark = SparkSession.builder.appName("Simple Application").getOrCreate()
     implicit val sc = spark.sparkContext
-      
+
+    spark.conf.set("es.index.auto.create", "true")
     sc.hadoopConfiguration.set("fs.s3a.endpoint", "http://localhost:9000")
     RunJob.runner(arguments.job, arguments.path)
     spark.stop()

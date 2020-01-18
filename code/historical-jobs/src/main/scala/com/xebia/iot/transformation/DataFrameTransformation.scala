@@ -29,14 +29,7 @@ object DataFrameTransformation {
     dataFrame.saveToEs(index)
   }
 
-  def updateColumnValueInDataFrame(dataFrame: DataFrame, columnName: String, columnValue: Any)(implicit spark: SparkSession) ={
+  def insertColumnInDataFrame(dataFrame: DataFrame, columnName: String, columnValue: Any)(implicit spark: SparkSession) ={
     dataFrame.withColumn(columnName, lit(columnValue))
-  }
-
-  def getLimitedNumberOfDataAsJsonString(inputParquetPath: String, columnNameToOrder: String)(implicit spark: SparkSession): String = {
-    val parquetFileDF = spark.read.parquet(inputParquetPath)
-    val limitedNumberOfDataAsJson = parquetFileDF.orderBy(asc(columnNameToOrder)).toJSON.take(LIMIT_NUMBER_ELEMENTS)
-    val limitedNumberOfDataAsJsonString = "[" + limitedNumberOfDataAsJson.mkString(",") + "]"
-    limitedNumberOfDataAsJsonString
   }
 }

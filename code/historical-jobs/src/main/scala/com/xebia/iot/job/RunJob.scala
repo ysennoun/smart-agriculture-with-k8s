@@ -2,7 +2,7 @@ package com.xebia.iot.job
 
 import com.xebia.iot.data.{DataPath, Point}
 import com.xebia.iot.exception.JobException.WrongJobException
-import com.xebia.iot.transformation.DataFrameTransformation.{getDataFrameFromElasticsearch, updateColumnValueInDataFrame, saveDataFrameInObjectStore, saveDataFrameInElasticsearch}
+import com.xebia.iot.transformation.DataFrameTransformation.{getDataFrameFromElasticsearch, getDataFrameFromParquet, insertColumnInDataFrame, saveDataFrameInObjectStore, saveDataFrameInElasticsearch}
 import com.xebia.iot.transformation.PointsTransformation.getDatSetAsPoint
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Dataset, SparkSession}
@@ -11,8 +11,8 @@ object RunJob {
 
   def runner(job: String, path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
     job match {
-      case "JsonToParquet" => runJsonToParquet(path)
-      case "LimitedNumberOfDataSelected" => ""
+      case "EsToParquet" => runEsToParquet(path)
+      case "AveragePerDeviceAndDay" => runAveragePerDeviceAndDay(path)
       case _ =>
         val message = s"Job $job is not recognized, failed to run spark job!"
         println(message)
@@ -20,14 +20,19 @@ object RunJob {
     }
   }
 
-  def runJsonToParquet(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
-    val dataFrame = getDataFrameFromElasticsearch(path.incomingIndex, "?q=historicalJobDone:false")
+  def runEsToParquet(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
+    val dataFrame = getDataFrameFromElasticsearch(path.incomingIndex, "?q=!(_exists_:\"historicalJobDone\")")
     val dataSetAsPoint: Dataset[Point] = getDatSetAsPoint(dataFrame)
     saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.preparedDataPath)
-    val updatedDataFrame = updateColumnValueInDataFrame(dataFrame, "historicalJobDone", true)
-    saveDataFrameInElasticsearch(updatedDataFrame, path.incomingIndex)
+    val newDataFrame = insertColumnInDataFrame(dataFrame, "historicalJobDone", true)
+    saveDataFrameInElasticsearch(newDataFrame, path.incomingIndex)
+  }
+
+  def runAveragePerDeviceAndDay(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
+    val dataFrame = getDataFrameFromParquet(path.incomingIndex)
+    val dataSetAsPoint: Dataset[Point] = getDatSetAsPoint(dataFrame)
+    saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.preparedDataPath)
+    val newDataFrame = insertColumnInDataFrame(dataFrame, "historicalJobDone", true)
+    saveDataFrameInElasticsearch(newDataFrame, path.incomingIndex)
   }
 }
-
-//https://spark.apache.org/docs/latest/sql-data-sources-parquet.html
-//https://stackoverflow.com/questions/21510360/how-to-get-the-output-from-jar-execution-in-python-codes

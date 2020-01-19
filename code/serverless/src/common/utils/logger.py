@@ -2,9 +2,6 @@ import json
 import logging
 
 
-_LOG_FILE_NAME = 'logfile.log'
-
-
 def _logger_schema():
     return json.dumps({
         "timestamp": "%(asctime)s",
@@ -17,7 +14,6 @@ def _logger_schema():
 def _create_logging():
     logging.basicConfig(
         format=_logger_schema(),
-        filename=_LOG_FILE_NAME,
         level=logging.INFO
     )
     return logging

@@ -118,6 +118,8 @@ function install_elasticsearch(){
     helm install --name "$INFRASTRUCTURE_RELEASE-elasticsearch" stable/elasticsearch
 }
 
+# TODO export elasticsearch nodes, port and minio endpoint
+
 function delete_elasticsearch(){
     echo "Delete Elasticsearch"
     helm del --purge "$INFRASTRUCTURE_RELEASE-elasticsearch"

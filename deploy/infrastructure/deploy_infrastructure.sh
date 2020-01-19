@@ -113,30 +113,14 @@ function get_vernemq_status(){
     kubectl exec --namespace default vernemq-cluster-0 /vernemq/bin/vmq-admin cluster show
 }
 
-function install_postgresql(){
-    echo "Install PostgreSQL"
-    DATABASE_USER="userlastvalue"
-    DATABASE_NAME="dbiotlastvalue"
-    DATABASE_PASSWORD="iotlastvalue1234"
-    helm install \
-        --name "$INFRASTRUCTURE_RELEASE-postgresql" \
-        --set global.postgresql.postgresqlPassword=${DATABASE_PASSWORD},global.postgresql.postgresqlUsername=${DATABASE_USER},global.postgresql.postgresqlDatabase=${DATABASE_NAME} \
-         stable/postgresql
+function install_elasticsearch(){
+    echo "Install Elasticsearch"
+    helm install --name "$INFRASTRUCTURE_RELEASE-elasticsearch" stable/elasticsearch
 }
 
-function delete_postgresql(){
-    echo "Delete PostgreSQL"
-    helm del --purge "$INFRASTRUCTURE_RELEASE-postgresql"
-}
-
-function install_influxdb(){
-    echo "Install Influxdb"
-    helm install --name "$INFRASTRUCTURE_RELEASE-influxdb" stable/influxdb
-}
-
-function delete_influxdb(){
-    echo "Delete Influxdb"
-    helm del --purge "$INFRASTRUCTURE_RELEASE-influxdb"
+function delete_elasticsearch(){
+    echo "Delete Elasticsearch"
+    helm del --purge "$INFRASTRUCTURE_RELEASE-elasticsearch"
 }
 
 function install_minio(){
@@ -147,14 +131,4 @@ function install_minio(){
 function delete_minio(){
     echo "Delete Minio"
     helm del --purge "$INFRASTRUCTURE_RELEASE-minio"
-}
-
-function install_redis(){
-    echo "Install Redis"
-    helm install --name "$INFRASTRUCTURE_RELEASE-redis" stable/redis
-}
-
-function delete_redis(){
-    echo "Delete Redis"
-    helm del --purge "$INFRASTRUCTURE_RELEASE-redis"
 }

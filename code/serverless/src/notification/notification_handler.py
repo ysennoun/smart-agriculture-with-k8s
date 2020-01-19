@@ -1,5 +1,7 @@
+import json
 import smtplib
 import ssl
+from flask import Response
 from notification import env
 
 
@@ -20,3 +22,17 @@ def send_email(data: dict):
     with smtplib.SMTP_SSL(env.get_smtp_server(), env.get_smtp_port(), context=context) as server:
         server.login(env.get_sender_email(), env.get_sender_password())
         server.sendmail(env.get_sender_email(), env.get_receiver_email(), env.get_message(data))
+
+
+def get_status_response(status):
+    return Response(
+        json.dumps({"status": status}),
+        status=200,
+        mimetype="application/json"
+    )
+
+
+def handler(data: dict) -> Response:
+    if is_notification_activated(data):
+        send_email(data)
+    return get_status_response("inserted")

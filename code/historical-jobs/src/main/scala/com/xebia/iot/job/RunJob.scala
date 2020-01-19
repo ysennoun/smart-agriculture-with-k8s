@@ -12,7 +12,7 @@ object RunJob {
   def runner(job: String, path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
     job match {
       case "EsToParquet" => runEsToParquet(path)
-      case "AveragePerDeviceAndDay" => runAveragePerDeviceAndDay(path)
+      case "AveragePerDeviceAndDate" => runAveragePerDeviceAndDate(path)
       case _ =>
         val message = s"Job $job is not recognized, failed to run spark job!"
         println(message)
@@ -28,7 +28,7 @@ object RunJob {
     saveDataFrameInElasticsearch(newDataFrame, path.incomingIndex)
   }
 
-  def runAveragePerDeviceAndDay(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
+  def runAveragePerDeviceAndDate(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
     val dataFrame = getDataFrameFromParquet(path.incomingIndex)
     val dataSetAsPoint: Dataset[Point] = getDatSetAsPoint(dataFrame)
     saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.preparedDataPath)

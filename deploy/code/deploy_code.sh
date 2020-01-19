@@ -7,7 +7,7 @@ SCRIPT_PATH=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
-STORAGES=("last-value" "timeseries" "historical")
+STORAGES=("historical")
 MQTT_IMAGE="mqtt-client"
 NOTIFICATION_IMAGE="notification"
 INCOMING_DATA_PATH="s3://bucket/incoming/"
@@ -33,20 +33,11 @@ function install_python_requirements(){
     pip install -r requirements.txt
     pip install -r test_requirements.txt
     cd ../../
-
-    cd "$BASE_PATH/code/redis-to-minio/"
-    pip install -r requirements.txt
-    pip install -r test_requirements.txt
-    cd ../../
 }
 
 function launch_python_unit_tests(){
     # Run unit tests (for python)
     cd "$BASE_PATH/code/serverless/"
-    python setup.py test
-    cd ../../
-
-    cd "$BASE_PATH/code/redis-to-minio/"
     python setup.py test
     cd ../../
 }
@@ -173,10 +164,20 @@ function delete_historical_job_json_to_parquet_application(){
     kubectl delete --filename="$template"
 }
 
-function deploy_historical_limited_number_of_data_selected_image(){
-    docker build -f "$BASE_PATH/deploy/code/historical-jobs/docker-images/Dockerfile-limited-number-of-data-selected" -t "$ENVIRONMENT-spark-limited-number-of-data-selected:$VERSION" .
-    docker tag "$ENVIRONMENT-spark-limited-number-of-data-selected:$VERSION" "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-limited-number-of-data-selected:$VERSION"
-    docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-limited-number-of-data-selected:$VERSION"
+function deploy_historical_job_average_point_per_device_and_date_image(){
+    docker build -f "$BASE_PATH/deploy/code/historical-jobs/docker-images/Dockerfile-average-point-per-device-and-date" -t "$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION" .
+    docker tag "$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION" "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION"
+    docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION"
+}
+
+function deploy_historical_job_average_point_per_device_and_date_application(){
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/$ENVIRONMENT-spark-average-point-per-device-and-date.template")
+    kubectl apply --filename="$template"
+}
+
+function delete_historical_job_average_point_per_device_and_date_application(){
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/$ENVIRONMENT-spark-average-point-per-device-and-date.template")
+    kubectl delete --filename="$template"
 }
 
 function deploy_ingress_for_kn_function_api(){

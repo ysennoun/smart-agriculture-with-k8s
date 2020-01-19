@@ -8,8 +8,12 @@ RUN tar -zxvf spark-2.4.4.tgz
 CMD spark-2.4.4/bin/spark-submit \
     --master k8s://https://${K8S_APISERVER_HOST}:${K8S_APISERVER_PORT} \
     --deploy-mode cluster \
-    --name ${ENVIRONMENT}-spark-limited-number-of-data-selected \
+    --name ${ENVIRONMENT}-spark-json-to-parquet \
     --class com.xebia.iot.main.Main \
     --conf spark.executor.instances=2 \
+    --conf es.index.auto.create=true \
+    --conf es.nodes=localhost \
+    --conf es.port=9200 \
+    --conf fs.s3a.endpoint=http://localhost:9000 \
     --conf spark.kubernetes.container.image=${PROJECT_NAME}/${ENVIRONMENT}-spark-on-docker:2.4.4 \
-    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${INCOMING_DATA_PATH} ${RAW_DATA_PATH} ${PREPARED_DATA_PATH} "LimitedNumberOfDataSelected"
+    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${INCOMING_DATA_PATH} ${RAW_DATA_PATH} ${PREPARED_DATA_PATH} "JsonToParquet"

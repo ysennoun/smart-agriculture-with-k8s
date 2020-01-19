@@ -35,11 +35,3 @@ class MqttClient:
         keep_alive = env.get_keep_alive()
         client.connect(host, port, keep_alive)
         client.loop_forever()
-
-
-if __name__ == "__main__":
-    try:
-        mqtt_client = MqttClient()
-        mqtt_client.run()
-    except Exception as ex:
-        logger.error(f"Mqtt client failed: {str(ex)}")

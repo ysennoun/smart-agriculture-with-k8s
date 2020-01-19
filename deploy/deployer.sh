@@ -54,14 +54,11 @@ function deploy-all(){
     add_helm_vernemq_repo
     install_vernemq
 
-    # Deploy PostgreSQL
-    install_postgresql
+    # Deploy Elasticsearch
+    install_elasticsearch
 
-    # Deploy Influxdb
-    install_influxdb
-
-    # Deploy Redis
-    install_redis
+    # Deploy Minio
+    install_minio
 
     # Deploy docker images
     deploy_api_image

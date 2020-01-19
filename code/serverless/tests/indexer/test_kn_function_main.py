@@ -35,7 +35,7 @@ class TestKnFunctionMain(unittest.TestCase):
             "humidity": 56.8,
             "moisture": 9.21
         }
-        from storage.historical.kn_function_main import handler
+        from storage.indexer.kn_function_main import handler
         result = handler(data)
         self.assertEqual(str(result.get_data().decode("utf-8")), '{"status": "inserted"}')
 

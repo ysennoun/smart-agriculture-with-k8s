@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: ${ENVIRONMENT}-mqtt-client
-      image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-mqtt-client:${VERSION}
+      image: ${CONTAINER_REPOSITORY}/mqtt-client:${VERSION}
       env:
         - name: SERVICE_NAME
           value: "vernemq-cluster"
@@ -22,6 +22,6 @@ spec:
         - name: ISTIO_INGRESS_GATEWAY_IP_ADDRESS
           value: ${ISTIO_INGRESS_GATEWAY_IP_ADDRESS}
         - name: BROKERS_URL
-          value: "http://${ENVIRONMENT}-broker-last-value-broker.default.svc.cluster.local/"
+          value: "http://${ENVIRONMENT}-broker-indexer.default.svc.cluster.local/,http://${ENVIRONMENT}-broker-notification.default.svc.cluster.local/"
         - name: CE-Type
           value: "dev.knative.last.value"

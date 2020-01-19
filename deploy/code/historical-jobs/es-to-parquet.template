@@ -9,7 +9,7 @@ spec:
   template:
     spec:
       containers:
-        - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-es-to-parquet:${VERSION}
+        - image: ${CONTAINER_REPOSITORY}/es-to-parquet:${VERSION}
 
 ---
 

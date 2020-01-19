@@ -15,5 +15,5 @@ CMD spark-2.4.4/bin/spark-submit \
     --conf es.nodes=localhost \
     --conf es.port=9200 \
     --conf fs.s3a.endpoint=http://localhost:9000 \
-    --conf spark.kubernetes.container.image=${PROJECT_NAME}/${ENVIRONMENT}-spark-on-docker:2.4.4 \
-    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${INCOMING_DATA_PATH} ${RAW_DATA_PATH} ${PREPARED_DATA_PATH} "JsonToParquet"
+    --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark-on-docker:2.4.4 \
+    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${INCOMING_DATA_PATH} ${RAW_DATA_PATH} ${PREPARED_DATA_PATH} "EsToParquet"

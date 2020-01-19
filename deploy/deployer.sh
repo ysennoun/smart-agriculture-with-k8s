@@ -35,6 +35,13 @@ usage() {
     echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
 }
 
+function install_deps() {
+    apt-get update
+    apt-get install -y --no-install-recommends ca-certificates-java jq realpath zip
+    apt-get install -y openjdk-8-jdk maven
+    update-ca-certificates -f
+}
+
 function deploy-all(){
     # Enable APIs
     enable_apis

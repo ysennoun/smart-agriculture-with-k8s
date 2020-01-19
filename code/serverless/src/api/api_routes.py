@@ -17,7 +17,7 @@ def get_offset_and_max_results(request):
     return offset, max_results
 
 
-def register_routes(app, es_client, es_alias_raw_data, es_alias_summared_data):
+def register_routes(app, es_client, es_alias_raw_data, es_alias_summarized_data):
 
     @app.route('/device/last-value/<string:device>', methods=['GET'])
     def handle_get_last_value(device):
@@ -33,4 +33,4 @@ def register_routes(app, es_client, es_alias_raw_data, es_alias_summared_data):
     @app.route('/device/summuared/<string:device>', methods=['GET'])
     def handle_get_summuared(device):
         logger.info(f"GET summared data for device: {device}")
-        return api_handler.get_last_value(es_client, es_alias_summared_data, device)
+        return api_handler.get_last_value(es_client, es_alias_summarized_data, device)

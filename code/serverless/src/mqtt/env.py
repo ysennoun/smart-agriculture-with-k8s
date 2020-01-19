@@ -26,6 +26,4 @@ def get_keep_alive():
 
 
 def get_brokers_url():
-    print(os.environ["BROKERS_URL"])
-    print(os.environ["BROKERS_URL"].split(","))
-    return os.environ["BROKERS_URL"].split(",") #brokers are seperated by ','
+    return os.environ["BROKERS_URL"].split(",")

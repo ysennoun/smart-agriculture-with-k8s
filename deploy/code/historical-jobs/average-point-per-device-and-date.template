@@ -9,7 +9,7 @@ spec:
   template:
     spec:
       containers:
-        - image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-average-point-per-device-and-date:${VERSION}
+        - image: ${CONTAINER_REPOSITORY}/average-point-per-device-and-date:${VERSION}
 
 ---
 

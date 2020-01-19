@@ -7,9 +7,6 @@ SCRIPT_PATH=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
-STORAGES=("historical")
-MQTT_IMAGE="mqtt-client"
-NOTIFICATION_IMAGE="notification"
 INCOMING_DATA_PATH="s3://bucket/incoming/"
 RAW_DATA_PATH="s3://bucket/raw-data/"
 PREPARED_DATA_PATH="s3://bucket/prepared/"
@@ -50,90 +47,62 @@ function launch_spark_unit_tests(){
 }
 
 function deploy_api_image(){
-    for ix in ${!STORAGES[*]}
-    do
-        API_IMAGE="api-"${STORAGES[$ix]}
-        docker build -f "$BASE_PATH/deploy/code/serverless/api/docker-images/Dockerfile-$API_IMAGE" -t "$API_IMAGE:$VERSION" .
-        docker tag "$API_IMAGE:$VERSION $CONTAINER_REPOSITORY/$PROJECT_NAME/$API_IMAGE:$VERSION"
-        docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$API_IMAGE:$VERSION"
-    done
+    docker build -f "$BASE_PATH/deploy/code/serverless/api/docker-images/Dockerfile-api" -t "$CONTAINER_REPOSITORY/api:$VERSION" .
+    docker push "$CONTAINER_REPOSITORY/api:$VERSION"
 }
 
 function deploy_api_application(){
-    for ix in ${!STORAGES[*]}
-    do
-        API_IMAGE="api-"${STORAGES[$ix]}
-        yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/api/$API_IMAGE.template")
-        kubectl apply --filename="$yaml_file"
-    done
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/api/api.template")
+    kubectl apply --filename="$yaml_file"
 }
 
 function delete_api_application(){
-    for ix in ${!STORAGES[*]}
-    do
-        API_IMAGE="api-"${STORAGES[$ix]}
-        yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/api/$API_IMAGE.template")
-        kubectl delete --filename="$yaml_file"
-    done
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/api/api.template")
+    kubectl delete --filename="$yaml_file"
 }
 
-function deploy_storage_image(){
-    for ix in ${!STORAGES[*]}
-    do
-        API_IMAGE="storage-"${STORAGES[$ix]}
-        docker build -f "$BASE_PATH/deploy/code/serverless/storage/docker-images/Dockerfile-$API_IMAGE" -t "$API_IMAGE:$VERSION" .
-        docker tag "$API_IMAGE:$VERSION" "$CONTAINER_REPOSITORY/$PROJECT_NAME/$API_IMAGE:$VERSION"
-        docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$API_IMAGE:$VERSION"
-    done
+function deploy_indexer_image(){
+    docker build -f "$BASE_PATH/deploy/code/serverless/storage/docker-images/Dockerfile-indexer" -t "$CONTAINER_REPOSITORY/indexer:$VERSION" .
+    docker push "$CONTAINER_REPOSITORY/indexer:$VERSION"
 }
 
-function deploy_storage_application(){
-    for ix in ${!STORAGES[*]}
-    do
-        API_IMAGE="storage-"${STORAGES[$ix]}
-        yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/storage/$API_IMAGE.template")
-        kubectl apply --filename="$yaml_file"
-    done
+function deploy_indexer_application(){
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/storage/indexer.template")
+    kubectl apply --filename="$yaml_file"
 }
 
 function delete_storage_application(){
-    for ix in ${!STORAGES[*]}
-    do
-        API_IMAGE="storage-"${STORAGES[$ix]}
-        template=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/storage/$API_IMAGE.template")
-        kubectl delete --filename="$template"
-    done
+    template=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/storage/indexer.template")
+    kubectl delete --filename="$template"
 }
 
 function deploy_mqtt_image(){
-    docker build -f "$BASE_PATH/deploy/code/serverless/mqtt/docker-images/Dockerfile-$MQTT_IMAGE" -t "$MQTT_IMAGE:$VERSION" .
-    docker tag "$MQTT_IMAGE:$VERSION" "$CONTAINER_REPOSITORY/$PROJECT_NAME/$MQTT_IMAGE:$VERSION"
-    docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$MQTT_IMAGE:$VERSION"
+    docker build -f "$BASE_PATH/deploy/code/serverless/mqtt/docker-images/Dockerfile-mqtt-client" -t "$CONTAINER_REPOSITORY/mqtt-client:$VERSION" .
+    docker push "$CONTAINER_REPOSITORY/mqtt-client:$VERSION"
 }
 
-function deploy_mqtt_consumer(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/mqtt/$MQTT_IMAGE.template")
+function deploy_mqtt_client(){
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/mqtt/mqtt-client.template")
     kubectl apply --filename="$template"
 }
 
-function delete_mqtt_consumer(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/mqtt/$MQTT_IMAGE.template")
+function delete_mqtt_client(){
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/mqtt/mqtt-client.template")
     kubectl delete --filename="$yaml_file"
 }
 
 function deploy_notification_image(){
-    docker build -f "$BASE_PATH/deploy/code/serverless/notification/docker-images/Dockerfile-$NOTIFICATION_IMAGE" -t "$NOTIFICATION_IMAGE:$VERSION" .
-    docker tag "$NOTIFICATION_IMAGE:$VERSION" "$CONTAINER_REPOSITORY/$PROJECT_NAME/$NOTIFICATION_IMAGE:$VERSION"
-    docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$NOTIFICATION_IMAGE:$VERSION"
+    docker build -f "$BASE_PATH/deploy/code/serverless/notification/docker-images/Dockerfile-notification" -t "$CONTAINER_REPOSITORY/notification:$VERSION" .
+    docker push "$CONTAINER_REPOSITORY/notification:$VERSION"
 }
 
 function deploy_notification_application(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/notification/$NOTIFICATION_IMAGE.template")
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/notification/notification.template")
     kubectl apply --filename="$template"
 }
 
 function delete_notification_application(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/notification/$NOTIFICATION_IMAGE.template")
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/serverless/notification/notification.template")
     kubectl delete --filename="$template"
 }
 
@@ -141,42 +110,40 @@ function deploy_spark_on_docker_image(){
     wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
     tar -zxvf spark-2.4.4.tgz
     cd spark-2.4.4/
-    ./bin/docker-image-tool.sh -r "$CONTAINER_REPOSITORY" -t "$ENVIRONMENT-spark-on-docker:2.4.4" build
-    ./ls a-lbin/docker-image-tool.sh -r "$CONTAINER_REPOSITORY" -t "$ENVIRONMENT-spark-on-docker:2.4.4" push
+    ./bin/docker-image-tool.sh -r "$CONTAINER_REPOSITORY" -t "spark-on-docker:2.4.4" build
+    ./ls a-lbin/docker-image-tool.sh -r "$CONTAINER_REPOSITORY" -t "spark-on-docker:2.4.4" push
     cd ..
     rm -f spark-2.4.4.tgz
     rm -rf spark-2.4.4/
 }
 
-function deploy_historical_job_json_to_parquet_image(){
-    docker build -f "$BASE_PATH/deploy/code/historical-jobs/docker-images/Dockerfile-json-to-parquet" -t "$ENVIRONMENT-spark-json-to-parquet:$VERSION" .
-    docker tag "$ENVIRONMENT-spark-json-to-parquet:$VERSION" "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-json-to-parquet:$VERSION"
-    docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-json-to-parquet:$VERSION"
+function deploy_historical_job_es_to_parquet_image(){
+    docker build -f "$BASE_PATH/deploy/code/historical-jobs/docker-images/Dockerfile-es-to-parquet" -t "$CONTAINER_REPOSITORY/spark-es-to-parquet:$VERSION" .
+    docker push "$CONTAINER_REPOSITORY/spark-es-to-parquet:$VERSION"
 }
 
-function deploy_historical_job_json_to_parquet_application(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/$ENVIRONMENT-spark-json-to-parquet.template")
+function deploy_historical_job_es_to_parquet_application(){
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/es-to-parquet.template")
     kubectl apply --filename="$template"
 }
 
-function delete_historical_job_json_to_parquet_application(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/$ENVIRONMENT-spark-json-to-parquet.template")
+function delete_historical_job_es_to_parquet_application(){
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/es-to-parquet.template")
     kubectl delete --filename="$template"
 }
 
 function deploy_historical_job_average_point_per_device_and_date_image(){
-    docker build -f "$BASE_PATH/deploy/code/historical-jobs/docker-images/Dockerfile-average-point-per-device-and-date" -t "$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION" .
-    docker tag "$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION" "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION"
-    docker push "$CONTAINER_REPOSITORY/$PROJECT_NAME/$ENVIRONMENT-spark-average-point-per-device-and-date:$VERSION"
+    docker build -f "$BASE_PATH/deploy/code/historical-jobs/docker-images/Dockerfile-average-point-per-device-and-date" -t "$CONTAINER_REPOSITORY/spark-average-point-per-device-and-date:$VERSION" .
+    docker push "$CONTAINER_REPOSITORY/spark-average-point-per-device-and-date:$VERSION"
 }
 
 function deploy_historical_job_average_point_per_device_and_date_application(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/$ENVIRONMENT-spark-average-point-per-device-and-date.template")
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/average-point-per-device-and-date.template")
     kubectl apply --filename="$template"
 }
 
 function delete_historical_job_average_point_per_device_and_date_application(){
-    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/$ENVIRONMENT-spark-average-point-per-device-and-date.template")
+    yaml_file=$(get_yaml_file "$BASE_PATH/deploy/code/historical-jobs/average-point-per-device-and-date.template")
     kubectl delete --filename="$template"
 }
 

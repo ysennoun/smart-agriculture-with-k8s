@@ -13,8 +13,8 @@ if __name__ == "__main__":
     app = Flask(__name__)
     es_client = get_elasticsearch_client()
     es_alias_raw_data = os.environ["ES_ALIAS_RAW_DATA"]
-    es_alias_summared_data = os.environ["ES_ALIAS_SUMMARED_DATA"]
-    api_routes.register_routes(app, es_client, es_alias_raw_data, es_alias_summared_data)
+    es_alias_summarized_data = os.environ["ES_ALIAS_SUMMARIZED_DATA"]
+    api_routes.register_routes(app, es_client, es_alias_raw_data, es_alias_summarized_data)
 
     app.run(
         debug=True,

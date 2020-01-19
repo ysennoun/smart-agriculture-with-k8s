@@ -9,4 +9,4 @@ COPY code/serverless/src /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD [ "python", "mqtt/mqtt_client.py" ]
+CMD [ "python", "mqtt/mqtt_main.py" ]

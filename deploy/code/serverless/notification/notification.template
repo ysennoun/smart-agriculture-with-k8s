@@ -20,7 +20,7 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: ${CONTAINER_REPOSITORY}/${PROJECT_NAME}/${ENVIRONMENT}-kn-function-notification:${VERSION}
+            image: ${CONTAINER_REPOSITORY}/notification:${VERSION}
             env:
               - name: THRESHOLD_TEMPERATURE
                 value: "35"

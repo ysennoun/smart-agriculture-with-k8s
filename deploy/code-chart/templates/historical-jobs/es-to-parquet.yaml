@@ -1,0 +1,27 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: es-to-parquet
+  namespace: {{ .Values.namespace }}
+  labels:
+    purpose: demonstrate-es-to-parquet
+    serving.knative.dev/visibility: cluster-local
+spec:
+  template:
+    spec:
+      containers:
+        - image: {{ .Values.container_reposiroty }}/es-to-parquet:{{ .Values.docker_version }}
+
+---
+
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: CronJobSource
+metadata:
+  name: cronjob-es-to-parquet
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: "0 * * * *" # every hour
+  sink:
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    name: es-to-parquet

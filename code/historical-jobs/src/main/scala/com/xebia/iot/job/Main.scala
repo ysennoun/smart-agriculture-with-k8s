@@ -27,7 +27,7 @@ object Main {
     }
     Arguments(
       path=DataPath(
-        incomingIndex=args.apply(0),
+        incomingAlias=args.apply(0),
         preparedDataPath=args.apply(1)
       ),
       job=args.apply(2)

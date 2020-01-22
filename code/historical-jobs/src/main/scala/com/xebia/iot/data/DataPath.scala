@@ -1,3 +1,3 @@
 package com.xebia.iot.data
 
-case class DataPath(incomingIndex: String, preparedDataPath: String)
+case class DataPath(incomingAlias: String, preparedDataPath: String)

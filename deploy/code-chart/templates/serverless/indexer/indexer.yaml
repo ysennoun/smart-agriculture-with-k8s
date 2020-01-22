@@ -1,0 +1,43 @@
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Broker
+metadata:
+  name: broker-indexer
+  namespace: {{ .Values.namespace }}
+  labels:
+    serving.knative.dev/visibility: cluster-local
+
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: kn-function-indexer
+  namespace: {{ .Values.namespace }}
+  labels:
+    serving.knative.dev/visibility: cluster-local
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            image: {{ .Values.container_reposiroty }}/indexer:{{ .Values.docker_version }}
+            env:
+              - name: ES_ALIAS
+                value: "smart-agriculture"
+
+---
+
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: trigger-indexer
+  namespace: {{ .Values.namespace }}
+spec:
+  filter:
+    attributes:
+      type: dev.knative.indexer
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
+      name: kn-function-indexer

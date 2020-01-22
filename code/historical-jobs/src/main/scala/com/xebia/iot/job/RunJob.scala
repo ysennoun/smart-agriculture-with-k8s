@@ -22,6 +22,8 @@ object RunJob {
 
   def runEsToParquet(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
     val dataFrame = getDataFrameFromElasticsearch(path.incomingIndex, "?q=!(_exists_:\"historicalJobDone\")")
+    //?q=_type:sms_cockpit_metrics&size=1&sort=metric_year:desc
+    //https://kubernetes.io/fr/docs/concepts/services-networking/dns-pod-service/
     val dataSetAsPoint: Dataset[Point] = getDatSetAsPoint(dataFrame)
     saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.preparedDataPath)
     val newDataFrame = insertColumnInDataFrame(dataFrame, "historicalJobDone", true)

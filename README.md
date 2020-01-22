@@ -50,17 +50,18 @@ Modify the following parameters before those commands:
 
 Run the following script to run all unit tests:
 
-    ./deploy/iot-handler.sh test-unit
+    ./deploy/deployer.sh test-unit
+
 
 ### Install IoT Platform
 
 Run the following script to install this IoT platform on your GCP Account:
 
-    ./deploy/iot-handler.sh deploy-all
+    ./deploy/deployer.sh deploy-all
     
 ### Delete IoT Platform
 
 Run the following script to delete the IoT platform on your GCP Account:
 
-    ./deploy/iot-handler.sh delete-all
+    ./deploy/deployer.sh delete-all
 

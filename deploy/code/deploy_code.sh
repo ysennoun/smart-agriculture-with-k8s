@@ -18,6 +18,9 @@ PROJECT_NAME="$PROJECT_NAME"
 K8S_APISERVER_HOST="$K8S_APISERVER_HOST"
 K8S_APISERVER_PORT="$K8S_APISERVER_PORT"
 
+#TODO https://docs.bitnami.com/kubernetes/how-to/create-your-first-helm-chart/
+#TODO use helm to set dynamically variables
+
 function get_yaml_file(){
     template_file=$1
     yaml_file="${template_file%.template}.template"

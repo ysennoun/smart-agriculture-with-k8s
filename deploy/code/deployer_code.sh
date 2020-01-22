@@ -37,19 +37,19 @@ function deploy_serverless_docker_images(){
     container_repository=$1
     docker_version=$2
 
-    docker build -f "$BASE_PATH/deploy/code-chart/dockerfiles/serverless/api/Dockerfile-api" \
+    docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/api/Dockerfile-api" \
       -t "$container_repository/api:$docker_version" .
     docker push "$container_repository/api:$docker_version"
 
-    docker build -f "$BASE_PATH/deploy/code-chart/dockerfiles/serverless/indexer/Dockerfile-indexer" \
+    docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/indexer/Dockerfile-indexer" \
       -t "$container_repository/indexer:$docker_version" .
     docker push "$container_repository/indexer:$docker_version"
 
-    docker build -f "$BASE_PATH/deploy/code-chart/dockerfiles/serverless/mqtt/Dockerfile-mqtt-client" \
+    docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/mqtt/Dockerfile-mqtt-client" \
       -t "$container_repository/mqtt-client:$docker_version" .
     docker push "$container_repository/mqtt-client:$docker_version"
 
-    docker build -f "$BASE_PATH/deploy/code-chart/dockerfiles/serverless/notification/Dockerfile-notification" \
+    docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/notification/Dockerfile-notification" \
       -t "$container_repository/notification:$docker_version" .
     docker push "$container_repository/notification:$docker_version"
 }
@@ -86,7 +86,7 @@ function deploy_historical_jobs_docker_images(){
       --build-arg FS_S3A_ENDPOINT="$fs_s3a_endpoint" \
       --build-arg INCOMING_ALIAS="$incoming_alias" \
       --build-arg PREPARED_DATA_PATH="$prepared_data_path" \
-      -f "$BASE_PATH/deploy/code-chart/dockerfiles/historical-jobs/Dockerfile-es-to-parquet" \
+      -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-es-to-parquet" \
       -t "$container_repository/spark-es-to-parquet:$docker_version" .
     docker push "$container_repository/spark-es-to-parquet:$docker_version"
 
@@ -99,7 +99,7 @@ function deploy_historical_jobs_docker_images(){
       --build-arg FS_S3A_ENDPOINT="$fs_s3a_endpoint" \
       --build-arg INCOMING_ALIAS="$incoming_alias" \
       --build-arg PREPARED_DATA_PATH="$prepared_data_path" \
-      -f "$BASE_PATH/deploy/code-chart/dockerfiles/historical-jobs/Dockerfile-average-point-per-device-and-date" \
+      -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-average-point-per-device-and-date" \
       -t "$container_repository/spark-average-point-per-device-and-date:$docker_version" .
     docker push "$container_repository/spark-average-point-per-device-and-date:$docker_version"
 }
@@ -112,7 +112,7 @@ function deploy_release_from_templates(){
 
   helm install --debug \
     --name-template "$release" \
-    "$BASE_PATH/code-chart" \
+    "$BASE_PATH/code" \
     --set namespace="$namespace" \
     --set container_repository="$container_repository" \
     --set docker_version="$docker_version"

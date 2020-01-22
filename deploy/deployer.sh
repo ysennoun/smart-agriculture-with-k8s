@@ -9,8 +9,8 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 
 # IMPORTS
-. "$BASE_PATH/deploy/infrastructure/infrastructure.sh"
-. "$BASE_PATH/deploy/configuration/configuration.sh"
+. "$BASE_PATH/deploy/infrastructure/deployer_infrastructure.sh"
+. "$BASE_PATH/deploy/code/deployer_code.sh"
 
 
 ACTION=$1
@@ -33,13 +33,6 @@ usage() {
     echo "  - delete-all <ENVIRONMENT>: delete all modules"
     echo "  - test-unit <ENVIRONMENT>: launch unit tests"
     echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
-}
-
-function install_deps() {
-    apt-get update
-    apt-get install -y --no-install-recommends ca-certificates-java jq realpath zip
-    apt-get install -y openjdk-8-jdk maven
-    update-ca-certificates -f
 }
 
 function deploy-all(){
@@ -68,17 +61,12 @@ function deploy-all(){
     install_minio
 
     # Deploy docker images
-    deploy_api_image
-    deploy_storage_image
-    deploy_connector_image
-    deploy_notification_image
+    deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$VERSION"
+    deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
+    deploy_historical_jobs_docker_images"$CONTAINER_REPOSITORY" "$VERSION" "-" "-" "-" "-" "-"
 
     # Deploy applications
-    deploy_api_application
-    deploy_storage_application
-    deploy_connector_application
-    deploy_notification_application
-    deploy_ingress_for_kn_function_api
+    deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$VERSION"
 }
 
 function delete-all(){

@@ -18,6 +18,13 @@ function install_python_requirements(){
     cd ../../
 }
 
+function install_deps() {
+    apt-get update
+    apt-get install -y --no-install-recommends ca-certificates-java jq realpath zip
+    apt-get install -y openjdk-8-jdk maven
+    update-ca-certificates -f
+}
+
 function launch_python_unit_tests(){
     # Run unit tests (for python)
     cd "$BASE_PATH/code/serverless/"
@@ -32,6 +39,12 @@ function launch_spark_unit_tests(){
     cd ../../
 }
 
+function launch_e2e_tests(){
+    # Run e2e tests
+    cd "$BASE_PATH/code/features/"
+    behave
+    cd ../../
+}
 
 function deploy_serverless_docker_images(){
     container_repository=$1
@@ -109,13 +122,15 @@ function deploy_release_from_templates(){
   namespace=$2
   container_repository=$3
   docker_version=$4
+  istio_ingress_gateway_ip_address=$5
 
   helm install --debug \
     --name-template "$release" \
     "$BASE_PATH/code" \
     --set namespace="$namespace" \
     --set container_repository="$container_repository" \
-    --set docker_version="$docker_version"
+    --set docker_version="$docker_version" \
+    --set istio_ingress_gateway_ip_address="$istio_ingress_gateway_ip_address"
 }
 
 function delete_release(){

@@ -12,7 +12,7 @@ CMD spark-2.4.4/bin/spark-submit \
     --class com.xebia.iot.main.Main \
     --conf spark.executor.instances=2 \
     --conf es.index.auto.create=true \
-    --conf es.nodes=${ES_NODES} \
+    --conf es.nodes=${ES_NODES} \ mon-service.mon-namespace.svc.cluster.local
     --conf es.port=${ES_PORT} \
     --conf fs.s3a.endpoint=${FS_S3A_ENDPOINT} \
     --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark-on-docker:2.4.4 \

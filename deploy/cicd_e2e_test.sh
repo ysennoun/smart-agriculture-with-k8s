@@ -1,14 +1,11 @@
 #!/bin/bash
 
-set -e
+set -eax
 
-# PARAMETERS
-SCRIPT_PATH=$(realpath "$0")
-SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
-BASE_PATH=$(realpath "$SCRIPT_DIR/../")
+source deploy/code/deployer_code.sh
 
+# Install python requirements
+install_python_requirements
 
-# IMPORTS
-. "$BASE_PATH/deploy/infrastructure/infrastructure.sh"
-. "$BASE_PATH/deploy/configuration/configuration.sh"
-
+# Run e2e tests
+launch_e2e_tests

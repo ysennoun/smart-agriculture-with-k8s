@@ -21,8 +21,8 @@ spec:
         - name: KN_FUNCTION_NAME
           value: "iot-kn-function"
         - name: ISTIO_INGRESS_GATEWAY_IP_ADDRESS
-          value: ${ISTIO_INGRESS_GATEWAY_IP_ADDRESS}
+          value: {{ .Values.istio_ingress_gateway_ip_address }}
         - name: BROKERS_URL
-          value: "http://${ENVIRONMENT}-broker-indexer.default.svc.cluster.local/,http://${ENVIRONMENT}-broker-notification.default.svc.cluster.local/"
+          value: "http://broker-indexer."{{ .Values.namespace }}".svc.cluster.local/,http://broker-notification."{{ .Values.namespace }}".svc.cluster.local/"
         - name: CE-Type
           value: "dev.knative.last.value"

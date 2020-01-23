@@ -82,18 +82,16 @@ function deploy_spark_within_docker_image(){
 function deploy_historical_jobs_docker_images(){
     container_repository=$1
     docker_version=s2
-    k8_apiserver_host=$3
-    k8_apiserver_port=$4
-    es_nodes=$5
-    es_port=$6
-    fs_s3a_endpoint=$7
+    k8_apiserver_url=$3
+    es_nodes=$4
+    es_port=$5
+    fs_s3a_endpoint=$6
     incoming_alias=$INCOMING_ALIAS
     prepared_data_path=$PREPARED_DATA_PATH
 
     docker build \
       --build-arg CONTAINER_REPOSITORY="$container_repository" \
-      --build-arg K8S_APISERVER_HOST="$k8_apiserver_host" \
-      --build-arg K8S_APISERVER_PORT="$k8_apiserver_port" \
+      --build-arg K8S_APISERVER_URL="$k8_apiserver_url" \
       --build-arg ES_NODES="$es_nodes" \
       --build-arg ES_PORT="$es_port" \
       --build-arg FS_S3A_ENDPOINT="$fs_s3a_endpoint" \
@@ -105,8 +103,7 @@ function deploy_historical_jobs_docker_images(){
 
     docker build \
       --build-arg CONTAINER_REPOSITORY="$container_repository" \
-      --build-arg K8S_APISERVER_HOST="$k8_apiserver_host" \
-      --build-arg K8S_APISERVER_PORT="$k8_apiserver_port" \
+      --build-arg K8S_APISERVER_URL="$k8_apiserver_url" \
       --build-arg ES_NODES="$es_nodes" \
       --build-arg ES_PORT="$es_port" \
       --build-arg FS_S3A_ENDPOINT="$fs_s3a_endpoint" \

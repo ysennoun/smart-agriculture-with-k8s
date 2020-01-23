@@ -87,8 +87,9 @@ function visualize_knative_deployment(){
     kubectl get pods --namespace knative-monitoring
 }
 
-function export_istio_ingress_gateway_ip(){
-    export ISTIO_INGRESS_GATEWAY_IP_ADDRESS=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+function get_istio_ingress_gateway_ip(){
+    ISTIO_INGRESS_GATEWAY_IP_ADDRESS=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    echo "$ISTIO_INGRESS_GATEWAY_IP_ADDRESS"
 }
 
 function add_helm_vernemq_repo(){
@@ -127,7 +128,9 @@ function delete_elasticsearch(){
 
 function install_minio(){
     echo "Install Minio"
-    helm install --name "$INFRASTRUCTURE_RELEASE-minio" stable/minio
+    helm install --name "$INFRASTRUCTURE_RELEASE-minio" \
+      --set buckets[0].name=bucket,buckets[0].policy=none,buckets[0].purge=true \
+      stable/minio
 }
 
 function delete_minio(){

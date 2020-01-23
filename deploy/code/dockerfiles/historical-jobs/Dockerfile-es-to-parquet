@@ -6,7 +6,7 @@ RUN mvn clean package
 RUN wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
 RUN tar -zxvf spark-2.4.4.tgz
 CMD spark-2.4.4/bin/spark-submit \
-    --master k8s://https://${K8S_APISERVER_HOST}:${K8S_APISERVER_PORT} \
+    --master k8s://${K8S_APISERVER_URL} \
     --deploy-mode cluster \
     --name spark-json-to-parquet \
     --class com.xebia.iot.main.Main \

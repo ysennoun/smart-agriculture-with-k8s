@@ -35,8 +35,3 @@ object Main {
     )
   }
 }
-
-
-//https://kubernetes.io/fr/docs/concepts/services-networking/dns-pod-service/
-//gitlab on_failure https://gitlab.com/gitlab-org/gitlab-foss/issues/37567
-//https://lucene.apache.org/solr/guide/6_6/working-with-dates.html

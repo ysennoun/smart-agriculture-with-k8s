@@ -16,4 +16,4 @@ CMD spark-2.4.4/bin/spark-submit \
     --conf es.port=${ES_PORT} \
     --conf fs.s3a.endpoint=${FS_S3A_ENDPOINT} \
     --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark-on-docker:2.4.4 \
-    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${INCOMING_ALIAS} ${PREPARED_DATA_PATH} "AveragePerDeviceAndDate"
+    local:///app/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE} ${S3_PREPARED_DATA_PATH} "AveragePerDeviceAndDate"

@@ -7,8 +7,10 @@ SCRIPT_PATH=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
-INCOMING_ALIAS="smart-agriculture"
-PREPARED_DATA_PATH="s3://bucket/prepared/"
+ES_ALIAS_INCOMING_DATA="smart-agriculture"
+ES_ALIAS_FOR_HISTORICAL_JOBS="historical-jobs"
+ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE="average-per-device-and-date"
+S3_PREPARED_DATA_PATH="s3://bucket/prepared/"
 
 
 function install_python_requirements(){
@@ -86,8 +88,10 @@ function deploy_historical_jobs_docker_images(){
     esNodes=$4
     esPort=$5
     fsS3aEndpoint=$6
-    incomingAlias=$INCOMING_ALIAS
-    prepared_data_path=$PREPARED_DATA_PATH
+    esAliasIncomingData=$ES_ALIAS_INCOMING_DATA
+    esAliasForHistoricalJobs=$ES_ALIAS_FOR_HISTORICAL_JOBS
+    esAliasForAveragePerDeviceAndDate=$ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE
+    s3_prepared_data_path=$S3_PREPARED_DATA_PATH
 
     docker build \
       --build-arg containerRepository="$containerRepository" \
@@ -95,8 +99,10 @@ function deploy_historical_jobs_docker_images(){
       --build-arg ES_NODES="$esNodes" \
       --build-arg ES_PORT="$esPort" \
       --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
-      --build-arg INCOMING_ALIAS="$incomingAlias" \
-      --build-arg PREPARED_DATA_PATH="$prepared_data_path" \
+      --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
+      --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
+      --build-arg ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE="$esAliasForAveragePerDeviceAndDate" \
+      --build-arg S3_PREPARED_DATA_PATH="$s3_prepared_data_path" \
       -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-es-to-parquet" \
       -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
@@ -107,8 +113,10 @@ function deploy_historical_jobs_docker_images(){
       --build-arg ES_NODES="$esNodes" \
       --build-arg ES_PORT="$esPort" \
       --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
-      --build-arg INCOMING_ALIAS="$incomingAlias" \
-      --build-arg PREPARED_DATA_PATH="$prepared_data_path" \
+      --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
+      --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
+      --build-arg ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE="$esAliasForAveragePerDeviceAndDate" \
+      --build-arg S3_PREPARED_DATA_PATH="$s3_prepared_data_path" \
       -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-average-point-per-device-and-date" \
       -t "$containerRepository/spark-average-point-per-device-and-date:$dockerVersion" .
     docker push "$containerRepository/spark-average-point-per-device-and-date:$dockerVersion"

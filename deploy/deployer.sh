@@ -20,7 +20,7 @@ export COMPUTE_ZONE="your-selected-zone"
 export COMPUTE_REGION="your-selected-region"
 export CONTAINER_REPOSITORY="your docker repository"
 export PROJECT_NAME="your project name on gcp"
-export VERSION="latest"
+export DOCKER_VERSION="latest"
 
 
 ######## FUNCTIONS ########
@@ -52,21 +52,25 @@ function deploy-all(){
 
     # Deploy VerneMQ
     add_helm_vernemq_repo
-    install_vernemq
+    install_vernemq "$ENVIRONMENT"
 
     # Deploy Elasticsearch
-    install_elasticsearch
+    install_elasticsearch "$ENVIRONMENT"
 
     # Deploy Minio
-    install_minio
+    install_minio "$ENVIRONMENT"
 
     # Deploy docker images
-    deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$VERSION"
+    deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
     deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
-    deploy_historical_jobs_docker_images"$CONTAINER_REPOSITORY" "$VERSION" "-" "-" "-" "-" "-"
+    k8_apiserver_url=$(get_k8_apiserver_url)
+    es_nodes=elasticsearch."$ENVIRONMENT".svc.cluster.local
+    es_port=9200
+    fs_s3a_endpoint=minio."$ENVIRONMENT".svc.cluster.local
+    deploy_historical_jobs_docker_images"$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
 
     # Deploy applications
-    deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$VERSION"
+    deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
 }
 
 function delete-all(){

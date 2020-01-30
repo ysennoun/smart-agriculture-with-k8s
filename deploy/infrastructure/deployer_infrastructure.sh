@@ -58,6 +58,11 @@ function create_k8s_cluster() {
     echo "End creation"
 }
 
+function get_k8_apiserver_url() {
+  k8_apiserver_url=$(kubectl cluster-info | head -n 1 | rev | cut -d' ' -f 1 | rev)
+  echo "$k8_apiserver_url"
+}
+
 function delete_k8s_cluster() {
     echo "Let's delete k8s cluster"
     gcloud beta container clusters delete "$CLUSTER_NAME" --zone "$COMPUTE_ZONE"
@@ -101,39 +106,45 @@ function add_helm_vernemq_repo(){
 
 function install_vernemq(){
     echo "Install VerneMQ"
-    helm install vernemq/vernemq --name "$INFRASTRUCTURE_RELEASE-vernemq"
+    env=$1
+    helm install vernemq/vernemq --name "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env"
 }
 
 function delete_vernemq(){
     echo "Delete VerneMQ"
-    helm del --purge "$INFRASTRUCTURE_RELEASE-vernemq"
+    env=$1
+    helm del --purge "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env"
 }
 
 function get_vernemq_status(){
     echo "Get VerneMQ status"
-    kubectl exec --namespace default vernemq-cluster-0 /vernemq/bin/vmq-admin cluster show
+    env=$1
+    kubectl exec --namespace "$env" vernemq-cluster-0 /vernemq/bin/vmq-admin cluster show
 }
 
 function install_elasticsearch(){
     echo "Install Elasticsearch"
-    helm install --name "$INFRASTRUCTURE_RELEASE-elasticsearch" stable/elasticsearch
+    env=$1
+    helm install --namespace "$env" --name "$INFRASTRUCTURE_RELEASE-elasticsearch" stable/elasticsearch
 }
-
-# TODO export elasticsearch nodes, port and minio endpoint
 
 function delete_elasticsearch(){
     echo "Delete Elasticsearch"
-    helm del --purge "$INFRASTRUCTURE_RELEASE-elasticsearch"
+    env=$1
+    helm del --purge "$INFRASTRUCTURE_RELEASE-elasticsearch" --namespace "$env"
 }
 
 function install_minio(){
     echo "Install Minio"
+    env=$1
     helm install --name "$INFRASTRUCTURE_RELEASE-minio" \
+      --namespace "$env" \
       --set buckets[0].name=bucket,buckets[0].policy=none,buckets[0].purge=true \
       stable/minio
 }
 
 function delete_minio(){
     echo "Delete Minio"
-    helm del --purge "$INFRASTRUCTURE_RELEASE-minio"
+    env=$1
+    helm del --purge "$INFRASTRUCTURE_RELEASE-minio" --namespace "$env"
 }

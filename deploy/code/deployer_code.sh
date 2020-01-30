@@ -140,6 +140,5 @@ function deploy_release_from_templates(){
 
 function delete_release(){
   release=$1
-
   helm del --purge "$release"
 }

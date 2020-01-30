@@ -33,7 +33,7 @@ install_minio
 # Deploy docker images
 deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
 deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
-k8_apiserver_url="k8_apiserver_url" #$(kubectl cluster-info | head -n 1 | rev | cut -d' ' -f 1 | rev)
+k8_apiserver_url=$(get_k8_apiserver_url)
 es_nodes=elasticsearch."$ENVIRONMENT".svc.cluster.local
 es_port=9200
 fs_s3a_endpoint=minio."$ENVIRONMENT".svc.cluster.local

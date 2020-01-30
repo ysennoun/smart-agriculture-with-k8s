@@ -1,6 +1,5 @@
 package com.xebia.iot.transformation
 
-import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import org.elasticsearch.spark.sql._
 
@@ -27,9 +26,5 @@ object DataFrameTransformation {
 
   def saveDataFrameInElasticsearch(dataFrame: DataFrame, index: String)(implicit spark: SparkSession)={
     dataFrame.saveToEs(index)
-  }
-
-  def insertColumnInDataFrame(dataFrame: DataFrame, columnName: String, columnValue: Any)(implicit spark: SparkSession) ={
-    dataFrame.withColumn(columnName, lit(columnValue))
   }
 }

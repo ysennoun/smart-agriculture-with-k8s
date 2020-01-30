@@ -9,7 +9,7 @@ spec:
   template:
     spec:
       containers:
-        - image: {{ .Values.container_reposiroty }}/api:{{ .Values.docker_version }}
+        - image: {{ .Values.containerReposiroty }}/api:{{ .Values.dockerVersion }}
           env:
             - name: ES_ALIAS_RAW_DATA
               value: "smart-agriculture"

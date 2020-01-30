@@ -10,7 +10,7 @@ spec:
   template:
     spec:
       containers:
-        - image: {{ .Values.container_reposiroty }}/es-to-parquet:{{ .Values.docker_version }}
+        - image: {{ .Values.containerReposiroty }}/es-to-parquet:{{ .Values.dockerVersion }}
 
 ---
 

@@ -7,7 +7,6 @@ case class Point(device: String,
                  temperature: Double,
                  humidity: Double,
                  moisture: Double,
-                 historicalJobDone: Boolean,
                  year: Int,
                  month: Int,
                  day: Int)
@@ -27,3 +26,6 @@ case class PointValuesSummed(temperature: Double,
 
 case class DeviceAndDate(device: String, year: Int, month: Int, day: Int)
 case class PointValuesSummedByDeviceAndDay(deviceAndDate: DeviceAndDate, pointValuesSummed: PointValuesSummed)
+
+
+case class HistoricalJob(task: String, timestamp: Timestamp)

@@ -10,7 +10,7 @@ spec:
   template:
     spec:
       containers:
-        - image: {{ .Values.container_reposiroty }}/average-point-per-device-and-date:{{ .Values.docker_version }}
+        - image: {{ .Values.containerReposiroty }}/average-point-per-device-and-date:{{ .Values.dockerVersion }}
 
 ---
 

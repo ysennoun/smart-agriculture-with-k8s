@@ -20,7 +20,7 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: {{ .Values.container_reposiroty }}/notification:{{ .Values.docker_version }}
+            image: {{ .Values.containerReposiroty }}/notification:{{ .Values.dockerVersion }}
             env:
               - name: THRESHOLD_TEMPERATURE
                 value: "35"

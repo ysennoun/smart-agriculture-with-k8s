@@ -20,7 +20,6 @@ class PointsTransformationTest extends FlatSpec with Matchers with SparkTestUtil
           temperature=10,
           humidity=20,
           moisture=30,
-          historicalJobDone=true,
           day=22,
           month=10,
           year=2019
@@ -31,7 +30,6 @@ class PointsTransformationTest extends FlatSpec with Matchers with SparkTestUtil
           temperature=11,
           humidity=22,
           moisture=33,
-          historicalJobDone=true,
           day=22,
           month=10,
           year=2019
@@ -42,7 +40,6 @@ class PointsTransformationTest extends FlatSpec with Matchers with SparkTestUtil
           temperature=10,
           humidity=20,
           moisture=30,
-          historicalJobDone=true,
           day=22,
           month=10,
           year=2019
@@ -53,7 +50,6 @@ class PointsTransformationTest extends FlatSpec with Matchers with SparkTestUtil
           temperature=11,
           humidity=22,
           moisture=33,
-          historicalJobDone=true,
           day=22,
           month=10,
           year=2019

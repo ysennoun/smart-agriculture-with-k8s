@@ -1,13 +1,19 @@
 package com.xebia.iot.job
 
-import com.xebia.iot.data.{DataPath, Point}
+import java.sql.Timestamp
+
+import com.xebia.iot.data.{DataPath, HistoricalJob}
 import com.xebia.iot.exception.JobException.WrongJobException
-import com.xebia.iot.transformation.DataFrameTransformation.{getDataFrameFromElasticsearch, getDataFrameFromParquet, insertColumnInDataFrame, saveDataFrameInObjectStore, saveDataFrameInElasticsearch}
-import com.xebia.iot.transformation.PointsTransformation.getDatSetAsPoint
+import com.xebia.iot.transformation.DataFrameTransformation.{getDataFrameFromElasticsearch, getDataFrameFromParquet, saveDataFrameInElasticsearch, saveDataFrameInObjectStore}
+import com.xebia.iot.transformation.PointsTransformation.{getAveragePointPerDeviceAndDate, getDatSetAsPoint}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
 
 object RunJob {
+
+  val task = "historical"
+  val filterForLastJob = s"?q=task:$task&size=1&sort=timestamp:desc"
 
   def runner(job: String, path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
     job match {
@@ -21,21 +27,24 @@ object RunJob {
   }
 
   def runEsToParquet(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
-    val dataFrame = getDataFrameFromElasticsearch(path.incomingAlias, "?q=!(_exists_:\"historicalJobDone\")")
-    //?q=_type:sms_cockpit_metrics&size=1&sort=metric_year:desc
-    //https://kubernetes.io/fr/docs/concepts/services-networking/dns-pod-service/
-    //gitlab on_failure https://gitlab.com/gitlab-org/gitlab-foss/issues/37567
-    val dataSetAsPoint: Dataset[Point] = getDatSetAsPoint(dataFrame)
-    saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.preparedDataPath)
-    val newDataFrame = insertColumnInDataFrame(dataFrame, "historicalJobDone", true)
-    saveDataFrameInElasticsearch(newDataFrame, path.incomingAlias)
+    val dataFrameForLastJob = getDataFrameFromElasticsearch(path.esAliasForHistoricalJobs, filterForLastJob)
+    val dataSetAsPointForLastJob = getDatSetAsPoint(dataFrameForLastJob)
+    val fromTimestamp = dataSetAsPointForLastJob.head().timestamp
+    val filter = s"?q=*:*&facet.range=timestamp&facet=true&facet.range.start=$fromTimestamp"
+    val dataFrame = getDataFrameFromElasticsearch(path.esAliasForIncomingData, filter)
+    val dataSetAsPoint = getDatSetAsPoint(dataFrame)
+    saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.s3PreparedDataPath)
+
+    import spark.implicits._
+    val timestamp = dataSetAsPoint.map(_.timestamp).agg(max("timestamp")).head().getAs[Timestamp](0)
+    val newDataFrame = Seq(HistoricalJob(task, timestamp)).toDF()
+    saveDataFrameInElasticsearch(newDataFrame, path.esAliasForHistoricalJobs)
   }
 
   def runAveragePerDeviceAndDate(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
-    val dataFrame = getDataFrameFromParquet(path.incomingAlias)
-    val dataSetAsPoint: Dataset[Point] = getDatSetAsPoint(dataFrame)
-    saveDataFrameInObjectStore(dataSetAsPoint.toDF(), path.preparedDataPath)
-    val newDataFrame = insertColumnInDataFrame(dataFrame, "historicalJobDone", true)
-    saveDataFrameInElasticsearch(newDataFrame, path.incomingAlias)
+    val dataFrame = getDataFrameFromParquet(path.s3PreparedDataPath)
+    val dataSetAsPoint = getDatSetAsPoint(dataFrame)
+    val dataSetAsAveragePointPerDeviceAndDate = getAveragePointPerDeviceAndDate(dataSetAsPoint)
+    saveDataFrameInElasticsearch(dataSetAsAveragePointPerDeviceAndDate.toDF(), path.esAliasForAveragePerDeviceAndDate)
   }
 }

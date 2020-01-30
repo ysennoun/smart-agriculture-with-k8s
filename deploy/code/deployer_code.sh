@@ -47,87 +47,87 @@ function launch_e2e_tests(){
 }
 
 function deploy_serverless_docker_images(){
-    container_repository=$1
-    docker_version=$2
+    containerRepository=$1
+    dockerVersion=$2
 
     docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/api/Dockerfile-api" \
-      -t "$container_repository/api:$docker_version" .
-    docker push "$container_repository/api:$docker_version"
+      -t "$containerRepository/api:$dockerVersion" .
+    docker push "$containerRepository/api:$dockerVersion"
 
     docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/indexer/Dockerfile-indexer" \
-      -t "$container_repository/indexer:$docker_version" .
-    docker push "$container_repository/indexer:$docker_version"
+      -t "$containerRepository/indexer:$dockerVersion" .
+    docker push "$containerRepository/indexer:$dockerVersion"
 
     docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/mqtt/Dockerfile-mqtt-client" \
-      -t "$container_repository/mqtt-client:$docker_version" .
-    docker push "$container_repository/mqtt-client:$docker_version"
+      -t "$containerRepository/mqtt-client:$dockerVersion" .
+    docker push "$containerRepository/mqtt-client:$dockerVersion"
 
     docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/notification/Dockerfile-notification" \
-      -t "$container_repository/notification:$docker_version" .
-    docker push "$container_repository/notification:$docker_version"
+      -t "$containerRepository/notification:$dockerVersion" .
+    docker push "$containerRepository/notification:$dockerVersion"
 }
 
 function deploy_spark_within_docker_image(){
-    container_repository=$1
+    containerRepository=$1
     wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
     tar -zxvf spark-2.4.4.tgz
     cd spark-2.4.4/
-    ./bin/docker-image-tool.sh -r "$container_repository" -t "spark-on-docker:2.4.4" build
-    ./ls a-lbin/docker-image-tool.sh -r "$container_repository" -t "spark-on-docker:2.4.4" push
+    ./bin/docker-image-tool.sh -r "$containerRepository" -t "spark-on-docker:2.4.4" build
+    ./ls a-lbin/docker-image-tool.sh -r "$containerRepository" -t "spark-on-docker:2.4.4" push
     cd ..
     rm -f spark-2.4.4.tgz
     rm -rf spark-2.4.4/
 }
 
 function deploy_historical_jobs_docker_images(){
-    container_repository=$1
-    docker_version=s2
-    k8_apiserver_url=$3
-    es_nodes=$4
-    es_port=$5
-    fs_s3a_endpoint=$6
-    incoming_alias=$INCOMING_ALIAS
+    containerRepository=$1
+    dockerVersion=s2
+    k8ApiserverUrl=$3
+    esNodes=$4
+    esPort=$5
+    fsS3aEndpoint=$6
+    incomingAlias=$INCOMING_ALIAS
     prepared_data_path=$PREPARED_DATA_PATH
 
     docker build \
-      --build-arg CONTAINER_REPOSITORY="$container_repository" \
-      --build-arg K8S_APISERVER_URL="$k8_apiserver_url" \
-      --build-arg ES_NODES="$es_nodes" \
-      --build-arg ES_PORT="$es_port" \
-      --build-arg FS_S3A_ENDPOINT="$fs_s3a_endpoint" \
-      --build-arg INCOMING_ALIAS="$incoming_alias" \
+      --build-arg containerRepository="$containerRepository" \
+      --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
+      --build-arg ES_NODES="$esNodes" \
+      --build-arg ES_PORT="$esPort" \
+      --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
+      --build-arg INCOMING_ALIAS="$incomingAlias" \
       --build-arg PREPARED_DATA_PATH="$prepared_data_path" \
       -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-es-to-parquet" \
-      -t "$container_repository/spark-es-to-parquet:$docker_version" .
-    docker push "$container_repository/spark-es-to-parquet:$docker_version"
+      -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
+    docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
 
     docker build \
-      --build-arg CONTAINER_REPOSITORY="$container_repository" \
-      --build-arg K8S_APISERVER_URL="$k8_apiserver_url" \
-      --build-arg ES_NODES="$es_nodes" \
-      --build-arg ES_PORT="$es_port" \
-      --build-arg FS_S3A_ENDPOINT="$fs_s3a_endpoint" \
-      --build-arg INCOMING_ALIAS="$incoming_alias" \
+      --build-arg containerRepository="$containerRepository" \
+      --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
+      --build-arg ES_NODES="$esNodes" \
+      --build-arg ES_PORT="$esPort" \
+      --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
+      --build-arg INCOMING_ALIAS="$incomingAlias" \
       --build-arg PREPARED_DATA_PATH="$prepared_data_path" \
       -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-average-point-per-device-and-date" \
-      -t "$container_repository/spark-average-point-per-device-and-date:$docker_version" .
-    docker push "$container_repository/spark-average-point-per-device-and-date:$docker_version"
+      -t "$containerRepository/spark-average-point-per-device-and-date:$dockerVersion" .
+    docker push "$containerRepository/spark-average-point-per-device-and-date:$dockerVersion"
 }
 
 function deploy_release_from_templates(){
   release=$1
   namespace=$2
-  container_repository=$3
-  docker_version=$4
-  istio_ingress_gateway_ip_address=$5
+  containerRepository=$3
+  dockerVersion=$4
+  istioIngressGatewayIpAddress=$5
 
   helm install --debug \
     --name-template "$release" \
     "$BASE_PATH/code" \
     --set namespace="$namespace" \
-    --set container_repository="$container_repository" \
-    --set docker_version="$docker_version" \
-    --set istio_ingress_gateway_ip_address="$istio_ingress_gateway_ip_address"
+    --set containerRepository="$containerRepository" \
+    --set dockerVersion="$dockerVersion" \
+    --set istioIngressGatewayIpAddress="$istioIngressGatewayIpAddress"
 }
 
 function delete_release(){

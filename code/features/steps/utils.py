@@ -22,15 +22,9 @@ def get_service_url(service_name: str) -> str:
     return str(external_ip + ":" + port)
 
 
-def get_last_value(api_url: str, device: str) -> dict:
+def get_endpoint_value(api_url: str, api_uri: str, device: str) -> dict:
     url = api_url if api_url[len(api_url) - 1] != "/" else api_url[:-1]
-    uri = url + "/device/last-value=" + device
-    api_response = requests.get(uri)
-    return api_response.json()
-
-
-def get_timeseries(api_url: str, device: str) -> dict:
-    url = api_url if api_url[len(api_url) - 1] != "/" else api_url[:-1]
-    uri = url + "/device/timeseries=" + device
-    api_response = requests.get(uri)
+    uri = api_uri if api_uri[len(api_url) - 1] != "/" else api_uri[:-1]
+    endpoint = url + uri + device
+    api_response = requests.get(endpoint)
     return api_response.json()

@@ -30,7 +30,7 @@ def register_routes(app, es_client, es_alias_raw_data, es_alias_summarized_data)
         offset, max_results = get_offset_and_max_results(request)
         return api_handler.get_timeseries(es_client, es_alias_raw_data, device, offset, max_results)
 
-    @app.route('/device/summuared/<string:device>', methods=['GET'])
+    @app.route('/device/summarized/<string:device>', methods=['GET'])
     def handle_get_summuared(device):
-        logger.info(f"GET summared data for device: {device}")
+        logger.info(f"GET summarized data for device: {device}")
         return api_handler.get_last_value(es_client, es_alias_summarized_data, device)

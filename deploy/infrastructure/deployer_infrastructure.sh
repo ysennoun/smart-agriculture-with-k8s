@@ -13,8 +13,8 @@ MIN_NODES=1
 MAX_NODES=5
 NUM_NODES=3
 MACHINE_TYPE=n1-standard-2
-CLUSTER_NAME="$ENVIRONMENT-smart-agriculture-cluster"
-INFRASTRUCTURE_RELEASE="$ENVIRONMENT-smart-agriculture-infrastructure"
+CLUSTER_NAME="smart-agriculture-cluster"
+INFRASTRUCTURE_RELEASE="smart-agriculture-infrastructure"
 
 ## FUNCTIONS
 function activate_billing(){

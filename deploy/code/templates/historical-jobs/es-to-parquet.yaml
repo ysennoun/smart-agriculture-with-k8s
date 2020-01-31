@@ -20,7 +20,7 @@ metadata:
   name: cronjob-es-to-parquet
   namespace: {{ .Values.namespace }}
 spec:
-  schedule: "0 * * * *" # every hour
+  schedule: "*/10 * * * *" # every 10 minutes
   sink:
     apiVersion: serving.knative.dev/v1
     kind: Service

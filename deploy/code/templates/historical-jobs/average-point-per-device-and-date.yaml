@@ -20,7 +20,7 @@ metadata:
   name: cronjob-average-point-per-device-and-date
   namespace: {{ .Values.namespace }}
 spec:
-  schedule: "0 0 * * *" # every day at midnight
+  schedule: "*/10 * * * *" # every 10 minutes
   sink:
     apiVersion: serving.knative.dev/v1
     kind: Service

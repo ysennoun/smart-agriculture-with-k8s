@@ -74,8 +74,9 @@ function deploy_spark_within_docker_image(){
     wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
     tar -zxvf spark-2.4.4.tgz
     cd spark-2.4.4/
-    ./bin/docker-image-tool.sh -r "$containerRepository" -t "spark-on-docker:2.4.4" build
-    ./ls a-lbin/docker-image-tool.sh -r "$containerRepository" -t "spark-on-docker:2.4.4" push
+    ./build/mvn -pl :spark-assembly_2.11 clean install
+    ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.4" build
+    ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.4" push
     cd ..
     rm -f spark-2.4.4.tgz
     rm -rf spark-2.4.4/
@@ -83,7 +84,7 @@ function deploy_spark_within_docker_image(){
 
 function deploy_historical_jobs_docker_images(){
     containerRepository=$1
-    dockerVersion=s2
+    dockerVersion=$2
     k8ApiserverUrl=$3
     esNodes=$4
     esPort=$5
@@ -93,8 +94,12 @@ function deploy_historical_jobs_docker_images(){
     esAliasForAveragePerDeviceAndDate=$ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE
     s3_prepared_data_path=$S3_PREPARED_DATA_PATH
 
+    cd "$BASE_PATH/code/historical-jobs/"
+    mvn clean package
+    cd ../../
+
     docker build \
-      --build-arg containerRepository="$containerRepository" \
+      --build-arg CONTAINER_REPOSITORY="$containerRepository" \
       --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
       --build-arg ES_NODES="$esNodes" \
       --build-arg ES_PORT="$esPort" \
@@ -108,7 +113,7 @@ function deploy_historical_jobs_docker_images(){
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
 
     docker build \
-      --build-arg containerRepository="$containerRepository" \
+      --build-arg CONTAINER_REPOSITORY="$containerRepository" \
       --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
       --build-arg ES_NODES="$esNodes" \
       --build-arg ES_PORT="$esPort" \
@@ -131,7 +136,7 @@ function deploy_release_from_templates(){
 
   helm install --debug \
     --name-template "$release" \
-    "$BASE_PATH/code" \
+    "$BASE_PATH/deploy/code" \
     --set namespace="$namespace" \
     --set containerRepository="$containerRepository" \
     --set dockerVersion="$dockerVersion" \
@@ -140,5 +145,6 @@ function deploy_release_from_templates(){
 
 function delete_release(){
   release=$1
-  helm del --purge "$release"
+  env=$2
+  helm del --purge "$release" --namespace "$env"
 }

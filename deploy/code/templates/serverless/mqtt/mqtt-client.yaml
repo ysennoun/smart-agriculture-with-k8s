@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     purpose: demonstrate-mqtt-client
+    serving.knative.dev/visibility: cluster-local
 spec:
   containers:
     - name: mqtt-client
@@ -23,6 +24,6 @@ spec:
         - name: ISTIO_INGRESS_GATEWAY_IP_ADDRESS
           value: {{ .Values.istioIngressGatewayIpAddress }}
         - name: BROKERS_URL
-          value: "http://broker-indexer."{{ .Values.namespace }}".svc.cluster.local/,http://broker-notification."{{ .Values.namespace }}".svc.cluster.local/"
+          value: http://broker-indexer.{{ .Values.namespace }}.svc.cluster.local/,http://broker-notification.{{ .Values.namespace }}.svc.cluster.local/
         - name: CE-Type
           value: "dev.knative.last.value"

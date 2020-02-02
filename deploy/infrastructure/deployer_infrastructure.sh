@@ -10,9 +10,9 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 ENVIRONMENT="$ENVIRONMENT"
 COMPUTE_ZONE="$COMPUTE_ZONE"
 MIN_NODES=1
-MAX_NODES=5
+MAX_NODES=10
 NUM_NODES=3
-MACHINE_TYPE=n1-standard-2
+MACHINE_TYPE=n1-standard-4
 CLUSTER_NAME="smart-agriculture-cluster"
 INFRASTRUCTURE_RELEASE="smart-agriculture-infrastructure"
 
@@ -29,7 +29,8 @@ function enable_apis(){
          cloudapis.googleapis.com \
          cloudbuild.googleapis.com \
          container.googleapis.com \
-         containerregistry.googleapis.com
+         containerregistry.googleapis.com \
+         --quiet
 }
 
 function create_k8s_cluster() {
@@ -46,15 +47,14 @@ function create_k8s_cluster() {
        --machine-type "$MACHINE_TYPE" \
        --enable-autoscaling \
        --min-nodes="$MIN_NODES" \
-       --max-nodes="$MAX_NODES"
+       --max-nodes="$MAX_NODES" \
+       --quiet
     # Create an RBAC service account
     kubectl create serviceaccount tiller -n kube-system
     # Bind the cluster-admin role to the service account
     kubectl create clusterrolebinding tiller \
        --clusterrole=cluster-admin \
        --serviceaccount kube-system:tiller
-    # Install Tiller with the service account enabled
-    helm init --service-account tiller
     echo "End creation"
 }
 
@@ -65,19 +65,24 @@ function get_k8_apiserver_url() {
 
 function delete_k8s_cluster() {
     echo "Let's delete k8s cluster"
-    gcloud beta container clusters delete "$CLUSTER_NAME" --zone "$COMPUTE_ZONE"
+    gcloud beta container clusters delete "$CLUSTER_NAME" --zone "$COMPUTE_ZONE" --quiet
     echo "End deletion"
+}
+
+function create_namespace(){
+  env=$1
+  kubectl create namespace "$env"
 }
 
 function deploy_knative(){
     echo "Let's deploy knative"
     kubectl apply --selector knative.dev/crd-install=true \
-       --filename https://github.com/knative/serving/releases/download/v0.8.0/serving.yaml \
-       --filename https://github.com/knative/eventing/releases/download/v0.8.0/eventing.yaml \
-       --filename https://github.com/knative/serving/releases/download/v0.8.0/monitoring.yaml
-    kubectl apply --filename https://github.com/knative/serving/releases/download/v0.8.0/serving.yaml \
-        --filename https://github.com/knative/eventing/releases/download/v0.8.0/eventing.yaml \
-        --filename https://github.com/knative/serving/releases/download/v0.8.0/monitoring.yaml
+        --filename https://github.com/knative/serving/releases/download/v0.12.0/serving.yaml \
+        --filename https://github.com/knative/eventing/releases/download/v0.12.0/eventing.yaml \
+        --filename https://github.com/knative/serving/releases/download/v0.12.0/monitoring.yaml
+    kubectl apply --filename https://github.com/knative/serving/releases/download/v0.12.0/serving.yaml \
+        --filename https://github.com/knative/eventing/releases/download/v0.12.0/eventing.yaml \
+        --filename https://github.com/knative/serving/releases/download/v0.12.0/monitoring.yaml
     # Grant cluster-admin permissions to the current user
     kubectl create clusterrolebinding cluster-admin-binding \
          --clusterrole=cluster-admin \
@@ -97,17 +102,22 @@ function get_istio_ingress_gateway_ip(){
     echo "$ISTIO_INGRESS_GATEWAY_IP_ADDRESS"
 }
 
-function add_helm_vernemq_repo(){
-    echo "Add Helm VerneMQ repo"
-    URL="https://vernemq.github.io/docker-vernemq"
-    helm repo add vernemq ${URL}
+function set_helm_repos(){
+    echo "Add Helm VerneMQ and stable repos"
+    helm repo add vernemq https://vernemq.github.io/docker-vernemq
+    helm repo add stable https://kubernetes-charts.storage.googleapis.com
     helm repo update
+}
+
+function set_docker(){
+  hostname=$1
+  gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "https://$hostname"
 }
 
 function install_vernemq(){
     echo "Install VerneMQ"
     env=$1
-    helm install vernemq/vernemq --name "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env"
+    helm install vernemq/vernemq --name-template "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env" --set DOCKER_VERNEMQ_ACCEPT_EULA=yes
 }
 
 function delete_vernemq(){
@@ -125,7 +135,7 @@ function get_vernemq_status(){
 function install_elasticsearch(){
     echo "Install Elasticsearch"
     env=$1
-    helm install --namespace "$env" --name "$INFRASTRUCTURE_RELEASE-elasticsearch" stable/elasticsearch
+    helm install --namespace "$env" --name-template "$INFRASTRUCTURE_RELEASE-elasticsearch" stable/elasticsearch
 }
 
 function delete_elasticsearch(){
@@ -137,7 +147,7 @@ function delete_elasticsearch(){
 function install_minio(){
     echo "Install Minio"
     env=$1
-    helm install --name "$INFRASTRUCTURE_RELEASE-minio" \
+    helm install --name-template "$INFRASTRUCTURE_RELEASE-minio" \
       --namespace "$env" \
       --set buckets[0].name=bucket,buckets[0].policy=none,buckets[0].purge=true \
       stable/minio

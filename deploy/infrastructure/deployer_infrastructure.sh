@@ -117,13 +117,14 @@ function set_docker(){
 function install_vernemq(){
     echo "Install VerneMQ"
     env=$1
-    helm install vernemq/vernemq --name-template "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env" --set DOCKER_VERNEMQ_ACCEPT_EULA=yes
+    helm install vernemq/vernemq --name-template "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env" \
+      -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml"
 }
 
 function delete_vernemq(){
     echo "Delete VerneMQ"
     env=$1
-    helm del --purge "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env"
+    helm del "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env"
 }
 
 function get_vernemq_status(){
@@ -141,7 +142,7 @@ function install_elasticsearch(){
 function delete_elasticsearch(){
     echo "Delete Elasticsearch"
     env=$1
-    helm del --purge "$INFRASTRUCTURE_RELEASE-elasticsearch" --namespace "$env"
+    helm del "$INFRASTRUCTURE_RELEASE-elasticsearch" --namespace "$env"
 }
 
 function install_minio(){
@@ -156,5 +157,5 @@ function install_minio(){
 function delete_minio(){
     echo "Delete Minio"
     env=$1
-    helm del --purge "$INFRASTRUCTURE_RELEASE-minio" --namespace "$env"
+    helm del "$INFRASTRUCTURE_RELEASE-minio" --namespace "$env"
 }

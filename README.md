@@ -70,3 +70,18 @@ Run the following script to delete the IoT platform on your GCP Account:
 3) get key and set it in gitlab 
 4) deploy with gitlab
 
+PLAN
+1) wait to get more external ip
+2) tests e2e
+3) check spark is working on k8s
+4) script send multiple data and check through chrome
+5) check if terraform can be used
+6) recheck is working with terraform
+7) deploy with gitlab
+8) monitoring solution
+
+
+8) develop web interface code
+9) add web code in deployment
+10) develop device code
+11) add device code in deployment

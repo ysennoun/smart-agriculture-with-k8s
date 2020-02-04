@@ -7,12 +7,12 @@ RUN tar -zxvf spark-2.4.4.tgz
 CMD spark-2.4.4/bin/spark-submit \
     --master k8s://${K8S_APISERVER_URL} \
     --deploy-mode cluster \
-    --name spark-json-to-parquet \
-    --class com.xebia.iot.main.Main \
+    --name spark-es-to-parquet \
+    --class com.xebia.iot.main.MainEsToParquet \
     --conf spark.executor.instances=2 \
     --conf es.index.auto.create=true \
     --conf es.nodes=${ES_NODES} \
     --conf es.port=${ES_PORT} \
     --conf fs.s3a.endpoint=${FS_S3A_ENDPOINT} \
     --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark:2.4.4 \
-    local:///app/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE} ${S3_PREPARED_DATA_PATH} "EsToParquet"
+    local:///app/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE} ${S3_PREPARED_DATA_PATH}

@@ -59,7 +59,7 @@ function create_k8s_cluster() {
 }
 
 function get_k8_apiserver_url() {
-  k8_apiserver_url=$(kubectl cluster-info | head -n 1 | rev | cut -d' ' -f 1 | rev)
+  k8_apiserver_url=$(kubectl get svc -o jsonpath='{.items[0].spec.clusterIP}')
   echo "$k8_apiserver_url"
 }
 

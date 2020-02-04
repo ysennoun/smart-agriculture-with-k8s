@@ -65,3 +65,8 @@ Run the following script to delete the IoT platform on your GCP Account:
 
     ./deploy/deployer.sh delete-all
 
+1) create gcp project with id
+2) ask increase quota, for In-use IP addresses (8 ip -> 20 ip)
+3) get key and set it in gitlab 
+4) deploy with gitlab
+

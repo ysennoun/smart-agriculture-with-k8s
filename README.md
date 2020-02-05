@@ -4,28 +4,39 @@ Build a smart agriculture project with Kubernetes and Knative
 
 ## How to begin ?
 
-First you have to:
+### GCP Account
+Create a [GCP account](https://console.cloud.google.com/)
 
-- Create a [GCP account](https://console.cloud.google.com/)
-- Create a gcp project by given a project-id (example: my-iot-project)
-- Install [Google Cloud SDK](https://cloud.google.com/sdk/docs/downloads-interactive)
-- Login to your gcp account: `gcloud auth login`
-- Install `envsubst`
-    - MacOS: brew install gettext && brew link --force gettext
-    - Ubuntu: apt-get -y install gettext-devel 
-    - Centos: yum install gettext-devel
-- Install [Helm](https://helm.sh/docs/using_helm/#installing-helm), the package manager for Kubernetes
-- Install [Docker](https://docs.docker.com/install/)
-- Configure Docker for a specific repository
-    - Here we used GCP Container Repository: `gcloud auth configure-docker`
+### GCP Project
+Create a GCP project by given a project-id
+- example: my-iot-project
 
+### Increase quota for IP addresses
+- Go to `IAM and Administration/quota/` (as indicated below)
+- Search for `In-use IP addresses` and request to increase quota from 8 IP to 20 IP
+- Unfortunately, it takes almost two days to be validated by GCP 
+
+![Increase number of external IP](documents/increase-ip-quota.png)
+     
+### Get private key file
+- Go to `IAM and Administration/quota/` (as indicated below)
+- Download private key file to be used in gitlab CICD. Indeed, store the content as global environment variable `PRIVATE_KEY_FILE_CONTENT`
+
+![Private key file](documents/get-private-key-file.png)
+       
 ## Architecture of IoT platform 
 
 First we divide our plateform into microservices, here below the representation:
 
 ![Architecture of IoT Project](documents/microservices.png)
 
-The corresponding architecture we build to solve the previous representation:
+- Device management: manage reception of data from device
+- Notification: send a notification (for example: email) to some users when a data received exceeds some thresholds
+- Storage: store data received in different data storages
+- Data processing: Predefined Batch processes
+- Data Access: Expose data to users through API REST
+
+The corresponding architecture we build to solve the previous representation is as below:
 
 ![Architecture of IoT Project](documents/architecture.png)
 
@@ -33,41 +44,36 @@ The corresponding architecture we build to solve the previous representation:
 
 ### Configure gcloud
 
-Modify the following parameters before those commands:
+Modify in `.gitlab-ci.yaml` for deployment through CICD pipeline and `deploy/deployer.sh` for deployment through command lines 
 
-    export PROJECT_ID="your-project-id"
-    export COMPUTE_ZONE="your-selected-zone"
-    export COMPUTE_REGION="your-selected-region"
-    export CONTAINER_REPOSITORY="your docker repository" (for instance eu.gcr.io)
-    export PROJECT_NAME="your project name on gcp" (for instance my-iot-platform)
-    gcloud config set project ${PROJECT_ID}
-    gcloud config set compute/zone ${COMPUTE_ZONE}
-    gcloud config set compute/region ${COMPUTE_REGION}
-    gcloud components update
+    PROJECT_ID="your-project-id"
+    COMPUTE_ZONE="your-selected-zone"  # for instance europe-west1-b
+    COMPUTE_REGION="your-selected-region"  # for instance europe-west1
+    CONTAINER_REPOSITORY="your docker repository"  # for instance eu.gcr.io
+    PROJECT_NAME="your project name on gcp"  # for instance my-iot-platform
 
-
-### Run unit tests for IoT Platform
+### Run unit tests for IoT Platform with command lines
 
 Run the following script to run all unit tests:
 
     ./deploy/deployer.sh test-unit
 
 
-### Install IoT Platform
+### Install IoT Platform with command lines
 
 Run the following script to install this IoT platform on your GCP Account:
 
-    ./deploy/deployer.sh deploy-all
+    ./deploy/deployer.sh setup-cluster # create Kuberntes cluster
+    ./deploy/deployer.sh deploy-modules <environment> # Deploy all modules 
     
-### Delete IoT Platform
+### Delete IoT Platform with command lines
 
 Run the following script to delete the IoT platform on your GCP Account:
 
     ./deploy/deployer.sh delete-all
 
-1) create gcp project with id
-2) ask increase quota, for In-use IP addresses (8 ip -> 20 ip)
-3) get key and set it in gitlab 
+
+#########################################################
 4) deploy with gitlab
 
 PLAN

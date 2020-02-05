@@ -1,4 +1,4 @@
-from mqtt import env
+from device import env
 import paho.mqtt.client as mqtt
 from common.kn_client.kn_broker_client import send_to_broker
 from common.utils.logger import Logger

@@ -2,7 +2,7 @@ import os
 import json
 import unittest
 import requests_mock
-from mqtt.mqtt_client import MqttClient
+from device.mqtt_client import MqttClient
 
 
 class TestMqttClient(unittest.TestCase):

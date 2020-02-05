@@ -51,36 +51,36 @@ function setup-cluster(){
 
 function deploy-modules(){
     ## Create namespace
-    create_namespace "$ENVIRONMENT"
+   # create_namespace "$ENVIRONMENT"
 
     ## Deploy Knative
-    deploy_knative
-    visualize_knative_deployment
-    echo $(get_istio_ingress_gateway_ip)
+  #  deploy_knative
+   # visualize_knative_deployment
+   # echo $(get_istio_ingress_gateway_ip)
 
     ## Set helm repos
-    set_helm_repos
+   # set_helm_repos
 
     ## Deploy VerneMQ
-    install_vernemq "$ENVIRONMENT"
+    #install_vernemq "$ENVIRONMENT"
 
     ## Deploy Elasticsearch
-    install_elasticsearch "$ENVIRONMENT"
+    #install_elasticsearch "$ENVIRONMENT"
 
     ## Deploy Minio
-    install_minio "$ENVIRONMENT"
+    #install_minio "$ENVIRONMENT"
 
     ## Set Docker login
     set_docker "$HOSTNAME"
 
     ## Deploy docker images
     deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
-    deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
+    #deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
     k8_apiserver_url=$(get_k8_apiserver_url)
     es_nodes=elasticsearch."$ENVIRONMENT".svc.cluster.local
     es_port=9200
     fs_s3a_endpoint=minio."$ENVIRONMENT".svc.cluster.local
-    deploy_historical_jobs_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
+    #deploy_historical_jobs_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
 
     # Deploy applications
     deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"

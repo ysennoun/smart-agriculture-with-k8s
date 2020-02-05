@@ -1,4 +1,4 @@
-from mqtt.mqtt_client import MqttClient
+from device.mqtt_client import MqttClient
 from common.utils.logger import Logger
 
 logger = Logger().get_logger()

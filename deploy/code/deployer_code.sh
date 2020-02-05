@@ -147,5 +147,5 @@ function deploy_release_from_templates(){
 function delete_release(){
   release=$1
   env=$2
-  helm del --purge "$release" --namespace "$env"
+  helm del "$release" --namespace "$env"
 }

@@ -9,7 +9,7 @@ metadata:
 spec:
   containers:
     - name: mqtt-client
-      image: {{ .Values.containerReposiroty }}/mqtt-client:{{ .Values.dockerVersion }}
+      image: {{ .Values.containerRepository }}/mqtt-client:{{ .Values.dockerVersion }}
       env:
         - name: SERVICE_NAME
           value: "vernemq-cluster"

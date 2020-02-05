@@ -20,7 +20,7 @@ spec:
       revisionTemplate:
         spec:
           container:
-            image: {{ .Values.containerReposiroty }}/indexer:{{ .Values.dockerVersion }}
+            image: {{ .Values.containerRepository }}/indexer:{{ .Values.dockerVersion }}
             env:
               - name: ES_ALIAS
                 value: "smart-agriculture"

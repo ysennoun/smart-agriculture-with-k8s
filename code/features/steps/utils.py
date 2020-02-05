@@ -19,6 +19,7 @@ def get_current_timestamp() -> int:
 def get_service_url(service_name: str, env: str) -> (str, int):
     result = os.popen(f'kubectl get service {service_name} -n {env} -o json').read()
     json_result = json.loads(result)
+    print(json_result)
     external_ip = json_result["status"]["loadBalancer"]["ingress"][0]["ip"]
     port = json_result["status"]["loadBalancer"]["ingress"][0]["port"]
     return external_ip, port

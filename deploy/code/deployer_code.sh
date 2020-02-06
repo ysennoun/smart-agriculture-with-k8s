@@ -131,13 +131,15 @@ function deploy_historical_jobs_docker_images(){
 function deploy_release_from_templates(){
   release=$1
   namespace=$2
-  containerRepository=$3
-  dockerVersion=$4
-  istioIngressGatewayIpAddress=$5
+  infrastructureRelease=$3
+  containerRepository=$4
+  dockerVersion=$5
+  istioIngressGatewayIpAddress=$6
 
   helm install --debug \
     --name-template "$release" \
     "$BASE_PATH/deploy/code" \
+    --set infrastructureRelease="$infrastructureRelease" \
     --set namespace="$namespace" \
     --set containerRepository="$containerRepository" \
     --set dockerVersion="$dockerVersion" \

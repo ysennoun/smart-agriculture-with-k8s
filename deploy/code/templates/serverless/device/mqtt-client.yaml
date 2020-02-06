@@ -12,9 +12,9 @@ spec:
       image: {{ .Values.containerRepository }}/mqtt-client:{{ .Values.dockerVersion }}
       env:
         - name: SERVICE_NAME
-          value: "vernemq-cluster"
+          value: {{ .Values.infrastructureRelease }}-vernemq
         - name: NAMESPACE_NAME
-          value: "default"
+          value: {{ .Values.namespace }}
         - name: TOPIC_NAME
           value: "iot/farming"
         - name: PORT
@@ -25,5 +25,3 @@ spec:
           value: {{ .Values.istioIngressGatewayIpAddress }}
         - name: BROKERS_URL
           value: http://broker-indexer.{{ .Values.namespace }}.svc.cluster.local/,http://broker-notification.{{ .Values.namespace }}.svc.cluster.local/
-        - name: CE-Type
-          value: "dev.knative.last.value"

@@ -13,8 +13,6 @@ MIN_NODES=1
 MAX_NODES=10
 NUM_NODES=3
 MACHINE_TYPE=n1-standard-4
-CLUSTER_NAME="smart-agriculture-cluster"
-INFRASTRUCTURE_RELEASE="smart-agriculture-infrastructure"
 
 ## FUNCTIONS
 function activate_billing(){
@@ -35,7 +33,8 @@ function enable_apis(){
 
 function create_k8s_cluster() {
     echo "Let's create k8s cluster"
-    gcloud beta container clusters create "$CLUSTER_NAME" \
+    clusterName=$1
+    gcloud beta container clusters create "$clusterName" \
        --addons=HorizontalPodAutoscaling,HttpLoadBalancing,Istio,CloudRun \
        --cluster-version=latest \
        --enable-stackdriver-kubernetes\
@@ -65,7 +64,8 @@ function get_k8_apiserver_url() {
 
 function delete_k8s_cluster() {
     echo "Let's delete k8s cluster"
-    gcloud beta container clusters delete "$CLUSTER_NAME" --zone "$COMPUTE_ZONE" --quiet
+    clusterName=$1
+    gcloud beta container clusters delete "$clusterName" --zone "$COMPUTE_ZONE" --quiet
     echo "End deletion"
 }
 
@@ -117,14 +117,16 @@ function set_docker(){
 function install_vernemq(){
     echo "Install VerneMQ"
     env=$1
-    helm install vernemq/vernemq --name-template "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env" \
+    infrastructureRelease=$2
+    helm install vernemq/vernemq --name-template "$infrastructureRelease-vernemq" --namespace "$env" \
       -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml"
 }
 
 function delete_vernemq(){
     echo "Delete VerneMQ"
     env=$1
-    helm del "$INFRASTRUCTURE_RELEASE-vernemq" --namespace "$env"
+    infrastructureRelease=$2
+    helm del "$infrastructureRelease-vernemq" --namespace "$env"
 }
 
 function get_vernemq_status(){
@@ -136,19 +138,22 @@ function get_vernemq_status(){
 function install_elasticsearch(){
     echo "Install Elasticsearch"
     env=$1
-    helm install --namespace "$env" --name-template "$INFRASTRUCTURE_RELEASE-elasticsearch" stable/elasticsearch
+    infrastructureRelease=$2
+    helm install --namespace "$env" --name-template "$infrastructureRelease-elasticsearch" stable/elasticsearch
 }
 
 function delete_elasticsearch(){
     echo "Delete Elasticsearch"
     env=$1
-    helm del "$INFRASTRUCTURE_RELEASE-elasticsearch" --namespace "$env"
+    infrastructureRelease=$2
+    helm del "$infrastructureRelease-elasticsearch" --namespace "$env"
 }
 
 function install_minio(){
     echo "Install Minio"
     env=$1
-    helm install --name-template "$INFRASTRUCTURE_RELEASE-minio" \
+    infrastructureRelease=$2
+    helm install --name-template "$infrastructureRelease-minio" \
       --namespace "$env" \
       --set buckets[0].name=bucket,buckets[0].policy=none,buckets[0].purge=true \
       stable/minio
@@ -157,5 +162,6 @@ function install_minio(){
 function delete_minio(){
     echo "Delete Minio"
     env=$1
-    helm del "$INFRASTRUCTURE_RELEASE-minio" --namespace "$env"
+    infrastructureRelease=$2
+    helm del "$infrastructureRelease-minio" --namespace "$env"
 }

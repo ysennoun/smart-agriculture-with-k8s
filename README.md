@@ -74,6 +74,10 @@ Run the following script to delete the IoT platform on your GCP Account:
 
 
 #########################################################
+1) change mqtt-client
+2) elasticsearch Does not have minimum availability
+3) ingress error while evaluating the ingress spec: could not find port "80" in service "yse/kn-function-api" 
+4) limit IN_USE_ADDRESSES and limit cpu
 4) deploy with gitlab
 
 PLAN

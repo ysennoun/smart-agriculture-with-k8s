@@ -22,6 +22,8 @@ export HOSTNAME="eu.gcr.io"
 export CONTAINER_REPOSITORY="$HOSTNAME/$PROJECT_ID" #"your docker repository"
 export PROJECT_NAME="ysennoun-iot" #"your project name on gcp"
 export DOCKER_VERSION="latest"
+CLUSTER_NAME="smart-agriculture-cluster"
+INFRASTRUCTURE_RELEASE="smart-agriculture-infrastructure"
 
 
 ######## FUNCTIONS ########
@@ -46,29 +48,29 @@ function setup-cluster(){
     enable_apis
 
     # Create Kubernetes Cluster
-    create_k8s_cluster
+    create_k8s_cluster "$CLUSTER_NAME"
 }
 
 function deploy-modules(){
     ## Create namespace
-   # create_namespace "$ENVIRONMENT"
+    #create_namespace "$ENVIRONMENT"
 
     ## Deploy Knative
-  #  deploy_knative
-   # visualize_knative_deployment
-   # echo $(get_istio_ingress_gateway_ip)
+    deploy_knative
+    visualize_knative_deployment
+    echo $(get_istio_ingress_gateway_ip)
 
     ## Set helm repos
-   # set_helm_repos
+    set_helm_repos
 
     ## Deploy VerneMQ
-    #install_vernemq "$ENVIRONMENT"
+    install_vernemq "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     ## Deploy Elasticsearch
-    #install_elasticsearch "$ENVIRONMENT"
+    install_elasticsearch "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     ## Deploy Minio
-    #install_minio "$ENVIRONMENT"
+    install_minio "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     ## Set Docker login
     set_docker "$HOSTNAME"
@@ -80,15 +82,15 @@ function deploy-modules(){
     es_nodes=elasticsearch."$ENVIRONMENT".svc.cluster.local
     es_port=9200
     fs_s3a_endpoint=minio."$ENVIRONMENT".svc.cluster.local
-    #deploy_historical_jobs_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
+    deploy_historical_jobs_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
 
     # Deploy applications
-    deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
+    deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
 }
 
 function delete-cluster(){
     # Delete Kubernetes Cluster
-    delete_k8s_cluster
+    delete_k8s_cluster "$CLUSTER_NAME"
 }
 
 function delete-modules(){
@@ -96,13 +98,13 @@ function delete-modules(){
     delete_release "smart-agriculture-code" "$ENVIRONMENT"
 
     # Delete VerneMQ
-    delete_vernemq "$ENVIRONMENT"
+    delete_vernemq "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     # Delete Elasticsearch
-    delete_elasticsearch "$ENVIRONMENT"
+    delete_elasticsearch "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     # Delete Minio
-    delete_minio "$ENVIRONMENT"
+    delete_minio "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 }
 
 function test-unit(){

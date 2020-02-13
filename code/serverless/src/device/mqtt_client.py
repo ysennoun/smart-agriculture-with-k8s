@@ -13,7 +13,7 @@ class MqttClient:
         brokers_url = env.get_brokers_url()
         for broker_url in brokers_url:
             send_to_broker(broker_url, payload)
-        logger.info("end on_message")
+        logger.info("end xon_message")
 
     def on_connect(self, client, userdata, flags, rc):
         logger.info(f"Connected with result code {str(rc)}")

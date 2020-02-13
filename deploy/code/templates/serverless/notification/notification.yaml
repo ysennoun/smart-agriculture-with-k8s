@@ -1,10 +1,14 @@
 apiVersion: eventing.knative.dev/v1alpha1
 kind: Broker
 metadata:
-  name: broker-notification
+  name: notification
   namespace: {{ .Values.namespace }}
   labels:
     serving.knative.dev/visibility: cluster-local
+spec:
+  channelTemplateSpec:
+    apiVersion: messaging.knative.dev/v1alpha1
+    kind: InMemoryChannel
 
 ---
 apiVersion: serving.knative.dev/v1alpha1
@@ -38,18 +42,20 @@ spec:
                 value: "ysennoun@xebia.fr"
               - name: SENDER_PASSWORD
                 value: "SmartAgricultureWithK8S"
+              - name: CE_TYPE
+                value: dev.knative.{{ .Values.namespace }}.notification
 
 ---
-
 apiVersion: eventing.knative.dev/v1alpha1
 kind: Trigger
 metadata:
   name: trigger-notification
   namespace: {{ .Values.namespace }}
 spec:
+  broker: notification
   filter:
     attributes:
-      type: dev.knative.notification
+      type: dev.knative.{{ .Values.namespace }}.notification
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1alpha1

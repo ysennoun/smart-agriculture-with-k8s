@@ -4,7 +4,8 @@ WORKDIR /app
 ENV PYTHONPATH /app
 
 COPY code/serverless/requirements.txt ./
-COPY code/serverless/src /app
+COPY code/serverless/src/common /app/common
+COPY code/serverless/src/notification /app/notification
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt

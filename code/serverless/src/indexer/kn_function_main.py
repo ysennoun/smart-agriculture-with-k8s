@@ -7,11 +7,10 @@ from indexer import indexer_routes
 
 
 logger = Logger().get_logger()
-
+app = Flask(__name__)
 
 if __name__ == "__main__":
     logger.info("main run")
-    app = Flask(__name__)
     es_client = get_elasticsearch_client()
     es_alias = os.environ["ES_ALIAS"]
     indexer_routes.register_routes(app, es_client, es_alias)

@@ -6,11 +6,10 @@ from api import api_routes
 from common.indexer.elasticsearch_client import get_elasticsearch_client
 
 logger = Logger().get_logger()
-
+app = Flask(__name__)
 
 if __name__ == "__main__":
     logger.info("main run")
-    app = Flask(__name__)
     es_client = get_elasticsearch_client()
     es_alias_raw_data = os.environ["ES_ALIAS_RAW_DATA"]
     es_alias_summarized_data = os.environ["ES_ALIAS_SUMMARIZED_DATA"]

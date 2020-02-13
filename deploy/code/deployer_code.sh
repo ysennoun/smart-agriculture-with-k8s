@@ -72,24 +72,24 @@ function deploy_serverless_docker_images(){
 
 function deploy_spark_within_docker_image(){
     containerRepository=$1
-    wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
-    tar -zxvf spark-2.4.4.tgz
-    cd spark-2.4.4/
-    ./build/mvn -pl :spark-assembly_2.11 clean install
-    ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.4" build
-    ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.4" push
+    wget http://mirrors.standaloneinstaller.com/apache/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
+    tar -zxvf spark-2.4.5-bin-hadoop2.7.tgz
+    cd spark-2.4.5-bin-hadoop2.7/
+    ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.5" build
+    ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.5" push
     cd ..
-    rm -f spark-2.4.4.tgz
-    rm -rf spark-2.4.4/
+    rm -f spark-2.4.5-bin-hadoop2.7.tgz
+    rm -rf spark-2.4.5-bin-hadoop2.7/
 }
 
 function deploy_historical_jobs_docker_images(){
-    containerRepository=$1
-    dockerVersion=$2
-    k8ApiserverUrl=$3
-    esNodes=$4
-    esPort=$5
-    fsS3aEndpoint=$6
+    env=$1
+    containerRepository=$2
+    dockerVersion=$3
+    k8ApiserverUrl=$4
+    esNodes=$5
+    esPort=$6
+    fsS3aEndpoint=$7
     esAliasIncomingData=$ES_ALIAS_INCOMING_DATA
     esAliasForHistoricalJobs=$ES_ALIAS_FOR_HISTORICAL_JOBS
     esAliasForAveragePerDeviceAndDate=$ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE
@@ -109,6 +109,7 @@ function deploy_historical_jobs_docker_images(){
       --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
       --build-arg ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE="$esAliasForAveragePerDeviceAndDate" \
       --build-arg S3_PREPARED_DATA_PATH="$s3_prepared_data_path" \
+      --build-arg ENVIRONMENT="$env" \
       -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-es-to-parquet" \
       -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
@@ -123,6 +124,7 @@ function deploy_historical_jobs_docker_images(){
       --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
       --build-arg ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE="$esAliasForAveragePerDeviceAndDate" \
       --build-arg S3_PREPARED_DATA_PATH="$s3_prepared_data_path" \
+      --build-arg ENVIRONMENT="$env" \
       -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-average-point-per-device-and-date" \
       -t "$containerRepository/spark-average-point-per-device-and-date:$dockerVersion" .
     docker push "$containerRepository/spark-average-point-per-device-and-date:$dockerVersion"
@@ -148,6 +150,5 @@ function deploy_release_from_templates(){
 
 function delete_release(){
   release=$1
-  env=$2
-  helm del "$release" --namespace "$env"
+  helm delete "$release"
 }

@@ -45,7 +45,6 @@ function setup-cluster(){
     enable_apis
     # Activate billing and enable APIs
     activate_billing ${PROJECT_ID}
-    enable_apis
 
     # Create Kubernetes Cluster
     create_k8s_cluster "$CLUSTER_NAME"
@@ -53,10 +52,10 @@ function setup-cluster(){
 
 function deploy-modules(){
     ## Create namespace
-    #create_namespace "$ENVIRONMENT"
+    create_namespace "$ENVIRONMENT"
 
     ## Deploy Knative
-    deploy_knative
+    deploy_knative "$ENVIRONMENT"
     visualize_knative_deployment
     echo $(get_istio_ingress_gateway_ip)
 
@@ -77,12 +76,12 @@ function deploy-modules(){
 
     ## Deploy docker images
     deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
-    #deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
+    deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
     k8_apiserver_url=$(get_k8_apiserver_url)
-    es_nodes=elasticsearch."$ENVIRONMENT".svc.cluster.local
+    es_nodes=elasticsearch-master
     es_port=9200
-    fs_s3a_endpoint=minio."$ENVIRONMENT".svc.cluster.local
-    deploy_historical_jobs_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
+    fs_s3a_endpoint="$INFRASTRUCTURE_RELEASE"-minio:9000
+    deploy_historical_jobs_docker_images "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
 
     # Deploy applications
     deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
@@ -95,7 +94,7 @@ function delete-cluster(){
 
 function delete-modules(){
     # Delete applications
-    delete_release "smart-agriculture-code" "$ENVIRONMENT"
+    delete_release "smart-agriculture-code"
 
     # Delete VerneMQ
     delete_vernemq "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"

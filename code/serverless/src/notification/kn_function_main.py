@@ -5,13 +5,12 @@ from notification import notification_routes
 
 
 logger = Logger().get_logger()
+app = Flask(__name__)
 
 
 if __name__ == "__main__":
     logger.info("main run")
-    app = Flask(__name__)
     notification_routes.register_routes(app)
-
     app.run(
         debug=True,
         host='0.0.0.0',

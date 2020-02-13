@@ -2,9 +2,36 @@ FROM maven:3.3-jdk-8
 
 WORKDIR /app
 COPY code/historical-jobs/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar /app
-RUN wget https://apache.mirrors.benatherton.com/spark/spark-2.4.4/spark-2.4.4.tgz
-RUN tar -zxvf spark-2.4.4.tgz
-CMD spark-2.4.4/bin/spark-submit \
+RUN wget http://mirrors.standaloneinstaller.com/apache/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
+RUN tar -zxvf spark-2.4.5-bin-hadoop2.7.tgz
+RUN rm spark-2.4.5-bin-hadoop2.7.tgz
+
+ARG K8S_APISERVER_URL
+ARG ES_NODES
+ARG ES_PORT
+ARG FS_S3A_ENDPOINT
+ARG CONTAINER_REPOSITORY
+ARG ES_ALIAS_INCOMING_DATA
+ARG ES_ALIAS_FOR_HISTORICAL_JOBS
+ARG ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE
+ARG S3_PREPARED_DATA_PATH
+ARG ENVIRONMENT
+
+ENV K8S_APISERVER_URL=${K8S_APISERVER_URL}
+ENV ES_NODES=${ES_NODES}
+ENV ES_PORT=${ES_PORT}
+ENV FS_S3A_ENDPOINT=${FS_S3A_ENDPOINT}
+ENV CONTAINER_REPOSITORY=${CONTAINER_REPOSITORY}
+ENV ES_ALIAS_INCOMING_DATA=${ES_ALIAS_INCOMING_DATA}
+ENV ES_ALIAS_FOR_HISTORICAL_JOBS=${ES_ALIAS_FOR_HISTORICAL_JOBS}
+ENV ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE=${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE}
+ENV S3_PREPARED_DATA_PATH=${S3_PREPARED_DATA_PATH}
+ENV ENVIRONMENT=$ENVIRONMENT
+
+RUN echo "eee"
+RUN ls -al /app
+
+CMD echo k8s://${K8S_APISERVER_URL} && spark-2.4.5-bin-hadoop2.7/bin/spark-submit \
     --master k8s://${K8S_APISERVER_URL} \
     --deploy-mode cluster \
     --name spark-es-to-parquet \
@@ -14,5 +41,7 @@ CMD spark-2.4.4/bin/spark-submit \
     --conf es.nodes=${ES_NODES} \
     --conf es.port=${ES_PORT} \
     --conf fs.s3a.endpoint=${FS_S3A_ENDPOINT} \
-    --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark:2.4.4 \
+    --conf spark.kubernetes.namespace=${ENVIRONMENT} \
+    --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark-sa \
+    --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark:2.4.5 \
     local:///app/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE} ${S3_PREPARED_DATA_PATH}

@@ -1,10 +1,14 @@
 apiVersion: eventing.knative.dev/v1alpha1
 kind: Broker
 metadata:
-  name: broker-indexer
+  name: indexer
   namespace: {{ .Values.namespace }}
   labels:
     serving.knative.dev/visibility: cluster-local
+spec:
+  channelTemplateSpec:
+    apiVersion: messaging.knative.dev/v1alpha1
+    kind: InMemoryChannel
 
 ---
 apiVersion: serving.knative.dev/v1alpha1
@@ -24,7 +28,8 @@ spec:
             env:
               - name: ES_ALIAS
                 value: "smart-agriculture"
-
+              - name: CE_TYPE
+                value: dev.knative.{{ .Values.namespace }}.indexer
 ---
 
 apiVersion: eventing.knative.dev/v1alpha1
@@ -33,9 +38,10 @@ metadata:
   name: trigger-indexer
   namespace: {{ .Values.namespace }}
 spec:
+  broker: indexer
   filter:
     attributes:
-      type: dev.knative.indexer
+      type: dev.knative.{{ .Values.namespace }}.indexer
   subscriber:
     ref:
       apiVersion: serving.knative.dev/v1alpha1

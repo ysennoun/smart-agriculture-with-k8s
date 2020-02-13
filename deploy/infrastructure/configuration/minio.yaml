@@ -1,0 +1,59 @@
+clusterDomain: cluster.local
+
+image:
+  repository: minio/minio
+  tag: RELEASE.2020-01-16T22-40-29Z
+  pullPolicy: IfNotPresent
+
+mcImage:
+  repository: minio/mc
+  tag: RELEASE.2020-01-13T22-49-03Z
+  pullPolicy: IfNotPresent
+
+mode: standalone
+
+existingSecret: ""
+accessKey: "AKIAIOSFODNN7EXAMPLE"
+secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+certsPath: "/etc/minio/certs/"
+configPathmc: "/etc/minio/mc/"
+mountPath: "/export"
+
+bucketRoot: ""
+
+persistence:
+  enabled: true
+  existingClaim: ""
+  storageClass: ""
+  VolumeName: ""
+  accessMode: ReadWriteOnce
+  size: 2Gi
+  subPath: ""
+
+service:
+  type: ClusterIP
+  clusterIP: ~
+  port: 9000
+  nodePort: 31311
+  externalIPs: []
+  annotations: {}
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 250m
+
+defaultBucket:
+  enabled: true
+  name: bucket
+  policy: none
+  purge: false
+
+#https://medium.com/@zhimin.wen/explore-knative-eventing-7cd04c210378
+
+
+#ingress:
+#  enabled: true
+#  path: /
+#  hosts:
+#    - minio.apps.ocp.io.cpak

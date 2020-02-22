@@ -4,6 +4,11 @@ Build a smart agriculture project with Kubernetes and Knative
 
 ## How to begin ?
 
+### Creat a Gmail 
+activate Gmail API for python
+
+https://developers.google.com/gmail/api/quickstart/python
+
 ### GCP Account
 Create a [GCP account](https://console.cloud.google.com/)
 

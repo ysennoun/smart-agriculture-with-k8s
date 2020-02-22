@@ -14,5 +14,5 @@ spec:
         paths:
           - path: /(.*)
             backend:
-              serviceName: kn-function-api
+              serviceName: kn-serving-api
               servicePort: 8080

@@ -1,5 +1,5 @@
 ---
-clusterName: "elasticsearch"
+clusterName: "elasticsearch" #{{ .Values.infrastructureRelease }}-elasticsearch
 nodeGroup: "master"
 
 replicas: 1

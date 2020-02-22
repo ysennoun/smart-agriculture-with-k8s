@@ -1,16 +1,18 @@
-apiVersion: serving.knative.dev/v1alpha1
+apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: kn-function-api
+  name: kn-serving-api
   namespace: {{ .Values.namespace }}
-  labels:
-    serving.knative.dev/visibility: cluster-local
+  #labels:
+  #  serving.knative.dev/visibility: cluster-local #https://kubernetes.github.io/ingress-nginx/examples/auth/basic/
 spec:
   template:
     spec:
       containers:
         - image: {{ .Values.containerRepository }}/api:{{ .Values.dockerVersion }}
           env:
+            - name: ELASTICSEARCH_ENDPOINT
+              value: "elasticsearch-master:9200" #{{ .Values.infrastructureRelease }}-elasticsearch-master:9200
             - name: ES_ALIAS_RAW_DATA
               value: "smart-agriculture"
             - name: ES_ALIAS_SUMMARIZED_DATA

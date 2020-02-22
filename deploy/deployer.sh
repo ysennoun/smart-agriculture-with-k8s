@@ -55,7 +55,7 @@ function deploy-modules(){
     create_namespace "$ENVIRONMENT"
 
     ## Deploy Knative
-    deploy_knative "$ENVIRONMENT"
+    deploy_knative
     visualize_knative_deployment
     echo $(get_istio_ingress_gateway_ip)
 

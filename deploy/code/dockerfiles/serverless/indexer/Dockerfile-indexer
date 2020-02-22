@@ -10,4 +10,4 @@ COPY code/serverless/src/indexer /app/indexer
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 indexer.kn_function_main:app
+CMD [ "python", "indexer/mqtt_main.py" ]

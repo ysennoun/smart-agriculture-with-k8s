@@ -10,4 +10,4 @@ COPY code/serverless/src/notification /app/notification
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 notification.kn_function_main:app
+CMD [ "python", "notification/mqtt_main.py" ]

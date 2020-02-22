@@ -1,6 +1,10 @@
 import os
 
 
+def get_es_alias():
+    return os.environ["ES_ALIAS"]
+
+
 def get_service_name():
     return os.environ["SERVICE_NAME"]
 
@@ -23,7 +27,3 @@ def get_topic_name():
 
 def get_keep_alive():
     return int(os.getenv("KEEP_ALIVE", 60)) #in seconds
-
-
-def get_brokers_url():
-    return os.environ["BROKERS_URL"].split(",")

@@ -1,49 +1,73 @@
-apiVersion: eventing.knative.dev/v1alpha1
-kind: Broker
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: indexer
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      run: indexer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: indexer
+    spec:
+      containers:
+        - name: indexer
+          image: {{ .Values.containerRepository }}/indexer:{{ .Values.dockerVersion }}
+          env:
+            - name: SERVICE_NAME
+              value: {{ .Values.infrastructureRelease }}-vernemq
+            - name: NAMESPACE_NAME
+              value: {{ .Values.namespace }}
+            - name: TOPIC_NAME
+              value: "$share/indexer/iot/farming" # sharing topic "iot/farming between replicas
+            - name: PORT
+              value: "1883"
+            - name: ELASTICSEARCH_ENDPOINT
+              value: "elasticsearch-master:9200" #{{ .Values.infrastructureRelease }}-elasticsearch-master:9200
+            - name: ES_ALIAS
+              value: "smart-agriculture"
+          ports:
+          - containerPort: 80
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+
+---
+apiVersion: v1
+kind: Service
 metadata:
   name: indexer
   namespace: {{ .Values.namespace }}
   labels:
-    serving.knative.dev/visibility: cluster-local
+    run: indexer
 spec:
-  channelTemplateSpec:
-    apiVersion: messaging.knative.dev/v1alpha1
-    kind: InMemoryChannel
+  ports:
+    - port: 80
+  selector:
+    run: indexer
 
 ---
-apiVersion: serving.knative.dev/v1alpha1
-kind: Service
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
 metadata:
-  name: kn-function-indexer
-  namespace: {{ .Values.namespace }}
-  labels:
-    serving.knative.dev/visibility: cluster-local
-spec:
-  runLatest:
-    configuration:
-      revisionTemplate:
-        spec:
-          container:
-            image: {{ .Values.containerRepository }}/indexer:{{ .Values.dockerVersion }}
-            env:
-              - name: ES_ALIAS
-                value: "smart-agriculture"
-              - name: CE_TYPE
-                value: dev.knative.{{ .Values.namespace }}.indexer
----
-
-apiVersion: eventing.knative.dev/v1alpha1
-kind: Trigger
-metadata:
-  name: trigger-indexer
+  name: indexer
   namespace: {{ .Values.namespace }}
 spec:
-  broker: indexer
-  filter:
-    attributes:
-      type: dev.knative.{{ .Values.namespace }}.indexer
-  subscriber:
-    ref:
-      apiVersion: serving.knative.dev/v1alpha1
-      kind: Service
-      name: kn-function-indexer
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: indexer
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50

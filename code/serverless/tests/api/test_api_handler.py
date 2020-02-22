@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock, patch
 from api import api_handler
 
 
@@ -7,6 +7,20 @@ class TestApiHandler(unittest.TestCase):
 
     def setUp(self):
         self.es_client = Mock()
+
+    def test_get_offset_and_max_results(self):
+        ######### Given #########
+
+        request = Mock()
+        request.args.get = Mock(return_value="11")
+
+        ######### When #########
+        offset, max_results = api_handler.get_offset_and_max_results(request)
+
+        ######### Then #########
+        self.assertEqual(offset, 11)
+        self.assertEqual(max_results, 11)
+
 
     def test_get_last_value_query(self):
         ######### Given #########
@@ -44,7 +58,7 @@ class TestApiHandler(unittest.TestCase):
         ######### Then #########
         self.assertEqual(result["from"], offset)
         self.assertEqual(result["size"], max_results)
-        self.assertEqual(result["query"]["term"], {"device": device})
+        self.assertEqual(result["query"]["bool"]["must"][0]["term"], {"device": device})
 
     def test_get_search_result(self):
         ######### Given #########
@@ -93,7 +107,8 @@ class TestApiHandler(unittest.TestCase):
         self.assertEqual(last_value.json["rows"][0], {"id": 1, "device": device})
 
 
-    def test_get_timeseries(self):
+    @patch("api.api_handler.get_offset_and_max_results")
+    def test_get_timeseries(self, get_offset_and_max_results_mock: MagicMock):
         ######### Given #########
         device = "device"
         hits = {
@@ -108,9 +123,10 @@ class TestApiHandler(unittest.TestCase):
             }
         }
         self.es_client.search = Mock(return_value=hits)
+        get_offset_and_max_results_mock.return_value = (0, 2)
 
         ######### When #########
-        timeseries = api_handler.get_timeseries(self.es_client, "es_alias", device, 0, 2)
+        timeseries = api_handler.get_timeseries(self.es_client, "es_alias", device)
 
         ######### Then #########
         self.assertEqual(timeseries.status_code, 200)

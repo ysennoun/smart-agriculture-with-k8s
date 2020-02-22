@@ -40,15 +40,3 @@ class TestNotificationHandler(unittest.TestCase):
         ######### Then #########
         expected_result = False
         self.assertEqual(is_activated, expected_result)
-
-    def test_get_status_response(self):
-        ######### Given #########
-        status = "status"
-
-        ######### When #########
-        res = notification_handler.get_status_response(status)
-
-        ######### Then #########
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.json, {"status": "status"})

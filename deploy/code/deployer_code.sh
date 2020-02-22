@@ -61,10 +61,6 @@ function deploy_serverless_docker_images(){
       -t "$containerRepository/indexer:$dockerVersion" .
     docker push "$containerRepository/indexer:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/device/Dockerfile-mqtt-client" \
-      -t "$containerRepository/mqtt-client:$dockerVersion" .
-    docker push "$containerRepository/mqtt-client:$dockerVersion"
-
     docker build -f "$BASE_PATH/deploy/code/dockerfiles/serverless/notification/Dockerfile-notification" \
       -t "$containerRepository/notification:$dockerVersion" .
     docker push "$containerRepository/notification:$dockerVersion"

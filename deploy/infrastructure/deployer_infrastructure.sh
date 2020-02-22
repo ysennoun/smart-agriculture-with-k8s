@@ -71,7 +71,6 @@ function create_namespace(){
 }
 
 function deploy_knative(){
-    env=$1
     echo "Let's deploy knative"
     kubectl apply --selector knative.dev/crd-install=true \
         --filename https://github.com/knative/serving/releases/download/v0.12.0/serving.yaml \
@@ -82,25 +81,7 @@ function deploy_knative(){
         --filename https://github.com/knative/eventing/releases/download/v0.12.0/eventing.yaml \
         --filename https://github.com/knative/serving/releases/download/v0.12.0/monitoring.yaml
 
-    echo "Configure Knative to use Broker and trigger"
-    kubectl -n "$env" create serviceaccount eventing-broker-ingress
-    kubectl -n "$env" create serviceaccount eventing-broker-filter
-
-    kubectl -n "$env" create rolebinding eventing-broker-ingress \
-      --clusterrole=eventing-broker-ingress \
-      --serviceaccount=default:eventing-broker-ingress
-    kubectl -n "$env" create rolebinding eventing-broker-filter \
-      --clusterrole=eventing-broker-filter \
-      --serviceaccount=default:eventing-broker-filter
-
-    kubectl -n knative-eventing create rolebinding eventing-config-reader-default-eventing-broker-ingress \
-      --clusterrole=eventing-config-reader \
-      --serviceaccount=default:eventing-broker-ingress
-    kubectl -n knative-eventing create rolebinding eventing-config-reader-default-eventing-broker-filter \
-      --clusterrole=eventing-config-reader \
-      --serviceaccount=default:eventing-broker-filter
-
-    kubectl label namespace "$env" knative-eventing-injection=enabled #### IMPORTANT
+    #kubectl label namespace "$env" knative-eventing-injection=enabled #### IMPORTANT
 
     echo "End deployment"
 }

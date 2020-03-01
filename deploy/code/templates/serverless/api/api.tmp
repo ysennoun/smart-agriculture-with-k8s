@@ -1,0 +1,40 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: kn-serving-api
+  namespace: {{ .Values.namespace }}
+  #labels:
+  #  serving.knative.dev/visibility: cluster-local #https://kubernetes.github.io/ingress-nginx/examples/auth/basic/
+spec:
+  template:
+    spec:
+      containers:
+        - image: {{ .Values.containerRepository }}/api:{{ .Values.dockerVersion }}
+          env:
+            - name: ELASTICSEARCH_ENDPOINT
+              value: https://{{ .Values.infrastructureRelease }}-elasticsearch-es-http:9200
+            - name: ELASTICSEARCH_CA_FILE
+              value: "/etc/ssl/elasticsearch/tls.crt"
+            - name: ELASTICSEARCH_USER
+              value: "elastic"
+            - name: ELASTICSEARCH_PASSWORD_PATH
+              value: "/etc/credentials/elasticsearch/elastic"
+            - name: ES_ALIAS_RAW_DATA
+              value: "smart-agriculture"
+            - name: ES_ALIAS_SUMMARIZED_DATA
+              value: "smart-agriculture-summarized"
+          volumeMounts:
+            - name: elasticsearch-certificates
+              mountPath: /etc/ssl/elasticsearch/tls.crt
+              subPath: tls.crt
+              readOnly: true
+            - name: elasticsearch-credentials
+              mountPath: /etc/credentials/elasticsearch/
+              readOnly: true
+      volumes:
+        - name: elasticsearch-certificates
+          secret:
+            secretName: elasticsearch-certificates-secret
+        - name: elasticsearch-credentials
+          secret:
+            secretName: {{ .Values.infrastructureRelease }}-elasticsearch-es-elastic-user

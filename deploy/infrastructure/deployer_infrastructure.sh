@@ -107,10 +107,10 @@ function install_infrastructure(){
   helm upgrade --install --namespace "$env" "$infrastructureRelease-vernemq" vernemq/vernemq \
     -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml"
 
-  echo "Install Minio"
-  helm upgrade --install --namespace "$env" "$infrastructureRelease-minio" \
-    -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
-    stable/minio
+  #echo "Install Minio"
+  #helm upgrade --install --namespace "$env" "$infrastructureRelease-minio" \
+  #  -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
+  #  stable/minio
 }
 
 function delete_infrastructure(){

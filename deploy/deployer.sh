@@ -63,27 +63,27 @@ function deploy-modules(){
     create_namespace "$ENVIRONMENT"
 
     ## Set helm repos
-    set_helm_repos
+    #set_helm_repos
 
     ## Create Namespace, Elasticsearch, VerneMQ and Minio clusters
     install_infrastructure "infrastructure" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     ## Deploy Knative
-    deploy_knative
-    visualize_knative_deployment
-    echo $(get_istio_ingress_gateway_ip)
+    #deploy_knative
+    #visualize_knative_deployment
+    #echo $(get_istio_ingress_gateway_ip)
 
     ## Set Docker login
-    set_docker "$HOSTNAME"
+    #set_docker "$HOSTNAME"
 
     ## Deploy docker images
-    deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
-    deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
+    #deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
+    #deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
     k8_apiserver_url=$(get_k8_apiserver_url)
     es_nodes=elasticsearch-master
     es_port=9200
     fs_s3a_endpoint="$INFRASTRUCTURE_RELEASE"-minio:9000
-    deploy_historical_jobs_docker_images "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
+    #deploy_historical_jobs_docker_images "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
 
     # Deploy applications
     deploy_release_from_templates "code" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"

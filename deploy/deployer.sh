@@ -9,6 +9,7 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 
 # IMPORTS
+. "$BASE_PATH/deploy/certificates/deployer_certificates.sh"
 . "$BASE_PATH/deploy/infrastructure/deployer_infrastructure.sh"
 . "$BASE_PATH/deploy/code/deployer_code.sh"
 
@@ -23,7 +24,7 @@ export CONTAINER_REPOSITORY="$HOSTNAME/$PROJECT_ID" #"your docker repository"
 export PROJECT_NAME="ysennoun-iot" #"your project name on gcp"
 export DOCKER_VERSION="latest"
 CLUSTER_NAME="smart-agriculture-cluster"
-INFRASTRUCTURE_RELEASE="smart-agriculture-infrastructure"
+INFRASTRUCTURE_RELEASE="smart-agriculture"
 
 
 ######## FUNCTIONS ########
@@ -33,6 +34,7 @@ usage() {
     echo ""
     echo "ACTION:"
     echo "  - setup-cluster: create k8s cluster"
+    echo "  - create-certificates <ENVIRONMENT>: create certificates for environment"
     echo "  - deploy-modules <ENVIRONMENT>: deploy all modules (infrastructure, docker images, applications)"
     echo "  - delete-cluster: delete cluster"
     echo "  - delete-modules: delete cluster"
@@ -50,26 +52,26 @@ function setup-cluster(){
     create_k8s_cluster "$CLUSTER_NAME"
 }
 
+function create-certificates(){
+  echo "Create certificates"
+  create_ssl_certificates "vernemq" "$INFRASTRUCTURE_RELEASE-vernemq.$ENVIRONMENT.svc.cluster.local"
+  create_ssl_certificates "elasticsearch" "$INFRASTRUCTURE_RELEASE-elasticsearch-es-http"
+}
+
 function deploy-modules(){
-    ## Create namespace
+    ## Create Namespace
     create_namespace "$ENVIRONMENT"
+
+    ## Set helm repos
+    set_helm_repos
+
+    ## Create Namespace, Elasticsearch, VerneMQ and Minio clusters
+    install_infrastructure "infrastructure" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     ## Deploy Knative
     deploy_knative
     visualize_knative_deployment
     echo $(get_istio_ingress_gateway_ip)
-
-    ## Set helm repos
-    set_helm_repos
-
-    ## Deploy VerneMQ
-    install_vernemq "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
-
-    ## Deploy Elasticsearch
-    install_elasticsearch "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
-
-    ## Deploy Minio
-    install_minio "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
 
     ## Set Docker login
     set_docker "$HOSTNAME"
@@ -84,7 +86,7 @@ function deploy-modules(){
     deploy_historical_jobs_docker_images "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
 
     # Deploy applications
-    deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
+    deploy_release_from_templates "code" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
 }
 
 function delete-cluster(){
@@ -92,18 +94,14 @@ function delete-cluster(){
     delete_k8s_cluster "$CLUSTER_NAME"
 }
 
+function gen(){
+  create_ssl_certificates "dev" "elasticsearch" "smart-agriculture-elasticsearch"
+  get_ssl_certificates_in_base64 "elasticsearch" "tls.key"
+}
+
 function delete-modules(){
-    # Delete applications
-    delete_release "smart-agriculture-code"
-
-    # Delete VerneMQ
-    delete_vernemq "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
-
-    # Delete Elasticsearch
-    delete_elasticsearch "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
-
-    # Delete Minio
-    delete_minio "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
+    # Delete Namespace
+    delete_namespace "$ENVIRONMENT"
 }
 
 function test-unit(){

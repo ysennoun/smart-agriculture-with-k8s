@@ -1,27 +1,47 @@
-apiVersion: serving.knative.dev/v1
-kind: Service
+#apiVersion: serving.knative.dev/v1
+#kind: Service
+#metadata:
+#  name: es-to-parquet
+#  namespace: {{ .Values.namespace }}
+#  labels:
+#    purpose: demonstrate-es-to-parquet
+#    serving.knative.dev/visibility: cluster-local
+#spec:
+#  template:
+#    spec:
+#      containers:
+#        - image: {{ .Values.containerRepository }}/es-to-parquet:{{ .Values.dockerVersion }}
+#
+#---
+#
+#apiVersion: sources.eventing.knative.dev/v1alpha1
+#kind: CronJobSource
+#metadata:
+#  name: cronjob-es-to-parquet
+#  namespace: {{ .Values.namespace }}
+#spec:
+#  schedule: "*/10 * * * *" # every 10 minutes
+#  sink:
+#    apiVersion: serving.knative.dev/v1
+#    kind: Service
+#    name: es-to-parquet
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: es-to-parquet
+  name: es-to-parquet-deployment
   namespace: {{ .Values.namespace }}
   labels:
-    purpose: demonstrate-es-to-parquet
-    serving.knative.dev/visibility: cluster-local
+    app: es-to-parquet
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: es-to-parquet
   template:
+    metadata:
+      labels:
+        app: es-to-parquet
     spec:
       containers:
-        - image: {{ .Values.containerRepository }}/es-to-parquet:{{ .Values.dockerVersion }}
-
----
-
-apiVersion: sources.eventing.knative.dev/v1alpha1
-kind: CronJobSource
-metadata:
-  name: cronjob-es-to-parquet
-  namespace: {{ .Values.namespace }}
-spec:
-  schedule: "*/10 * * * *" # every 10 minutes
-  sink:
-    apiVersion: serving.knative.dev/v1
-    kind: Service
-    name: es-to-parquet
+        - name: es-to-parquet
+          image: {{ .Values.containerRepository }}/spark-es-to-parquet:{{ .Values.dockerVersion }}

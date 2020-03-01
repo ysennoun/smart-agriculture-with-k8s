@@ -1,3 +1,4 @@
+import ssl
 from indexer import env
 from common.utils.logger import Logger
 from common.utils.date import get_current_date_as_string
@@ -28,13 +29,24 @@ class DeviceHandler:
         logger.info(f"Connected with result code {str(rc)}")
         client.subscribe(env.get_topic_name())
 
-    def on_message(self, client, userdata, msg):
-        payload = str(msg.payload.decode("utf-8"))
-        self.handle_on_message(payload, msg.topic)
+    def on_message(self, client, userdata, message):
+        payload = str(message.payload.decode("utf-8"))
+        self.handle_on_message(payload, message.topic)
 
     def run(self):
+        self.mqtt_client.username_pw_set(
+            env.get_mqtt_username(),
+            env.get_mqtt_password())
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message
+        self.mqtt_client.tls_set(
+            ca_certs=env.get_mqtt_ca_file(),
+            certfile=None,
+            keyfile=None,
+            cert_reqs=ssl.CERT_REQUIRED,
+            tls_version=ssl.PROTOCOL_TLS,
+            ciphers=None)
+        self.mqtt_client.tls_insecure_set(False)
 
         service_name = env.get_service_name()
         namespace_name = env.get_namespace_name()

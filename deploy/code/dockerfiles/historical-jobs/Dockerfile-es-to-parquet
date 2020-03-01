@@ -42,6 +42,6 @@ CMD echo k8s://${K8S_APISERVER_URL} && spark-2.4.5-bin-hadoop2.7/bin/spark-submi
     --conf es.port=${ES_PORT} \
     --conf fs.s3a.endpoint=${FS_S3A_ENDPOINT} \
     --conf spark.kubernetes.namespace=${ENVIRONMENT} \
-    --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark-sa \
+    --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
     --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark:2.4.5 \
     local:///app/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE} ${S3_PREPARED_DATA_PATH}

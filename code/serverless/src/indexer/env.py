@@ -13,6 +13,20 @@ def get_namespace_name():
     return os.environ["NAMESPACE_NAME"]
 
 
+def get_mqtt_ca_file():
+    return os.environ["MQTT_CA_FILE"]
+
+
+def get_mqtt_username():
+    username_path = os.environ["MQTT_USERNAME_PATH"]
+    return open(username_path, 'r').read().rstrip('\n')
+
+
+def get_mqtt_password():
+    password_path = os.environ["MQTT_PASSWORD_PATH"]
+    return open(password_path, 'r').read().rstrip('\n')
+
+
 def get_host(service_name, namespace_name):
     return f"{service_name}.{namespace_name}.svc.cluster.local"
 

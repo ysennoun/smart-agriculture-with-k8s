@@ -69,6 +69,7 @@ Run the following script to run all unit tests:
 Run the following script to install this IoT platform on your GCP Account:
 
     ./deploy/deployer.sh setup-cluster # create Kuberntes cluster
+    ./deploy/deployer.sh create-certificates <environment> # Create localy self signed ssl certificates 
     ./deploy/deployer.sh deploy-modules <environment> # Deploy all modules 
     
 ### Delete IoT Platform with command lines

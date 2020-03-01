@@ -11,7 +11,7 @@ ENVIRONMENT="$ENVIRONMENT"
 COMPUTE_ZONE="$COMPUTE_ZONE"
 MIN_NODES=1
 MAX_NODES=10
-NUM_NODES=3
+NUM_NODES=1 #3
 MACHINE_TYPE=n1-standard-4
 
 ## FUNCTIONS
@@ -67,8 +67,67 @@ function delete_k8s_cluster() {
 
 function create_namespace(){
   env=$1
+  echo "Create Namespace"
   kubectl create namespace "$env"
 }
+
+function delete_namespace(){
+  env=$1
+  echo "Delete Namespace"
+  kubectl delete namespace "$env"
+}
+
+function install_infrastructure(){
+  release=$1
+  env=$2
+  infrastructureRelease=$3
+  echo "Get certificates"
+  mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
+  mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
+  mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
+  esCA=$(get_ssl_certificates_in_base64 "elasticsearch" "ca.crt")
+  esTLS=$(get_ssl_certificates_in_base64 "elasticsearch" "tls.crt")
+  esKey=$(get_ssl_certificates_in_base64 "elasticsearch" "tls.key")
+
+  echo "Install Elasticsearch"
+  kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
+  helm upgrade --install --debug \
+    "$release" \
+    "$BASE_PATH/deploy/infrastructure" \
+    --set infrastructureRelease="$infrastructureRelease" \
+    --set namespace="$env" \
+    --set mqttCA="$mqttCA" \
+    --set mqttTLS="$mqttTLS" \
+    --set mqttKey="$mqttKey" \
+    --set esCA="$esCA" \
+    --set esTLS="$esTLS" \
+    --set esKey="$esKey"
+
+  echo "Install VerneMQ"
+  helm upgrade --install --namespace "$env" "$infrastructureRelease-vernemq" vernemq/vernemq \
+    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml"
+
+  echo "Install Minio"
+  helm upgrade --install --namespace "$env" "$infrastructureRelease-minio" \
+    -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
+    stable/minio
+}
+
+function delete_infrastructure(){
+  release=$1
+  env=$2
+  infrastructureRelease=$3
+
+  echo "Delete Minio"
+  helm del "$infrastructureRelease-minio" --namespace "$env"
+
+  echo "Delete VerneMQ"
+  helm del "$infrastructureRelease-vernemq" --namespace "$env"
+
+  echo "Delete Elasticsearch and Namespace"
+  helm delete "$release"
+}
+
 
 function deploy_knative(){
     echo "Let's deploy knative"
@@ -101,7 +160,6 @@ function get_istio_ingress_gateway_ip(){
 function set_helm_repos(){
     echo "Add Helm VerneMQ and stable repos"
     helm repo add vernemq https://vernemq.github.io/docker-vernemq
-    helm repo add elastic https://helm.elastic.co
     helm repo add stable https://kubernetes-charts.storage.googleapis.com
     helm repo update
 }
@@ -111,55 +169,9 @@ function set_docker(){
   gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "https://$hostname"
 }
 
-function install_vernemq(){
-    echo "Install VerneMQ"
-    env=$1
-    infrastructureRelease=$2
-    helm install --namespace "$env" vernemq/vernemq --name-template "$infrastructureRelease-vernemq" \
-      -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml"
-}
 
-function delete_vernemq(){
-    echo "Delete VerneMQ"
-    env=$1
-    infrastructureRelease=$2
-    helm del "$infrastructureRelease-vernemq" --namespace "$env"
-}
-
-function get_vernemq_status(){
-    echo "Get VerneMQ status"
-    env=$1
-    kubectl exec --namespace "$env" vernemq-cluster-0 /vernemq/bin/vmq-admin cluster show
-}
-
-function install_elasticsearch(){
-    echo "Install Elasticsearch"
-    env=$1
-    infrastructureRelease=$2
-    helm install --namespace "$env" --name-template "$infrastructureRelease-elasticsearch" elastic/elasticsearch \
-      -f "$BASE_PATH/deploy/infrastructure/configuration/elasticsearch.yaml"
-}
-
-function delete_elasticsearch(){
-    echo "Delete Elasticsearch"
-    env=$1
-    infrastructureRelease=$2
-    helm del "$infrastructureRelease-elasticsearch" --namespace "$env"
-}
-
-function install_minio(){
-    echo "Install Minio"
-    env=$1
-    infrastructureRelease=$2
-    helm install --name-template "$infrastructureRelease-minio" \
-      --namespace "$env" \
-      -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
-      stable/minio
-}
-
-function delete_minio(){
-    echo "Delete Minio"
-    env=$1
-    infrastructureRelease=$2
-    helm del "$infrastructureRelease-minio" --namespace "$env"
+function get_ssl_certificates_in_base64(){
+  server=$1
+  file=$2
+  echo $(cat "$BASE_PATH/deploy/certificates/$server/$file" | base64)
 }

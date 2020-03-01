@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: vernemq/vernemq
-  tag: 1.10.1-alpine
+  tag: 1.10.1 #-alpine
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -30,7 +30,7 @@ service:
     # This is the port used by nodes to expose the service
     nodePort: 1883
   mqtts:
-    enabled: false
+    enabled: true
     port: 8883
     # This is the port used by nodes to expose the service
     nodePort: 8883
@@ -110,10 +110,10 @@ persistentVolume:
 
 # A list of secrets and their paths to mount inside the pod
 # This is useful for mounting certificates for security (tls)
-secretMounts: []
-#  - name: vernemq-certificates
-#    secretName: vernemq-certificates-secret
-#    path: /etc/ssl/vernemq
+secretMounts:
+  - name: vernemq-certificates
+    secretName: vernemq-certificates-secret
+    path: /etc/ssl/vernemq
 
 statefulset:
   ## Start and stop pods in Parallel or OrderedReady (one-by-one.)  Note - Can not change after first release.
@@ -158,17 +158,23 @@ additionalEnv:
     value: "on"
   - name: DOCKER_VERNEMQ_ACCEPT_EULA
     value: "yes"
-  - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
-    value: "on"
+#  - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
+#    value: "on"
+  - name: DOCKER_VERNEMQ_USER_indexer
+    value: "3ywbCs2uB4"
+  - name: DOCKER_VERNEMQ_USER_notifier
+    value: "qvQsSpg3tk"
+  - name: DOCKER_VERNEMQ_USER_device
+    value: "9Fex2nqdqe"
 #  - name: DOCKER_VERNEMQ_MAX_CLIENT_ID_SIZE
 #    value: "100"
 #  - name: DOCKER_VERNEMQ_MAX_ONLINE_MESSAGES
 #    value: "10000"
 #  - name: DOCKER_VERNEMQ_MAX_OFFLINE_MESSAGES
 #    value: "-1"
-#  - name: DOCKER_VERNEMQ_LISTENER__SSL__CAFILE
-#    value: "/etc/ssl/vernemq/tls.crt"
-#  - name: DOCKER_VERNEMQ_LISTENER__SSL__CERTFILE
-#    value: "/etc/ssl/vernemq/tls.crt"
-#  - name: DOCKER_VERNEMQ_LISTENER__SSL__KEYFILE
-#    value: "/etc/ssl/vernemq/tls.key"
+  - name: DOCKER_VERNEMQ_LISTENER__SSL__CAFILE
+    value: "/etc/ssl/vernemq/ca.crt"
+  - name: DOCKER_VERNEMQ_LISTENER__SSL__CERTFILE
+    value: "/etc/ssl/vernemq/tls.crt"
+  - name: DOCKER_VERNEMQ_LISTENER__SSL__KEYFILE
+    value: "/etc/ssl/vernemq/tls.key"

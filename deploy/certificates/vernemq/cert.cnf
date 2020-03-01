@@ -1,0 +1,14 @@
+[ req ]
+default_bits       = 2048
+default_md         = sha512
+default_keyfile    = tls.key
+prompt             = no
+encrypt_key        = no
+distinguished_name = req_distinguished_name
+
+[ req_distinguished_name ]
+countryName                 = FR
+stateOrProvinceName         = France
+localityName               = Paris
+organizationName           = Xebia
+commonName                 = smart-agriculture-vernemq.dev.svc.cluster.local

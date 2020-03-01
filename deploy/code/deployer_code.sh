@@ -68,11 +68,26 @@ function deploy_serverless_docker_images(){
 
 function deploy_spark_within_docker_image(){
     containerRepository=$1
-    wget http://mirrors.standaloneinstaller.com/apache/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
-    tar -zxvf spark-2.4.5-bin-hadoop2.7.tgz
+    #wget http://mirrors.standaloneinstaller.com/apache/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz
+    #tar -zxvf spark-2.4.5-bin-hadoop2.7.tgz
     cd spark-2.4.5-bin-hadoop2.7/
+    ### ADD jars needed to communicate with Minio
+    cd jars/
+    wget -N https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/2.7.3/hadoop-common-2.7.3.jar
+    wget -N https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar
+    #wget -N https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.8/httpclient-4.5.8.jar
+    #wget -N https://repo1.maven.org/maven2/joda-time/joda-time/2.9.9/joda-time-2.9.9.jar
+    wget -N https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk/1.11.534/aws-java-sdk-1.11.534.jar
+    wget -N https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-core/1.11.534/aws-java-sdk-core-1.11.534.jar
+    wget -N https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-kms/1.11.534/aws-java-sdk-kms-1.11.534.jar
+    wget -N https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-s3/1.11.534/aws-java-sdk-s3-1.11.534.jar
+    cd ..
     ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.5" build
     ./bin/docker-image-tool.sh -r "$containerRepository" -t "2.4.5" push
+
+    ### Put an object for test
+    #python minio.py bucket jars/spark-examples_2.11-2.4.5.jar examples/jars/spark-examples_2.11-2.4.5.jar
+
     cd ..
     rm -f spark-2.4.5-bin-hadoop2.7.tgz
     rm -rf spark-2.4.5-bin-hadoop2.7/
@@ -90,6 +105,14 @@ function deploy_historical_jobs_docker_images(){
     esAliasForHistoricalJobs=$ES_ALIAS_FOR_HISTORICAL_JOBS
     esAliasForAveragePerDeviceAndDate=$ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE
     s3_prepared_data_path=$S3_PREPARED_DATA_PATH
+
+    docker build \
+      --build-arg CONTAINER_REPOSITORY="$containerRepository" \
+      --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
+      --build-arg ENVIRONMENT="$env" \
+      -f "$BASE_PATH/deploy/code/dockerfiles/historical-jobs/Dockerfile-sparkPi" \
+      -t "$containerRepository/spark-sparkpi:$dockerVersion" .
+    docker push "$containerRepository/spark-sparkpi:$dockerVersion"
 
     cd "$BASE_PATH/code/historical-jobs/"
     mvn clean package
@@ -134,17 +157,12 @@ function deploy_release_from_templates(){
   dockerVersion=$5
   istioIngressGatewayIpAddress=$6
 
-  helm install --debug \
-    --name-template "$release" \
+  helm upgrade --install --debug \
+    "$release" \
     "$BASE_PATH/deploy/code" \
     --set infrastructureRelease="$infrastructureRelease" \
     --set namespace="$namespace" \
     --set containerRepository="$containerRepository" \
     --set dockerVersion="$dockerVersion" \
     --set istioIngressGatewayIpAddress="$istioIngressGatewayIpAddress"
-}
-
-function delete_release(){
-  release=$1
-  helm delete "$release"
 }

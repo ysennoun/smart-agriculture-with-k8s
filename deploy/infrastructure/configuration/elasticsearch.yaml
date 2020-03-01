@@ -1,9 +1,0 @@
----
-clusterName: "elasticsearch" #{{ .Values.infrastructureRelease }}-elasticsearch
-nodeGroup: "master"
-
-replicas: 1
-
-image: "docker.elastic.co/elasticsearch/elasticsearch"
-imageTag: "7.5.2"
-imagePullPolicy: "IfNotPresent"

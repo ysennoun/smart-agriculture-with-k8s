@@ -96,11 +96,13 @@ function install_infrastructure(){
   mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
   mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
   mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
+  s3aPublicCRT=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
+  s3aPrivateKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
   ingressCA=$(get_ssl_certificates_in_base64 "api" "ca.crt")
   ingressTLS=$(get_ssl_certificates_in_base64 "api" "tls.crt")
   ingressKey=$(get_ssl_certificates_in_base64 "api" "tls.key")
 
-  echo "Install Namespace, Secrets, Elasticsearch"
+  echo "Install Secrets, Elasticsearch"
   kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
   helm upgrade --install --debug \
     "infra-secrets-and-elasticsearch" \
@@ -113,8 +115,13 @@ function install_infrastructure(){
     --set ingressCA="$ingressCA" \
     --set ingressTLS="$ingressTLS" \
     --set ingressKey="$ingressKey" \
+    --set s3aPublicCRT="$s3aPublicCRT" \
+    --set s3aPrivateKey="$s3aPrivateKey" \
     --set s3aAccessKey="$s3aAccessKey" \
-    --set s3aSecretKey="$s3aSecretKey"
+    --set s3aSecretKey="$s3aSecretKey" \
+    --set mqttIndexerPassBase64="$(echo mqttIndexerPass | base64)" \
+    --set mqttNotifierPassBase64="$(echo mqttNotifierPass | base64)"
+
 
   #echo "Install Nginx Ingress"
   #helm upgrade --install --namespace "$env" "smart-agriculture-nginx-ingress" \

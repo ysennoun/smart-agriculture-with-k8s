@@ -36,3 +36,5 @@ stringData:
     spark.es.net.ssl.truststore.pass        {{ .Values.esTruststorePass }}
     spark.kubernetes.driver.secrets.elasticsearch-truststore-secret /opt/spark/conf/truststore
     spark.kubernetes.executor.secrets.elasticsearch-truststore-secret /opt/spark/conf/truststore
+
+#    spark.hadoop.fs.s3a.connection.ssl.enabled true

@@ -61,7 +61,7 @@ function setup-cluster(){
 function create-certificates(){
   echo "Create certificates"
   create_ssl_certificates "api" "api.smart-agriculture.com"
-  #create_ssl_certificates "elasticsearch" "smart-agriculture-elasticsearch-es-http"
+  create_ssl_certificates "minio" "smart-agriculture-minio:9000 "
   create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
 }
 

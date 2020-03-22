@@ -46,11 +46,8 @@ defaultBucket:
   policy: none
   purge: false
 
-#https://medium.com/@zhimin.wen/explore-knative-eventing-7cd04c210378
-
-
-#ingress:
+#tls:
 #  enabled: true
-#  path: /
-#  hosts:
-#    - minio.apps.ocp.io.cpak
+#  certSecret: "minio-certificates-secret"
+#  publicCrt: tls.crt
+#  privateKey: tls.key

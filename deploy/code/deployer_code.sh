@@ -16,11 +16,11 @@ function install_python_requirements(){
 }
 
 function install_deps() {
-    apt-get update
-    apt-get install -y --no-install-recommends ca-certificates-java jq realpath zip
-    apt-get install -y openjdk-8-jdk maven
-    update-ca-certificates -f
-    curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
+    apk update
+    apk fetch openjdk8
+    apk add openjdk8
+    apk add maven
+    apk add jq
 }
 
 function launch_python_unit_tests(){

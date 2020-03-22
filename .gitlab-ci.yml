@@ -16,6 +16,7 @@ cache:
     - venv/
 
 before_script:
+  - echo "eeee"$PRIVATE_KEY_FILE_CONTENT
   - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
   - ls -al /tmp/$CI_PIPELINE_ID.json
   - cat /tmp/$CI_PIPELINE_ID.json

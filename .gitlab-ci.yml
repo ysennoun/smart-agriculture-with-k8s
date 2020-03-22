@@ -17,6 +17,8 @@ cache:
 
 before_script:
   - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
+  - ls -al /tmp/$CI_PIPELINE_ID.json
+  - cat /tmp/$CI_PIPELINE_ID.json
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
   - apk update && apk fetch openjdk8 && apk add openjdk8
   - apk add maven openssl

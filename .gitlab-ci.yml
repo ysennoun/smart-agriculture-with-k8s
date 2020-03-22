@@ -18,10 +18,8 @@ cache:
 before_script:
   - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-  - apk --update add openjdk8-jre
-  - apk upgrade --update-cache --available && \
-    apk add openssl && \
-    rm -rf /var/cache/apk/*
+  - apk update && apk fetch openjdk8 && apk add openjdk8
+  - apk add maven openssl
   - gcloud components install kubectl
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
     chmod 700 get_helm.sh && \
@@ -47,9 +45,6 @@ build:unit-test:
 # SETUP CLUSTER (Create branch setup_cluster at the beginning to create k8s cluster)
 ########################################################################################################################
 setup_cluster:deploy:
-  variables:
-    PROJECT_ID: $PROJECT_ID
-    CLUSTER_NAME: "smart-agriculture-cluster"
   stage: setup_cluster_deploy
   allow_failure: false
   only:
@@ -64,6 +59,7 @@ setup_cluster:deploy:
 dev:deploy:
   variables:
     ENVIRONMENT: dev
+    DOCKER_VERSION: $CI_COMMIT_SHA
   stage: dev_deploy
   allow_failure: false
   only:

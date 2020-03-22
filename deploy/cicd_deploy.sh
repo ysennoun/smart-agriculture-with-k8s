@@ -5,7 +5,6 @@ set -eax
 source deploy/infrastructure/deployer_infrastructure.sh
 source deploy/code/deployer_code.sh
 
-DOCKER_VERSION="$CI_COMMIT_SHA"
 
 ## Create Namespace
 create_namespace "$ENVIRONMENT"

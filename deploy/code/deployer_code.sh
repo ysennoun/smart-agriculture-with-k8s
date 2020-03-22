@@ -91,10 +91,6 @@ function deploy_application_images_and_release(){
       -t "$containerRepository/indexer:$dockerVersion" .
     docker push "$containerRepository/indexer:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/code/serverless/application/dockerfiles/notification/Dockerfile-notification" \
-      -t "$containerRepository/notification:$dockerVersion" .
-    docker push "$containerRepository/notification:$dockerVersion"
-
     # Deploy release
     helm upgrade --install --debug \
       "serverless" \

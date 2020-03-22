@@ -1,25 +1,73 @@
 image: google/cloud-sdk:alpine
 
-deploy_production:
-  stage: deploy
-  environment: Production
-  only:
-  - master
-  script:
-  # SERVICE_ACCOUNT => https://cloud.google.com/iam/docs/creating-managing-service-account-keys?hl=en
-  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
-  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-  - gcloud --quiet --project $PROJECT_ID app deploy app.yaml dispatch.yaml
+stages:
+  - unit_test
+  - setup_cluster_deploy
+  - dev_deploy
+#  - dev_e2e_test
 
-deploy_staging:
-  stage: deploy
-  environment: Staging
-  only:
-  - staging
-  script:
-  - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+# Pip's cache doesn't store the python packages https://pip.pypa.io/en/stable/reference/pip_install/#caching
+# If you want to also cache the installed packages, you have to install them in a virtualenv and cache it as well.
+cache:
+  # cache per branch
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .cache/pip
+    - venv/
+
+before_script:
+  - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-  - gcloud --quiet --project $PROJECT_ID app deploy staging-app.yaml
+  - apk --update add openjdk8-jre
+  - apk upgrade --update-cache --available && \
+    apk add openssl && \
+    rm -rf /var/cache/apk/*
+  - gcloud components install kubectl
+  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
+    chmod 700 get_helm.sh && \
+    ./get_helm.sh
+  - source deploy/deploy_functions.sh
+  - alias python=python3 && alias pip=pip3
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
 
 after_script:
-- rm /tmp/$CI_PIPELINE_ID.json
+  - rm /tmp/$CI_PIPELINE_ID.json
+
+# Run on all branches
+build:unit-test:
+  stage: unit_test
+  allow_failure: false
+  script:
+    - chmod +x deploy/cicd_unit_test.sh
+    - ./deploy/cicd_unit_test.sh
+
+########################################################################################################################
+# SETUP CLUSTER (Create branch setup_cluster at the beginning to create k8s cluster)
+########################################################################################################################
+setup_cluster:deploy:
+  variables:
+    PROJECT_ID: $PROJECT_ID
+    CLUSTER_NAME: "smart-agriculture-cluster"
+  stage: setup_cluster_deploy
+  allow_failure: false
+  only:
+    - setup_cluster
+  script:
+    - chmod +x deploy/cicd_setup_cluster_deploy.sh
+    - ./deploy/cicd_setup_cluster_deploy.sh
+
+########################################################################################################################
+# MASTER
+########################################################################################################################
+dev:deploy:
+  variables:
+    ENVIRONMENT: dev
+  stage: dev_deploy
+  allow_failure: false
+  only:
+    - master
+  script:
+    - chmod +x deploy/cicd_deploy.sh
+    - ./deploy/cicd_deploy.sh

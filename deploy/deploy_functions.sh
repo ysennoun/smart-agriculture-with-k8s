@@ -65,6 +65,26 @@ function create-certificates(){
   create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
 }
 
+
+  # PRIVATE_KEY_FILE_CONTENT => https://cloud.google.com/iam/docs/creating-managing-service-account-keys?hl=en
+
+    echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
+    gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+    apk --update add openjdk8-jre
+    gcloud components install kubectl
+
+
+
+    apk upgrade --update-cache --available && \
+    apk add openssl && \
+    rm -rf /var/cache/apk/*
+
+    echo "Install Helm"
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
+    chmod 700 get_helm.sh && \
+    ./get_helm.sh
+
+
 function deploy-modules(){
     ## Create Namespace
     create_namespace "$ENVIRONMENT"

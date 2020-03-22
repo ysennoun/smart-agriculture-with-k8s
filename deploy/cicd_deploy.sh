@@ -5,39 +5,45 @@ set -eax
 source deploy/infrastructure/deployer_infrastructure.sh
 source deploy/code/deployer_code.sh
 
+DOCKER_VERSION="$CI_COMMIT_SHA"
 
-# Enable APIs
-enable_apis
-# Activate billing and enable APIs
-activate_billing "$PROJECT_ID"
-enable_apis
+## Create Namespace
+create_namespace "$ENVIRONMENT"
 
-# Create Kubernetes Cluster
-create_k8s_cluster
+## Set helm repos
+set_helm_repos
 
-# Deploy Knative
-deploy_knative
-visualize_knative_deployment
-istio_ingress_gateway_ip=$(get_istio_ingress_gateway_ip)
+## Create Secrets, Elasticsearch, VerneMQ and Minio clusters
+install_infrastructure \
+  "$ENVIRONMENT" \
+  "$S3A_ACCESS_KEY" \
+  "$S3A_SECRET_KEY" \
+  "$MQTT_INDEXER_PASS" \
+  "$MQTT_NOTIFIER_PASS" \
+  "$MQTT_DEVICE_PASS"
 
-# Deploy VerneMQ
-add_helm_vernemq_repo
-install_vernemq
+## Set Docker login
+set_docker "$HOSTNAME"
 
-# Deploy Elasticsearch
-install_elasticsearch
+## Deploy Put Jars in Minio image and release And alias in Elasticsearch
+deploy_jars_alias_deployment_image_and_release \
+  "$ENVIRONMENT" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION"
 
-# Deploy Minio
-install_minio
+# Deploy Application images and release
+deploy_application_images_and_release \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY"  \
+      "$DOCKER_VERSION"
 
-# Deploy docker images
-deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
-deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
+## Deploy Spark and Historical jobs images and release
 k8_apiserver_url=$(get_k8_apiserver_url)
-es_nodes=elasticsearch."$ENVIRONMENT".svc.cluster.local
-es_port=9200
-fs_s3a_endpoint=minio."$ENVIRONMENT".svc.cluster.local
-deploy_historical_jobs_docker_images"$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
-
-# Deploy applications
-deploy_release_from_templates "smart-agriculture-code" "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$VERSION" "$istio_ingress_gateway_ip"
+deploy_historical_jobs_docker_images_and_release \
+  "$ENVIRONMENT" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION" \
+  "$k8_apiserver_url" \
+  "$S3A_ACCESS_KEY" \
+  "$S3A_SECRET_KEY" \
+  "$ES_TRUSTORE_PASS"

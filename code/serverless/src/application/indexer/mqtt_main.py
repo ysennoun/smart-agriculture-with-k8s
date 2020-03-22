@@ -1,8 +1,8 @@
 import paho.mqtt.client as mqtt
 from common.utils.logger import Logger
-from indexer import env
 from common.storage.elasticsearch_client import get_elasticsearch_client
-from indexer.device_handler import DeviceHandler
+from application.indexer import env
+from application.indexer.device_handler import DeviceHandler
 
 logger = Logger().get_logger()
 

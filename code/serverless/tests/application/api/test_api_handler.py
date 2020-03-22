@@ -21,7 +21,6 @@ class TestApiHandler(unittest.TestCase):
         self.assertEqual(offset, 11)
         self.assertEqual(max_results, 11)
 
-
     def test_get_last_value_query(self):
         ######### Given #########
         device = "device"
@@ -106,8 +105,7 @@ class TestApiHandler(unittest.TestCase):
         self.assertEqual(last_value.status_code, 200)
         self.assertEqual(last_value.json["rows"][0], {"id": 1, "device": device})
 
-
-    @patch("api.api_handler.get_offset_and_max_results")
+    @patch("application.api.api_handler.get_offset_and_max_results")
     def test_get_timeseries(self, get_offset_and_max_results_mock: MagicMock):
         ######### Given #########
         device = "device"

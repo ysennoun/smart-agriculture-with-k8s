@@ -35,6 +35,8 @@ after_script:
 build:unit-test:
   stage: unit_test
   allow_failure: false
+  except:
+    - setup_cluster
   script:
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh

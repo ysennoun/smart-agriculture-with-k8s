@@ -63,7 +63,7 @@ dev:deploy:
   stage: dev_deploy
   allow_failure: false
   only:
-    - master
+    - dev
   script:
     - chmod +x deploy/cicd_deploy.sh
     - ./deploy/cicd_deploy.sh

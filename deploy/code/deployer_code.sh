@@ -183,6 +183,7 @@ function get_elasticsearch_truststore_content_in_base64(){
     -noprompt
 
   truststore_content=$(cat truststore.jks | base64)
+  rm tls.crt
   rm truststore.jks
   echo "$truststore_content"
 }

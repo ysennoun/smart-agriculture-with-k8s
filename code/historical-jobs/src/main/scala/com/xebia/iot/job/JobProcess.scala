@@ -16,23 +16,44 @@ object JobProcess extends Logging {
 
   def getStartTimestamp(esAliasForHistoricalJobs: String)
                        (implicit spark: SparkSession, sc: SparkContext): Either[NoRecordTimestampColumnDefinedException, Timestamp] ={
-    logger.debug("Get Start Timestamp")
-    val filterForLastJob = "?q=*:*&size=1&sort=timestamp:desc"
+    val filterForLastJob =
+      """
+        |{
+        |    "query" : {
+        |        "match_all": {}
+        |    },
+        |    "size": 1,
+        |    "sort" : [
+        |        { "timestamp" : {"order" : "desc"}}
+        |    ]
+        |}
+        |""".stripMargin
+    logger.debug(s"Get Start Timestamp, filter=$filterForLastJob")
     val dataFrameForLastJob = getDataFrameFromElasticsearch(esAliasForHistoricalJobs, filterForLastJob)
-    val rowsForLastJob: Array[Row] = dataFrameForLastJob.head(1)
-    if(rowsForLastJob.isEmpty)
+    if(dataFrameForLastJob.isEmpty)
       Left(NoRecordTimestampColumnDefinedException("No record found for last job"))
     else{
-      Right(rowsForLastJob.head.asInstanceOf[Point].timestamp)
+      Right(dataFrameForLastJob.first().asInstanceOf[Point].timestamp)
     }
   }
 
   def getRecentRecords(esAliasForIncomingData: String, timestamp: Timestamp)
                       (implicit spark: SparkSession, sc: SparkContext): Either[NoRecordsFoundDefinedException, DataFrame] ={
-    logger.debug("Get Recent Records")
-    val filter = s"?q=*:*&facet.range=timestamp&facet=true&facet.range.start=$timestamp"
-    val dataFrame = getDataFrameFromElasticsearch(esAliasForIncomingData, filter)
-    if (dataFrame.head(1).isEmpty) Left(NoRecordsFoundDefinedException("No new records found"))
+    val filterRecentRecords =
+      s"""
+        |{
+        |    "query" : {
+        |       "range" : {
+        |            "timestamp" : {
+        |                "gte" : "$timestamp"
+        |            }
+        |        }
+        |    }
+        |}
+        |""".stripMargin
+    logger.debug(s"Get Recent Records, filter=$filterRecentRecords")
+    val dataFrame = getDataFrameFromElasticsearch(esAliasForIncomingData, filterRecentRecords)
+    if (dataFrame.isEmpty) Left(NoRecordsFoundDefinedException("No new records found"))
     else Right(dataFrame)
   }
 

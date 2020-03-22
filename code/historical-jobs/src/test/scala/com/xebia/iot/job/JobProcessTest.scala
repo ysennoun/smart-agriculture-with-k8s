@@ -2,7 +2,6 @@ package com.xebia.iot.job
 
 import java.sql.Timestamp
 
-import sys.process._
 import com.xebia.iot.utils.{Logging, SparkTestUtils}
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -26,22 +25,5 @@ class JobProcessTest extends FlatSpec with Matchers with SparkTestUtils with Log
     ).toDF("device", "timestamp", "temperature", "humidity", "moisture")
 
     mostRecent.collect() should contain theSameElementsAs expectedMostRecent.collect()
-  }
-
-  it should "get point" in {
-
-    // Given
-    import spark.implicits._
-
-    sparkConf.set("es.index.auto.create", "true")
-    sparkConf.set("es.nodes", "localhost")
-    sparkConf.set("es.port", "9200")
-    val esAliasForHistoricalJobs="historical-jobs"
-
-    val response = s"curl -X PUT http://localhost:9200/$esAliasForHistoricalJobs".!!
-    logger.info(s"Response from curl: $response")
-
-    val result = JobProcess.getStartTimestamp(esAliasForHistoricalJobs)
-    logger.info(s"ee$result")
   }
 }

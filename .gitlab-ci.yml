@@ -16,18 +16,14 @@ cache:
     - venv/
 
 before_script:
-  - echo $PROJECT_NAME
-  - echo "azerty"$PRIVATE_KEY_FILE_CONTENT
   - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
-  - ls -al /tmp/$CI_PIPELINE_ID.json
-  - cat /tmp/$CI_PIPELINE_ID.json
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
   - apk update && apk fetch openjdk8 && apk add openjdk8
   - apk add maven openssl
   - gcloud components install kubectl
-  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
-    chmod 700 get_helm.sh && \
-    ./get_helm.sh
+  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  - chmod 700 get_helm.sh && \
+  - ./get_helm.sh
   - source deploy/deploy_functions.sh
   - alias python=python3 && alias pip=pip3
   - pip install virtualenv

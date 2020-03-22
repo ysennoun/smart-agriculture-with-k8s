@@ -24,7 +24,8 @@ before_script:
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
   - chmod 700 get_helm.sh && \
   - ./get_helm.sh
-  - python3 -version
+  #- apk add --no-cache python3 py3-pip
+  - python3 --version
   - pip3 --version
   - alias python=python3
   - alias pip=pip3

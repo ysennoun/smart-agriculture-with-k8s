@@ -24,7 +24,8 @@ before_script:
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
   - chmod 700 get_helm.sh && \
   - ./get_helm.sh
-  - alias python=python3 && alias pip=pip3
+  - alias python=python3
+  - alias pip=pip3
   - pip install virtualenv
   - virtualenv venv
   - source venv/bin/activate

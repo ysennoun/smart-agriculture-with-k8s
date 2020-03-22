@@ -2,7 +2,7 @@ package com.xebia.iot.transformation
 
 import java.sql.Timestamp
 
-import com.xebia.iot.data.{AveragePointByDeviceAndDate, Point}
+import com.xebia.iot.data.Point
 import com.xebia.iot.utils.SparkTestUtils
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -10,80 +10,41 @@ class PointsTransformationTest extends FlatSpec with Matchers with SparkTestUtil
 
   it should "get an average point" in {
 
-      // Given
-      import spark.implicits._
+    // Given
+    import spark.implicits._
+    val pointsAsDataFrame = Seq(
+      ("device1", Timestamp.valueOf("2019-10-22 00:00:00"), 10, 20, 30),
+      ("device2", Timestamp.valueOf("2019-10-22 00:00:00"), 11, 21, 31)
+    ).toDF("device", "timestamp", "temperature", "humidity", "moisture")
 
-      val points = Seq(
-        Point(
-          device="device1",
-          timestamp=Timestamp.valueOf("2019-10-22 00:00:00"),
-          temperature=10,
-          humidity=20,
-          moisture=30,
-          day=22,
-          month=10,
-          year=2019
-        ),
-        Point(
-          device="device1",
-          timestamp=Timestamp.valueOf("2019-10-22 00:00:00"),
-          temperature=11,
-          humidity=22,
-          moisture=33,
-          day=22,
-          month=10,
-          year=2019
-        ),
-        Point(
-          device="device2",
-          timestamp=Timestamp.valueOf("2019-10-22 00:00:00"),
-          temperature=10,
-          humidity=20,
-          moisture=30,
-          day=22,
-          month=10,
-          year=2019
-        ),
-        Point(
-          device="device2",
-          timestamp=Timestamp.valueOf("2019-10-22 00:00:00"),
-          temperature=11,
-          humidity=22,
-          moisture=33,
-          day=22,
-          month=10,
-          year=2019
-        )
-      ).toDS()
+    // When`
+    val pointsAsDataSet = PointsTransformation.getDatSetAsPoint(pointsAsDataFrame)
 
-      // When`
-      val averagePointsPerDeviceAndDate = PointsTransformation.getAveragePointPerDeviceAndDate(points)
-
-      //Then
-      val expectedAveragePointsPerDeviceAndDate = Seq(
-        AveragePointByDeviceAndDate(
-          device="device1",
-          temperature=10.5,
-          humidity=21,
-          moisture=31.5,
-          day=22,
-          month=10,
-          year=2019
-        ),
-        AveragePointByDeviceAndDate(
-          device="device2",
-          temperature=10.5,
-          humidity=21,
-          moisture=31.5,
-          day=22,
-          month=10,
-          year=2019
-        )
+    //Then
+    val expectedPoints = Seq(
+      Point(
+        device="device1",
+        timestamp=Timestamp.valueOf("2019-10-22 00:00:00"),
+        temperature=10,
+        humidity=20,
+        moisture=30,
+        day=22,
+        month=10,
+        year=2019
+      ),
+      Point(
+        device="device2",
+        timestamp=Timestamp.valueOf("2019-10-22 00:00:00"),
+        temperature=11,
+        humidity=21,
+        moisture=31,
+        day=22,
+        month=10,
+        year=2019
       )
+    )
 
-      averagePointsPerDeviceAndDate.collect().toSeq should contain theSameElementsAs expectedAveragePointsPerDeviceAndDate
-    }
+    pointsAsDataSet.collect().toSeq should contain theSameElementsAs expectedPoints
+  }
 }
-
-
 

@@ -1,10 +1,10 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: {{ .Values.infrastructureRelease }}-elasticsearch
+  name: smart-agriculture-elasticsearch
   namespace: {{ .Values.namespace }}
 spec:
-  version: 7.6.0
+  version: 7.6.1
   nodeSets:
     - name: default
       count: 1
@@ -13,7 +13,3 @@ spec:
         node.data: true
         node.ingest: true
         node.store.allow_mmap: false
-  http:
-    tls:
-      certificate:
-        secretName: elasticsearch-certificates-secret

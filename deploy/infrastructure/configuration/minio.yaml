@@ -12,9 +12,6 @@ mcImage:
 
 mode: standalone
 
-existingSecret: ""
-accessKey: "AKIAIOSFODNN7EXAMPLE"
-secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 certsPath: "/etc/minio/certs/"
 configPathmc: "/etc/minio/mc/"
 mountPath: "/export"

@@ -5,5 +5,6 @@ flask>=1.1.1
 flask-classful>=0.14.2
 requests>=2.22.0
 gunicorn>=19.9.0
-elasticsearch>=7.1.0
+elasticsearch==7.1.0
 secure-smtplib>=0.1.1
+minio==5.0.7

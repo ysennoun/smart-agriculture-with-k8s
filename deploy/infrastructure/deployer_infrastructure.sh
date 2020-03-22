@@ -67,8 +67,15 @@ function delete_k8s_cluster() {
 
 function create_namespace(){
   env=$1
-  echo "Create Namespace"
-  kubectl create namespace "$env"
+  namespace_exit=$(kubectl get namespace -o name | grep -i "$env" | tr -d '\n')
+  echo "$namespace_exit"
+  if [ -z "$namespace_exit" ]
+  then
+        echo "Create namespace"
+        kubectl create namespace "$env"
+  else
+        echo "Namespace already exists"
+  fi
 }
 
 function delete_namespace(){
@@ -78,83 +85,67 @@ function delete_namespace(){
 }
 
 function install_infrastructure(){
-  release=$1
-  env=$2
-  infrastructureRelease=$3
+  env=$1
+  s3aAccessKey=$2
+  s3aSecretKey=$3
+  mqttIndexerPass=$4
+  mqttNotifierPass=$5
+  mqttDevicePass=$6
+
   echo "Get certificates"
   mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
   mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
   mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
-  esCA=$(get_ssl_certificates_in_base64 "elasticsearch" "ca.crt")
-  esTLS=$(get_ssl_certificates_in_base64 "elasticsearch" "tls.crt")
-  esKey=$(get_ssl_certificates_in_base64 "elasticsearch" "tls.key")
+  ingressCA=$(get_ssl_certificates_in_base64 "api" "ca.crt")
+  ingressTLS=$(get_ssl_certificates_in_base64 "api" "tls.crt")
+  ingressKey=$(get_ssl_certificates_in_base64 "api" "tls.key")
 
-  echo "Install Elasticsearch"
+  echo "Install Namespace, Secrets, Elasticsearch"
   kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
   helm upgrade --install --debug \
-    "$release" \
+    "infra-secrets-and-elasticsearch" \
     "$BASE_PATH/deploy/infrastructure" \
-    --set infrastructureRelease="$infrastructureRelease" \
+    --namespace "$env" \
     --set namespace="$env" \
     --set mqttCA="$mqttCA" \
     --set mqttTLS="$mqttTLS" \
     --set mqttKey="$mqttKey" \
-    --set esCA="$esCA" \
-    --set esTLS="$esTLS" \
-    --set esKey="$esKey"
+    --set ingressCA="$ingressCA" \
+    --set ingressTLS="$ingressTLS" \
+    --set ingressKey="$ingressKey" \
+    --set s3aAccessKey="$s3aAccessKey" \
+    --set s3aSecretKey="$s3aSecretKey"
+
+  #echo "Install Nginx Ingress"
+  #helm upgrade --install --namespace "$env" "smart-agriculture-nginx-ingress" \
+  # stable/nginx-ingress --set rbac.create=true
 
   echo "Install VerneMQ"
-  helm upgrade --install --namespace "$env" "$infrastructureRelease-vernemq" vernemq/vernemq \
-    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml"
+  helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
+    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml" \
+    --set env.DOCKER_VERNEMQ_USER_indexer="$mqttIndexerPass" \
+    --set env.DOCKER_VERNEMQ_USER_notifier="$mqttNotifierPass" \
+    --set env.DOCKER_VERNEMQ_USER_device="$mqttDevicePass"
 
-  #echo "Install Minio"
-  #helm upgrade --install --namespace "$env" "$infrastructureRelease-minio" \
-  #  -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
-  #  stable/minio
+  echo "Install Minio"
+  helm upgrade --install --namespace "$env" "smart-agriculture-minio" \
+    -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
+    --set accessKey="$s3aAccessKey" \
+    --set secretKey="$s3aSecretKey" \
+   stable/minio
 }
 
-function delete_infrastructure(){
-  release=$1
-  env=$2
-  infrastructureRelease=$3
+function delete_modules_infrastructure(){
+  env=$1
+
+  echo "Delete Secrets and Elasticsearch"
+  helm del "infra-secrets-and-elasticsearch" --namespace "$env"
 
   echo "Delete Minio"
-  helm del "$infrastructureRelease-minio" --namespace "$env"
+  helm del "smart-agriculture-minio" --namespace "$env"
 
   echo "Delete VerneMQ"
-  helm del "$infrastructureRelease-vernemq" --namespace "$env"
-
-  echo "Delete Elasticsearch and Namespace"
-  helm delete "$release"
-}
-
-
-function deploy_knative(){
-    echo "Let's deploy knative"
-    kubectl apply --selector knative.dev/crd-install=true \
-        --filename https://github.com/knative/serving/releases/download/v0.12.0/serving.yaml \
-        --filename https://github.com/knative/eventing/releases/download/v0.12.0/eventing.yaml \
-        --filename https://github.com/knative/serving/releases/download/v0.12.0/monitoring.yaml
-
-    kubectl apply --filename https://github.com/knative/serving/releases/download/v0.12.0/serving.yaml \
-        --filename https://github.com/knative/eventing/releases/download/v0.12.0/eventing.yaml \
-        --filename https://github.com/knative/serving/releases/download/v0.12.0/monitoring.yaml
-
-    #kubectl label namespace "$env" knative-eventing-injection=enabled #### IMPORTANT
-
-    echo "End deployment"
-}
-
-function visualize_knative_deployment(){
-    echo "Let's visualize deployment knative"
-    kubectl get pods --namespace knative-serving
-    kubectl get pods --namespace knative-eventing
-    kubectl get pods --namespace knative-monitoring
-}
-
-function get_istio_ingress_gateway_ip(){
-    ISTIO_INGRESS_GATEWAY_IP_ADDRESS=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    echo "$ISTIO_INGRESS_GATEWAY_IP_ADDRESS"
+  helm del "smart-agriculture-vernemq" --namespace "$env"
 }
 
 function set_helm_repos(){
@@ -168,7 +159,6 @@ function set_docker(){
   hostname=$1
   gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "https://$hostname"
 }
-
 
 function get_ssl_certificates_in_base64(){
   server=$1

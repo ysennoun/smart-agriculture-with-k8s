@@ -19,7 +19,7 @@ service:
   # NodePort - Listen to a port on nodes and forward to the service.
   # ClusterIP - Listen on the service internal to the cluster only.
   # LoadBalancer - Create a LoadBalancer in the cloud provider and forward to the service.
-  type: LoadBalancer
+  type: ClusterIP #LoadBalancer
 #  clusterIP: 10.1.2.4
 #  externalIPs: []
 #  loadBalancerIP: 10.1.2.4
@@ -158,14 +158,6 @@ additionalEnv:
     value: "on"
   - name: DOCKER_VERNEMQ_ACCEPT_EULA
     value: "yes"
-#  - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
-#    value: "on"
-  - name: DOCKER_VERNEMQ_USER_indexer
-    value: "3ywbCs2uB4"
-  - name: DOCKER_VERNEMQ_USER_notifier
-    value: "qvQsSpg3tk"
-  - name: DOCKER_VERNEMQ_USER_device
-    value: "9Fex2nqdqe"
 #  - name: DOCKER_VERNEMQ_MAX_CLIENT_ID_SIZE
 #    value: "100"
 #  - name: DOCKER_VERNEMQ_MAX_ONLINE_MESSAGES

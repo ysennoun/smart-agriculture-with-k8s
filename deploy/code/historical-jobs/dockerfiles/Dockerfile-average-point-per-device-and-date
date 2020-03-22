@@ -1,0 +1,63 @@
+FROM openjdk:8-alpine
+WORKDIR /opt
+ENV SPARK_VERSION="2.4.5"
+ENV SPARK_HOME="/opt/spark"
+ENV HADOOP_VERSION="2.8.5"
+ENV HADOOP_HOME="/opt/hadoop"
+#https://issues.apache.org/jira/browse/SPARK-26995
+#ln -s /lib /lib64 && \
+RUN adduser -D -s /bin/sh spark && \
+    ln -s /lib /lib64 && \
+    apk add --no-cache bash tini libc6-compat && \
+    # spark
+    wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-without-hadoop.tgz && \
+    tar -xzf spark-${SPARK_VERSION}-bin-without-hadoop.tgz && \
+    rm spark-${SPARK_VERSION}-bin-without-hadoop.tgz && \
+    mv spark-${SPARK_VERSION}-bin-without-hadoop $SPARK_HOME && \
+    # hadoop
+    wget https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz && \
+    tar -xzf hadoop-${HADOOP_VERSION}.tar.gz && \
+    rm hadoop-${HADOOP_VERSION}.tar.gz && \
+    mv hadoop-${HADOOP_VERSION} $HADOOP_HOME
+RUN wget -O hadoop-aws-${HADOOP_VERSION}.jar https://search.maven.org/remotecontent?filepath=org/apache/hadoop/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar && \
+    wget -O httpclient-4.5.8.jar https://search.maven.org/remotecontent?filepath=org/apache/httpcomponents/httpclient/4.5.8/httpclient-4.5.8.jar && \
+    wget -O joda-time-2.9.9.jar https://search.maven.org/remotecontent?filepath=joda-time/joda-time/2.9.9/joda-time-2.9.9.jar && \
+    wget -O aws-java-sdk-1.11.534.jar https://search.maven.org/remotecontent?filepath=com/amazonaws/aws-java-sdk/1.11.534/aws-java-sdk-1.11.534.jar && \
+    wget -O aws-java-sdk-core-1.11.534.jar https://search.maven.org/remotecontent?filepath=com/amazonaws/aws-java-sdk-core/1.11.534/aws-java-sdk-core-1.11.534.jar && \
+    wget -O aws-java-sdk-kms-1.11.534.jar https://search.maven.org/remotecontent?filepath=com/amazonaws/aws-java-sdk-kms/1.11.534/aws-java-sdk-kms-1.11.534.jar && \
+    wget -O aws-java-sdk-s3-1.11.534.jar https://search.maven.org/remotecontent?filepath=com/amazonaws/aws-java-sdk-s3/1.11.534/aws-java-sdk-s3-1.11.534.jar && \
+    #wget -O slf4j-log4j12-1.7.16.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-log4j12/1.7.16/slf4j-log4j12-1.7.16.jar && \
+    #wget -O slf4j-api-1.7.16.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.16/slf4j-api-1.7.16.jar && \
+    mv *.jar ${SPARK_HOME}/jars/ && \
+    cp ${HADOOP_HOME}/share/hadoop/common/*.jar ${SPARK_HOME}/jars/ && \
+    cp ${HADOOP_HOME}/share/hadoop/common/lib/*.jar ${SPARK_HOME}/jars/ && \
+    cp ${HADOOP_HOME}/share/hadoop/mapreduce/*.jar ${SPARK_HOME}/jars/ && \
+    cp ${HADOOP_HOME}/share/hadoop/mapreduce/lib/*.jar ${SPARK_HOME}/jars/ && \
+    cp ${HADOOP_HOME}/share/hadoop/mapreduce/lib/*.jar ${SPARK_HOME}/jars/ && \
+    chown -R spark:spark ${SPARK_HOME} && \
+    rm -rf ${HADOOP_HOME}
+
+ARG K8S_APISERVER_URL
+ARG CONTAINER_REPOSITORY
+ARG ES_ALIAS_INCOMING_DATA
+ARG ES_ALIAS_FOR_HISTORICAL_JOBS
+ARG ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE
+ARG S3_PREPARED_DATA_PATH
+
+ENV K8S_APISERVER_URL=${K8S_APISERVER_URL}
+ENV CONTAINER_REPOSITORY=${CONTAINER_REPOSITORY}
+ENV ES_ALIAS_INCOMING_DATA=${ES_ALIAS_INCOMING_DATA}
+ENV ES_ALIAS_FOR_HISTORICAL_JOBS=${ES_ALIAS_FOR_HISTORICAL_JOBS}
+ENV ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE=${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE}
+ENV S3_PREPARED_DATA_PATH=${S3_PREPARED_DATA_PATH}
+
+USER spark
+WORKDIR ${SPARK_HOME}
+
+CMD bin/spark-submit \
+    --master k8s://${K8S_APISERVER_URL} \
+    --deploy-mode cluster \
+    --name spark-average-point-per-device-and-date \
+    --class com.xebia.iot.MainAveragePointPerDeviceAndDate \
+    --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark:${SPARK_VERSION} \
+    s3a://bucket/jars/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${ES_ALIAS_FOR_AVERAGE_PER_DEVICE_AND_DATE} ${S3_PREPARED_DATA_PATH}

@@ -6,5 +6,6 @@ object JobException {
 
   case class WrongNumberOfArgumentsException(message: String) extends JobException(message)
   case class WrongJobException(message: String) extends JobException(message)
-
+  case class NoRecordTimestampColumnDefinedException(message: String) extends JobException(message)
+  case class NoRecordsFoundDefinedException(message: String) extends JobException(message)
 }

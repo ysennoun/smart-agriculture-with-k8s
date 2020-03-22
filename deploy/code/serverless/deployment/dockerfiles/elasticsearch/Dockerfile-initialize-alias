@@ -1,0 +1,15 @@
+FROM python:3.7
+
+WORKDIR /app
+ENV PYTHONPATH /app
+
+
+COPY code/serverless/requirements.txt ./
+COPY code/serverless/src/common /app/common
+COPY code/serverless/src/deployment/elasticsearch /app/deployment/elasticsearch
+
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+CMD [ "python", "deployment/elasticsearch/initialize_alias.py" ]

@@ -17,14 +17,19 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 ACTION=$1
 ENVIRONMENT=$2
 export PROJECT_ID="ysennoun-iot" #"your-project-id"
-export COMPUTE_ZONE="europe-west1-b" #"your-selected-zone"
-export COMPUTE_REGION="europe-west1" #"your-selected-region"
+export COMPUTE_ZONE="europe-west2-b" #"your-selected-zone"
+export COMPUTE_REGION="europe-west2" #"your-selected-region"
 export HOSTNAME="eu.gcr.io"
 export CONTAINER_REPOSITORY="$HOSTNAME/$PROJECT_ID" #"your docker repository"
 export PROJECT_NAME="ysennoun-iot" #"your project name on gcp"
 export DOCKER_VERSION="latest"
 CLUSTER_NAME="smart-agriculture-cluster"
-INFRASTRUCTURE_RELEASE="smart-agriculture"
+S3A_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE"
+S3A_SECRET_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+MQTT_INDEXER_PASS="3ywbCs2uB4"
+MQTT_NOTIFIER_PASS="qvQsSpg3tk"
+MQTT_DEVICE_PASS="9Fex2nqdqe"
+ES_TRUSTORE_PASS="ChI2OfIpGuq0be5X"
 
 
 ######## FUNCTIONS ########
@@ -37,7 +42,8 @@ usage() {
     echo "  - create-certificates <ENVIRONMENT>: create certificates for environment"
     echo "  - deploy-modules <ENVIRONMENT>: deploy all modules (infrastructure, docker images, applications)"
     echo "  - delete-cluster: delete cluster"
-    echo "  - delete-modules: delete cluster"
+    echo "  - delete-namespace <ENVIRONMENT>: delete namespace"
+    echo "  - delete-modules <ENVIRONMENT>: delete all modules"
     echo "  - test-unit <ENVIRONMENT>: launch unit tests"
     echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
 }
@@ -54,8 +60,9 @@ function setup-cluster(){
 
 function create-certificates(){
   echo "Create certificates"
-  create_ssl_certificates "vernemq" "$INFRASTRUCTURE_RELEASE-vernemq.$ENVIRONMENT.svc.cluster.local"
-  create_ssl_certificates "elasticsearch" "$INFRASTRUCTURE_RELEASE-elasticsearch-es-http"
+  create_ssl_certificates "api" "api.smart-agriculture.com"
+  #create_ssl_certificates "elasticsearch" "smart-agriculture-elasticsearch-es-http"
+  create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
 }
 
 function deploy-modules(){
@@ -63,30 +70,42 @@ function deploy-modules(){
     create_namespace "$ENVIRONMENT"
 
     ## Set helm repos
-    #set_helm_repos
+    set_helm_repos
 
-    ## Create Namespace, Elasticsearch, VerneMQ and Minio clusters
-    install_infrastructure "infrastructure" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE"
-
-    ## Deploy Knative
-    #deploy_knative
-    #visualize_knative_deployment
-    #echo $(get_istio_ingress_gateway_ip)
+    ## Create Secrets, Elasticsearch, VerneMQ and Minio clusters
+    install_infrastructure \
+      "$ENVIRONMENT" \
+      "$S3A_ACCESS_KEY" \
+      "$S3A_SECRET_KEY" \
+      "$MQTT_INDEXER_PASS" \
+      "$MQTT_NOTIFIER_PASS" \
+      "$MQTT_DEVICE_PASS"
 
     ## Set Docker login
-    #set_docker "$HOSTNAME"
+    set_docker "$HOSTNAME"
 
-    ## Deploy docker images
-    #deploy_serverless_docker_images "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
-    #deploy_spark_within_docker_image "$CONTAINER_REPOSITORY"
+    ## Deploy Put Jars in Minio image and release And alias in Elasticsearch
+    deploy_jars_alias_deployment_image_and_release \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION"
+
+    ## Deploy Application images and release
+    #deploy_application_images_and_release \
+    #      "$ENVIRONMENT" \
+    #      "$CONTAINER_REPOSITORY"  \
+    #      "$DOCKER_VERSION"
+
+    ## Deploy Spark and Historical jobs images and release
     k8_apiserver_url=$(get_k8_apiserver_url)
-    es_nodes=elasticsearch-master
-    es_port=9200
-    fs_s3a_endpoint="$INFRASTRUCTURE_RELEASE"-minio:9000
-    #deploy_historical_jobs_docker_images "$ENVIRONMENT" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION" "$k8_apiserver_url" "$es_nodes" "$es_port" "$fs_s3a_endpoint"
-
-    # Deploy applications
-    deploy_release_from_templates "code" "$ENVIRONMENT" "$INFRASTRUCTURE_RELEASE" "$CONTAINER_REPOSITORY" "$DOCKER_VERSION"
+    deploy_historical_jobs_docker_images_and_release \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION" \
+      "$k8_apiserver_url" \
+      "$S3A_ACCESS_KEY" \
+      "$S3A_SECRET_KEY" \
+      "$ES_TRUSTORE_PASS"
 }
 
 function delete-cluster(){
@@ -94,14 +113,15 @@ function delete-cluster(){
     delete_k8s_cluster "$CLUSTER_NAME"
 }
 
-function gen(){
-  create_ssl_certificates "dev" "elasticsearch" "smart-agriculture-elasticsearch"
-  get_ssl_certificates_in_base64 "elasticsearch" "tls.key"
+function delete-namespace(){
+    # Delete Namespace
+    delete_namespace "$ENVIRONMENT"
 }
 
 function delete-modules(){
-    # Delete Namespace
-    delete_namespace "$ENVIRONMENT"
+    # Delete Modules
+    delete_modules_code "$ENVIRONMENT"
+    delete_modules_infrastructure "$ENVIRONMENT"
 }
 
 function test-unit(){

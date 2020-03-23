@@ -22,12 +22,6 @@ before_script:
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
   - apk update && apk fetch openjdk8 && apk add openjdk8 maven openssl
   - gcloud components install kubectl
-  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-  - chmod 700 get_helm.sh
-  - ./get_helm.sh
-  - pip3 install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
 
 after_script:
   - rm /tmp/$CI_PIPELINE_ID.json
@@ -39,6 +33,9 @@ build:unit-test:
   except:
     - setup_cluster
   script:
+    - pip3 install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
 
@@ -66,8 +63,11 @@ dev:deploy:
   only:
     - dev
   script:
-    ## Get credentials from project
+    ## Get credentials from project for helm
     - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
+    - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+    - chmod 700 get_helm.sh
+    - ./get_helm.sh
     ## Execute deployment
     - chmod +x deploy/cicd_deploy.sh
     - ./deploy/cicd_deploy.sh

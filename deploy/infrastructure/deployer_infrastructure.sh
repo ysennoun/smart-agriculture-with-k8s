@@ -34,6 +34,7 @@ function enable_apis(){
 function create_k8s_cluster() {
     echo "Let's create k8s cluster"
     clusterName=$1
+    export CLOUDSDK_CORE_DISABLE_PROMPTS=1 #equivalent to --quiet if does not work
     gcloud beta container clusters create "$clusterName" \
       --addons=HorizontalPodAutoscaling,HttpLoadBalancing,Istio \
       --machine-type="$MACHINE_TYPE" \

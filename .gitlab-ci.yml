@@ -66,10 +66,9 @@ dev:deploy:
   allow_failure: false
   only:
     - dev
-  before_script:
+  script:
     - gcloud container clusters get-credentials $CLUSTER_NAME
     - ls -al $HOME/.kube
     - ls -al $HOME/.kube/config
-  script:
     - chmod +x deploy/cicd_deploy.sh
     - ./deploy/cicd_deploy.sh

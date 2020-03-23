@@ -1,4 +1,4 @@
-image: docke
+image: google/cloud-sdk:alpine
 
 stages:
   - unit_test

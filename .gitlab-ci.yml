@@ -18,13 +18,11 @@ cache:
 before_script:
   - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-  - apk update && apk fetch openjdk8 && apk add openjdk8
-  - apk add maven openssl
+  - apk update && apk fetch openjdk8 && apk add openjdk8 maven openssl
   - gcloud components install kubectl
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-  - chmod 700 get_helm.sh && \
+  - chmod 700 get_helm.sh
   - ./get_helm.sh
-  - ls -al $HOME/
   - pip3 install virtualenv
   - virtualenv venv
   - source venv/bin/activate
@@ -67,8 +65,8 @@ dev:deploy:
   only:
     - dev
   script:
+    ## Get credentials from project
     - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
-    - ls -al $HOME/.kube
-    - ls -al $HOME/.kube/config
+    ## Execute deployment
     - chmod +x deploy/cicd_deploy.sh
     - ./deploy/cicd_deploy.sh

@@ -24,8 +24,7 @@ before_script:
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
   - chmod 700 get_helm.sh && \
   - ./get_helm.sh
-  - ls -al $HOME/.kube
-  - ls -al $HOME/.kube/config
+  - ls -al $HOME/
   - pip3 install virtualenv
   - virtualenv venv
   - source venv/bin/activate

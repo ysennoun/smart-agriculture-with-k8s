@@ -67,7 +67,7 @@ dev:deploy:
   only:
     - dev
   script:
-    - gcloud container clusters get-credentials $CLUSTER_NAME
+    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE"
     - ls -al $HOME/.kube
     - ls -al $HOME/.kube/config
     - chmod +x deploy/cicd_deploy.sh

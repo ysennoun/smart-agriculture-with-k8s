@@ -32,9 +32,9 @@ deploy_jars_alias_deployment_image_and_release \
 
 # Deploy Application images and release
 deploy_application_images_and_release \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY"  \
-      "$DOCKER_VERSION"
+  "$ENVIRONMENT" \
+  "$CONTAINER_REPOSITORY"  \
+  "$DOCKER_VERSION"
 
 ## Deploy Spark and Historical jobs images and release
 k8_apiserver_url=$(get_k8_apiserver_url)

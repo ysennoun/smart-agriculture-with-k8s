@@ -1,4 +1,4 @@
-image: google/cloud-sdk:alpine
+image: docke
 
 stages:
   - unit_test
@@ -24,6 +24,8 @@ before_script:
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
   - chmod 700 get_helm.sh && \
   - ./get_helm.sh
+  - ls -al $HOME/.kube
+  - ls -al $HOME/.kube/config
   - pip3 install virtualenv
   - virtualenv venv
   - source venv/bin/activate
@@ -37,6 +39,7 @@ build:unit-test:
   allow_failure: false
   except:
     - setup_cluster
+    - dev
   script:
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
@@ -64,6 +67,10 @@ dev:deploy:
   allow_failure: false
   only:
     - dev
+  before_script:
+    - gcloud container clusters get-credentials $CLUSTER_NAME
+    - ls -al $HOME/.kube
+    - ls -al $HOME/.kube/config
   script:
     - chmod +x deploy/cicd_deploy.sh
     - ./deploy/cicd_deploy.sh

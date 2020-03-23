@@ -25,10 +25,17 @@ Create a GCP project by given a project-id
      
 ### Get private key file
 - Go to `IAM and Administration/quota/` (as indicated below)
+- Create a service account if it is not already done
 - Download private key file to be used in gitlab CICD. Indeed, store the content as global environment variable `PRIVATE_KEY_FILE_CONTENT`
 
 ![Private key file](documents/get-private-key-file.png)
-       
+
+### Give admin role to your service account
+- Go to `IAM and Administration/IAM/` (as indicated below)
+- Give role `owner` to your service account to be able to deploy with Gitlab CICD
+
+![Admin role for service account](documents/give_admin_role_to_service_account.png)
+     
 ## Architecture of IoT platform 
 
 First we divide our plateform into microservices, here below the representation:
@@ -47,15 +54,29 @@ The corresponding architecture we build to solve the previous representation is 
 
 ## Configure IoT platform 
 
-### Configure gcloud
+### Environment variables
 
-Modify in `.gitlab-ci.yaml` for deployment through CICD pipeline and `deploy/deployer.sh` for deployment through command lines 
+To deploy all application either with the Gitlab CICD pipeline (see the following picture to know where) or  with `deploy/deployer.sh` cli , you have to set the following environment variables:
 
     PROJECT_ID="your-project-id"
     COMPUTE_ZONE="your-selected-zone"  # for instance europe-west1-b
     COMPUTE_REGION="your-selected-region"  # for instance europe-west1
     CONTAINER_REPOSITORY="your docker repository"  # for instance eu.gcr.io
     PROJECT_NAME="your project name on gcp"  # for instance my-iot-platform
+    PROJECT_ID="your project id on gcp"  # for instance my-iot-platform
+    CLUSTER_NAME="name for the cluster" # for instance smart-agriculture-cluster
+    COMPUTE_ZONE="your-selected-zone" # for instance europe-west2-b
+    COMPUTE_REGION="your-selected-region" # for instance europe-west2
+    CONTAINER_REPOSITORY="your docker repository" # for instance eu.gcr.io/my-iot-platform
+    S3A_ACCESS_KEY="access-key-for-minio" # for instance AKIAIOSFODNN7EXBMJLE
+    S3A_SECRET_KEY="access-key-for-minio" # for instance wHalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    MQTT_INDEXER_PASS="password-for-user-indexer-into-vernemq" # for instance 3ywbCs2uB4
+    MQTT_NOTIFIER_PASS="password-for-user-notifier-into-vernemq"  # for instance qvQsSpg3tk
+    MQTT_DEVICE_PASS="password-for-user-device-into-vernemq"  # for instance 9Fex2nqdqe
+    ES_TRUSTORE_PASS="password-for-trustore-generated-for-spark-elasticsearch"  # for instance ChI2OfIpGuq0be5X
+
+![Set environment variables in Gitlab](documents/set_environment_variables_in_gitlab.png)
+
 
 ### Run unit tests for IoT Platform with command lines
 
@@ -77,27 +98,3 @@ Run the following script to install this IoT platform on your GCP Account:
 Run the following script to delete the IoT platform on your GCP Account:
 
     ./deploy/deployer.sh delete-all
-
-
-#########################################################
-1) change mqtt-client
-2) elasticsearch Does not have minimum availabil
-3) ingress error while evaluating the ingress spec: could not find port "80" in service "yse/kn-function-api" 
-4) limit IN_USE_ADDRESSES and limit cpu
-4) deploy with gitlab
-
-PLAN
-1) wait to get more external ip
-2) tests e2e
-3) check spark is working on k8s
-4) script send multiple data and check through chrome
-5) check if terraform can be used
-6) recheck is working with terraform
-7) deploy with gitlab
-8) monitoring solution
-
-
-8) develop web interface code
-9) add web code in deployment
-10) develop device code
-11) add device code in deployment

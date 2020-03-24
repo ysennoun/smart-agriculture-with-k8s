@@ -1,4 +1,12 @@
-image: google/cloud-sdk:alpine
+image: docker:stable
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  NO_PROXY: docker
+  DOCKER_DRIVER: overlay2
+
+services:
+  - docker:dind
 
 stages:
   - unit_test
@@ -9,18 +17,23 @@ stages:
 # Pip's cache doesn't store the python packages https://pip.pypa.io/en/stable/reference/pip_install/#caching
 # If you want to also cache the installed packages, you have to install them in a virtualenv and cache it as well.
 cache:
-  # cache per branch
+  # Cache per branch
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .cache/pip
     - venv/
 
 before_script:
+  - apk update && apk fetch openjdk8
+  - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
+  - alias python=python3
+  - curl https://sdk.cloud.google.com > install.sh # Download gcloud installer
+  - bash install.sh --disable-prompts # Install gcloud
+  - export PATH=$PATH:/root/google-cloud-sdk/bin # Add gcloud to PATH
   - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
-  - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 #equivalent to --quiet if does not work
+  - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
   - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
   - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-  - apk update && apk fetch openjdk8 && apk add openjdk8 maven openssl
   - gcloud components install kubectl
 
 after_script:
@@ -64,9 +77,9 @@ dev:deploy:
   only:
     - dev
   script:
-    - docker info
-    ## Get credentials from project for helm
+    ## Get credentials for helm
     - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
+    ## Install helm
     - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
     - chmod 700 get_helm.sh
     - ./get_helm.sh

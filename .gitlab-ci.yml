@@ -6,11 +6,6 @@ stages:
   - dev_deploy
 #  - dev_e2e_test
 
-variables:
-  DOCKER_HOST: tcp://docker:2375/
-  NO_PROXY: docker
-  DOCKER_DRIVER: overlay2
-
 # Pip's cache doesn't store the python packages https://pip.pypa.io/en/stable/reference/pip_install/#caching
 # If you want to also cache the installed packages, you have to install them in a virtualenv and cache it as well.
 cache:
@@ -36,6 +31,7 @@ build:unit-test:
   stage: unit_test
   allow_failure: false
   except:
+    - dev
     - setup_cluster
   script:
     - pip3 install virtualenv
@@ -63,14 +59,12 @@ dev:deploy:
   variables:
     ENVIRONMENT: dev
     DOCKER_VERSION: $CI_COMMIT_SHA
-  image: docker:stable
-  services:
-    - docker:dind
   stage: dev_deploy
   allow_failure: false
   only:
     - dev
   script:
+    - docker info
     ## Get credentials from project for helm
     - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3

@@ -166,5 +166,5 @@ function set_docker(){
 function get_ssl_certificates_in_base64(){
   server=$1
   file=$2
-  echo $(cat "$BASE_PATH/deploy/certificates/$server/$file" | base64)
+  echo $(cat "$BASE_PATH/deploy/certificates/$server/$file" | base64 | tr -d '\n')
 }

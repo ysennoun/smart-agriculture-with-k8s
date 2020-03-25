@@ -44,7 +44,6 @@ build:unit-test:
   stage: unit_test
   allow_failure: false
   except:
-    - dev
     - setup_cluster
   script:
     - pip3 install virtualenv

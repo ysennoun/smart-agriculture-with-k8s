@@ -187,7 +187,9 @@ function get_elasticsearch_truststore_content_in_base64(){
 
 function get_elastic_user_password(){
   env=$1
-
-  echo $(kubectl get secret smart-agriculture-elasticsearch-es-elastic-user -n "$env" \
-  -o=jsonpath='{.data.elastic}' | base64 --decode | tr -d '\n')
+  userPasswordAsBase64=$(kubectl get secret smart-agriculture-elasticsearch-es-elastic-user -n "$env" -o=jsonpath='{.data.elastic}')
+  echo "userPasswordAsBase64=$userPasswordAsBase64"
+  userPassword=$(echo "$userPasswordAsBase64" | base64 --decode)
+  echo "userPassword=$userPassword"
+  echo "$userPassword"
 }

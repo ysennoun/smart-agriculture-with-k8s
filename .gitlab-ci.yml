@@ -25,6 +25,7 @@ cache:
 
 before_script:
   - apk update && apk fetch openjdk8
+  - apk add --update coreutils # To update base64 in order to use option --decode
   - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
   - alias python=python3
   - curl https://sdk.cloud.google.com > install.sh # Download gcloud installer

@@ -27,7 +27,6 @@ CLUSTER_NAME="smart-agriculture-cluster"
 S3A_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE"
 S3A_SECRET_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 MQTT_INDEXER_PASS="3ywbCs2uB4"
-MQTT_NOTIFIER_PASS="qvQsSpg3tk"
 MQTT_DEVICE_PASS="9Fex2nqdqe"
 ES_TRUSTORE_PASS="ChI2OfIpGuq0be5X"
 
@@ -62,6 +61,7 @@ function create-certificates(){
   echo "Create certificates"
   create_ssl_certificates "api" "api.smart-agriculture.com"
   create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
+  create_ssl_certificates "minio" "smart-agriculture-minio.$ENVIRONMENT.svc.cluster.local"
 }
 
 function deploy-modules(){
@@ -69,7 +69,7 @@ function deploy-modules(){
     create_namespace "$ENVIRONMENT"
 
     ## Set helm repos
-    set_helm_repos
+    #set_helm_repos
 
     ## Create Secrets, Elasticsearch, VerneMQ and Minio clusters
     install_infrastructure \
@@ -77,34 +77,33 @@ function deploy-modules(){
       "$S3A_ACCESS_KEY" \
       "$S3A_SECRET_KEY" \
       "$MQTT_INDEXER_PASS" \
-      "$MQTT_NOTIFIER_PASS" \
       "$MQTT_DEVICE_PASS"
 
-    ## Set Docker login
-    set_docker "$HOSTNAME"
-
-    ## Deploy Put Jars in Minio image and release And alias in Elasticsearch
-    deploy_jars_alias_deployment_image_and_release \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION"
-
-    # Deploy Application images and release
-    deploy_application_images_and_release \
-          "$ENVIRONMENT" \
-          "$CONTAINER_REPOSITORY"  \
-          "$DOCKER_VERSION"
-
-    ## Deploy Spark and Historical jobs images and release
-    k8_apiserver_url=$(get_k8_apiserver_url)
-    deploy_historical_jobs_docker_images_and_release \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION" \
-      "$k8_apiserver_url" \
-      "$S3A_ACCESS_KEY" \
-      "$S3A_SECRET_KEY" \
-      "$ES_TRUSTORE_PASS"
+    ### Set Docker login
+    #set_docker "$HOSTNAME"
+#
+    ### Deploy Put Jars in Minio image and release And alias in Elasticsearch
+    #deploy_jars_alias_deployment_image_and_release \
+    #  "$ENVIRONMENT" \
+    #  "$CONTAINER_REPOSITORY" \
+    #  "$DOCKER_VERSION"
+#
+    ## Deploy Application images and release
+    #deploy_application_images_and_release \
+    #      "$ENVIRONMENT" \
+    #      "$CONTAINER_REPOSITORY"  \
+    #      "$DOCKER_VERSION"
+#
+    ### Deploy Spark and Historical jobs images and release
+    #k8_apiserver_url=$(get_k8_apiserver_url)
+    #deploy_historical_jobs_docker_images_and_release \
+    #  "$ENVIRONMENT" \
+    #  "$CONTAINER_REPOSITORY" \
+    #  "$DOCKER_VERSION" \
+    #  "$k8_apiserver_url" \
+    #  "$S3A_ACCESS_KEY" \
+    #  "$S3A_SECRET_KEY" \
+    #  "$ES_TRUSTORE_PASS"
 }
 
 function delete-cluster(){

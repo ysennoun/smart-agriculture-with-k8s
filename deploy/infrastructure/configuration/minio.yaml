@@ -46,8 +46,8 @@ defaultBucket:
   policy: none
   purge: false
 
-#tls:
-#  enabled: true
-#  certSecret: "minio-certificates-secret"
-#  publicCrt: tls.crt
-#  privateKey: tls.key
+tls:
+  enabled: true
+  certSecret: "minio-certificates-secret"
+  publicCrt: tls.crt
+  privateKey: tls.key

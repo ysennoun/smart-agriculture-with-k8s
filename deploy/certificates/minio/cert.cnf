@@ -11,12 +11,11 @@ countryName                 = FR
 stateOrProvinceName         = France
 localityName               = Paris
 organizationName           = Xebia
-commonName                 = APP_TO_REPLACE
+commonName                 = smart-agriculture-minio.dev.svc.cluster.local
 
 [ req_ext ]
 subjectAltName = @alt_names
 
 [ alt_names ]
-DNS.1 = APP_TO_REPLACE
-DNS.2 = smart-agriculture-vernemq
-IP.1 = 0.0.0.0
+DNS.1 = smart-agriculture-minio.dev.svc.cluster.local
+DNS.2 = smart-agriculture-minio

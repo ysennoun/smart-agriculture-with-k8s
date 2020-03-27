@@ -19,7 +19,7 @@ service:
   # NodePort - Listen to a port on nodes and forward to the service.
   # ClusterIP - Listen on the service internal to the cluster only.
   # LoadBalancer - Create a LoadBalancer in the cloud provider and forward to the service.
-  type: ClusterIP #LoadBalancer
+  type: LoadBalancer #ClusterIP #LoadBalancer
 #  clusterIP: 10.1.2.4
 #  externalIPs: []
 #  loadBalancerIP: 10.1.2.4
@@ -30,7 +30,7 @@ service:
     # This is the port used by nodes to expose the service
     nodePort: 1883
   mqtts:
-    enabled: true
+    enabled: false
     port: 8883
     # This is the port used by nodes to expose the service
     nodePort: 8883
@@ -158,15 +158,3 @@ additionalEnv:
     value: "on"
   - name: DOCKER_VERNEMQ_ACCEPT_EULA
     value: "yes"
-#  - name: DOCKER_VERNEMQ_MAX_CLIENT_ID_SIZE
-#    value: "100"
-#  - name: DOCKER_VERNEMQ_MAX_ONLINE_MESSAGES
-#    value: "10000"
-#  - name: DOCKER_VERNEMQ_MAX_OFFLINE_MESSAGES
-#    value: "-1"
-  - name: DOCKER_VERNEMQ_LISTENER__SSL__CAFILE
-    value: "/etc/ssl/vernemq/ca.crt"
-  - name: DOCKER_VERNEMQ_LISTENER__SSL__CERTFILE
-    value: "/etc/ssl/vernemq/tls.crt"
-  - name: DOCKER_VERNEMQ_LISTENER__SSL__KEYFILE
-    value: "/etc/ssl/vernemq/tls.key"

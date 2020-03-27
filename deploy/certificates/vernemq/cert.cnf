@@ -12,3 +12,11 @@ stateOrProvinceName         = France
 localityName               = Paris
 organizationName           = Xebia
 commonName                 = smart-agriculture-vernemq.dev.svc.cluster.local
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = smart-agriculture-vernemq.dev.svc.cluster.local
+DNS.2 = smart-agriculture-vernemq
+IP.1 = 35.197.237.167

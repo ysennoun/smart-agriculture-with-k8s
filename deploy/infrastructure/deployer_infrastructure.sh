@@ -7,6 +7,8 @@ SCRIPT_PATH=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
+. "$BASE_PATH/deploy/certificates/deployer_certificates.sh"
+
 ENVIRONMENT="$ENVIRONMENT"
 COMPUTE_ZONE="$COMPUTE_ZONE"
 MIN_NODES=1
@@ -89,16 +91,25 @@ function install_infrastructure(){
   s3aAccessKey=$2
   s3aSecretKey=$3
   mqttIndexerPass=$4
-  mqttNotifierPass=$5
-  mqttDevicePass=$6
+  mqttDevicePass=$5
 
-  echo "Get certificates"
+  echo "Install VerneMQ with LoadBalancer and TLS disabled"
+  helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
+    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq-tls-disabed.yaml"
+
+  echo "Retrieve VerneMQ LoadBalancer External IP address to update with TLS"
+  vernemqExternalIp=$(get_vernemq_external_ip "$env")
+  refresh_vernemq_ssl_certificates "$env" "$vernemqExternalIp"
+
+  echo "Get certificates with new certificate for vernemq"
   mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
   mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
   mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
   ingressCA=$(get_ssl_certificates_in_base64 "api" "ca.crt")
   ingressTLS=$(get_ssl_certificates_in_base64 "api" "tls.crt")
   ingressKey=$(get_ssl_certificates_in_base64 "api" "tls.key")
+  minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
+  minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
 
   echo "Install Secrets, Elasticsearch"
   kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
@@ -113,29 +124,31 @@ function install_infrastructure(){
     --set ingressCA="$ingressCA" \
     --set ingressTLS="$ingressTLS" \
     --set ingressKey="$ingressKey" \
+    --set minioTLS="$minioTLS" \
+    --set minioKey="$minioKey" \
     --set s3aAccessKey="$s3aAccessKey" \
     --set s3aSecretKey="$s3aSecretKey" \
     --set mqttIndexerPassBase64="$(echo mqttIndexerPass | base64)" \
     --set mqttNotifierPassBase64="$(echo mqttNotifierPass | base64)"
 
+  echo "Upgrade VerneMQ with new SSL certificate and new users"
+  helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
+    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq-tls-enabed.yaml" \
+    --set additionalEnv[0].name=DOCKER_VERNEMQ_USER_indexer \
+    --set additionalEnv[0].value="$mqttIndexerPass" \
+    --set additionalEnv[1].name=DOCKER_VERNEMQ_USER_device \
+    --set additionalEnv[1].value="$mqttDevicePass"
+
+  #echo "Install Minio"
+  #helm upgrade --install --namespace "$env" "smart-agriculture-minio" \
+  #  -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
+  #  --set accessKey="$s3aAccessKey" \
+  #  --set secretKey="$s3aSecretKey" \
+  # stable/minio
 
   #echo "Install Nginx Ingress"
   #helm upgrade --install --namespace "$env" "smart-agriculture-nginx-ingress" \
   # stable/nginx-ingress --set rbac.create=true
-
-  echo "Install VerneMQ"
-  helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
-    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq.yaml" \
-    --set env.DOCKER_VERNEMQ_USER_indexer="$mqttIndexerPass" \
-    --set env.DOCKER_VERNEMQ_USER_notifier="$mqttNotifierPass" \
-    --set env.DOCKER_VERNEMQ_USER_device="$mqttDevicePass"
-
-  echo "Install Minio"
-  helm upgrade --install --namespace "$env" "smart-agriculture-minio" \
-    -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
-    --set accessKey="$s3aAccessKey" \
-    --set secretKey="$s3aSecretKey" \
-   stable/minio
 }
 
 function delete_modules_infrastructure(){
@@ -167,4 +180,35 @@ function get_ssl_certificates_in_base64(){
   server=$1
   file=$2
   echo $(cat "$BASE_PATH/deploy/certificates/$server/$file" | base64 | tr -d '\n')
+}
+
+function get_vernemq_external_ip(){
+  env=$1
+  timeout=600 # 10 minutes
+  isExternalIpFound=false
+  while [ $timeout -gt 0 ]
+  do
+    externalIp=$(kubectl get service -n "$env" smart-agriculture-vernemq -o  jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    if [ -z "$externalIp" ]
+    then
+          # "External Ip is pending"
+          sleep 10
+          timeout=`expr $timeout - 10`
+    else
+          isExternalIpFound=true
+          break
+    fi
+  done
+
+  if [ "$isExternalIpFound" = false ] ; then
+    echo "External Ip for LoadBalancer can not be found"
+    exit 1
+  fi
+  echo "$externalIp"
+}
+
+function refresh_vernemq_ssl_certificates(){
+  env=$1
+  externalIp=$2
+  create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$env.svc.cluster.local" "$externalIp"
 }

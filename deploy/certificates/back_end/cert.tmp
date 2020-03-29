@@ -11,4 +11,11 @@ countryName                 = FR
 stateOrProvinceName         = France
 localityName               = Paris
 organizationName           = Xebia
-commonName                 = api.smart-agriculture.com
+commonName                 = APP_TO_REPLACE
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = APP_TO_REPLACE
+DNS.2 = back-end

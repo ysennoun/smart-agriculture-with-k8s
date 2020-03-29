@@ -36,18 +36,14 @@ object MainEsToParquet extends Logging{
 
   def runEsToParquet(path: DataPath)(implicit spark: SparkSession, sc: SparkContext)={
     logger.debug("Run ESToParquet")
-    val startTimestampToEvaluate = JobProcess.getStartTimestamp(path.esAliasForHistoricalJobs)
-    startTimestampToEvaluate match {
-      case Right(startTimestamp) =>
-        val recentRecordsToEvaluate = JobProcess.getRecentRecords(path.esAliasForIncomingData, startTimestamp)
-        recentRecordsToEvaluate match {
-          case Right(recentRecords) =>
-            saveDataFrameInObjectStore(recentRecords, path.s3PreparedDataPath)
-            val mostRecentRecord = JobProcess.getMostRecentRecord(recentRecords, "timestamp")
-            saveDataFrameInElasticsearch(mostRecentRecord, path.esAliasForHistoricalJobs)
-          case Left(exception) =>
-            logger.info(exception.getMessage)
-        }
+    val startTimestamp = JobProcess.getStartTimestamp(path.esAliasForHistoricalJobs)
+    logger.info(s"startTimestamp = $startTimestamp")
+    val recentRecordsToEvaluate = JobProcess.getRecentRecords(path.esAliasForIncomingData, startTimestamp)
+    recentRecordsToEvaluate match {
+      case Right(recentRecords) =>
+        saveDataFrameInObjectStore(recentRecords, path.s3PreparedDataPath)
+        val mostRecentRecord = JobProcess.getMostRecentRecord(recentRecords, "timestamp")
+        saveDataFrameInElasticsearch(mostRecentRecord, path.esAliasForHistoricalJobs)
       case Left(exception) =>
         logger.info(exception.getMessage)
     }

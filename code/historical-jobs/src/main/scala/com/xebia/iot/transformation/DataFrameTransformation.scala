@@ -19,8 +19,9 @@ object DataFrameTransformation  extends Logging {
 
   def saveDataFrameInObjectStore(dataFrame: DataFrame, outputParquetPath: String)(implicit spark: SparkSession)={
     logger.debug(s"Save DataFrame in Object Store, path=$outputParquetPath")
+
     dataFrame
-      .coalesce(10)
+      .coalesce(3)
       .write
       .mode(SaveMode.Append)
       .partitionBy("year", "month", "day")

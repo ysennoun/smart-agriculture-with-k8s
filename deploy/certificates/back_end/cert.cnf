@@ -11,4 +11,11 @@ countryName                 = FR
 stateOrProvinceName         = France
 localityName               = Paris
 organizationName           = Xebia
-commonName                 = APP_TO_REPLACE
+commonName                 = back-end.dev.svc.cluster.local
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = back-end.dev.svc.cluster.local
+DNS.2 = back-end

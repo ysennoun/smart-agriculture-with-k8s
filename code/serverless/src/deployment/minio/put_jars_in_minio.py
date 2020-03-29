@@ -53,4 +53,5 @@ if __name__ == "__main__":
         put_object(minio_client, bucket_name)
     except Exception as ex:
         logger.error("Put jars in minio failed", extra={"exception": str(ex)})
+        raise ex
 

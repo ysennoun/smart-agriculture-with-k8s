@@ -19,7 +19,7 @@ spec:
          - name: ELASTICSEARCH_PASSWORD_PATH
            value: "/etc/credentials/elasticsearch/elastic"
          - name: ES_ALIAS_LIST
-           value: "smart-agriculture,historical-jobs"
+           value: "iot-farming,iot-farming-historical-jobs"
       volumeMounts:
        - name: elasticsearch-certificates
          mountPath: /etc/ssl/elasticsearch/tls.crt

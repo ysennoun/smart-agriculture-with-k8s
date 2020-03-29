@@ -1,6 +1,6 @@
 import ssl
 from common.utils.logger import Logger
-from common.utils.date import get_current_date_as_string
+from common.utils.date import get_current_date
 from application.indexer import env
 
 
@@ -17,7 +17,7 @@ class DeviceHandler:
         self.es_alias = es_alias
 
     def index(self, body: str):
-        es_index = f"{self.es_alias}-{get_current_date_as_string(date_format=self.DATE_FORMAT)}"
+        es_index = f"{self.es_alias}-{get_current_date(date_format=self.DATE_FORMAT)}"
         self.es_client.indices.put_alias(index=es_index, name=self.es_alias, ignore=[400, 404])
         return self.es_client.index(index=es_index, body=body)
 

@@ -1,9 +1,10 @@
 import unittest
-from unittest.mock import Mock, MagicMock, patch
-from application.api import api_handler
+from unittest.mock import Mock
+from common.utils.date import get_current_date, get_date_at_midnight
+from application.back_end.handlers.back_end_service import BackEndService, QueryArguments
 
 
-class TestApiHandler(unittest.TestCase):
+class TestBackEndService(unittest.TestCase):
 
     def setUp(self):
         self.es_client = Mock()
@@ -12,21 +13,21 @@ class TestApiHandler(unittest.TestCase):
         ######### Given #########
 
         request = Mock()
-        request.args.get = Mock(return_value="11")
+        request.get = Mock(return_value=11)
 
         ######### When #########
-        offset, max_results = api_handler.get_offset_and_max_results(request)
+        query_arguments = QueryArguments.fromDict(request)
 
         ######### Then #########
-        self.assertEqual(offset, 11)
-        self.assertEqual(max_results, 11)
+        self.assertEqual(query_arguments.offset, 11)
+        self.assertEqual(query_arguments.max_results, 11)
 
     def test_get_last_value_query(self):
         ######### Given #########
         device = "device"
 
         ######### When #########
-        result = api_handler.get_last_value_query(device)
+        result = BackEndService.get_last_value_query(device)
         ######### Then #########
         expected_result = {
             "query": {
@@ -48,15 +49,19 @@ class TestApiHandler(unittest.TestCase):
     def test_get_timeseries_query(self):
         ######### Given #########
         device = "device"
-        offset = 0
-        max_results = 2
+        query_arguments = QueryArguments(
+            offset=0,
+            max_results=2,
+            from_date=get_date_at_midnight(),
+            to_date=get_current_date()
+        )
 
         ######### When #########
-        result = api_handler.get_timeseries_query(device, offset, max_results)
+        result = BackEndService.get_timeseries_query(device, query_arguments)
 
         ######### Then #########
-        self.assertEqual(result["from"], offset)
-        self.assertEqual(result["size"], max_results)
+        self.assertEqual(result["from"], query_arguments.offset)
+        self.assertEqual(result["size"], query_arguments.max_results)
         self.assertEqual(result["query"]["bool"]["must"][0]["term"], {"device": device})
 
     def test_get_search_result(self):
@@ -74,12 +79,21 @@ class TestApiHandler(unittest.TestCase):
             }
         }
         self.es_client.search = Mock(return_value=hits)
+        back_end_service = BackEndService(self.es_client, "es_alias")
 
         ######### When #########
-        search_result = api_handler.get_search_result(self.es_client, "es_alias", {}, 0, 2)
+        search_result = back_end_service.get_search_result(
+            {},
+            QueryArguments(
+                offset=0,
+                max_results=2,
+                from_date=get_date_at_midnight(),
+                to_date=get_current_date()
+            )
+        )
 
         ######### Then #########
-        expected_search_result = '{"rows": [{"id": 1, "device": "device1"}, {"id": 2, "device": "device2"}], "nextToken": 2, "maxResults": 2}'
+        expected_search_result = {"rows": [{"id": 1, "device": "device1"}, {"id": 2, "device": "device2"}], "next_token": 1}
         self.assertEqual(search_result, expected_search_result)
 
     def test_get_last_value(self):
@@ -97,18 +111,21 @@ class TestApiHandler(unittest.TestCase):
             }
         }
         self.es_client.search = Mock(return_value=hits)
+        back_end_service = BackEndService(self.es_client, "es_alias")
 
         ######### When #########
-        last_value = api_handler.get_last_value(self.es_client, "es_alias", device)
+        last_value = back_end_service.get_last_value(device)
 
         ######### Then #########
-        self.assertEqual(last_value.status_code, 200)
-        self.assertEqual(last_value.json["rows"][0], {"id": 1, "device": device})
+        self.assertEqual(last_value, {"rows": [{"id": 1, "device": "device"}]})
 
-    @patch("application.api.api_handler.get_offset_and_max_results")
-    def test_get_timeseries(self, get_offset_and_max_results_mock: MagicMock):
+    def test_get_timeseries(self):
         ######### Given #########
         device = "device"
+        arguments = {
+            "next_token": 0,
+            "max_results": 2
+        }
         hits = {
             "hits": {
                 "hits":
@@ -121,14 +138,13 @@ class TestApiHandler(unittest.TestCase):
             }
         }
         self.es_client.search = Mock(return_value=hits)
-        get_offset_and_max_results_mock.return_value = (0, 2)
+        back_end_service = BackEndService(self.es_client, "es_alias")
 
         ######### When #########
-        timeseries = api_handler.get_timeseries(self.es_client, "es_alias", device)
+        timeseries = back_end_service.get_timeseries(device, arguments)
 
         ######### Then #########
-        self.assertEqual(timeseries.status_code, 200)
-        self.assertEqual(timeseries.json["rows"][0], {"id": 1, "device": device})
+        self.assertEqual(timeseries, {"rows": [{"id": 1, "device": "device"}], "next_token": 1})
 
 
 if __name__ == '__main__':

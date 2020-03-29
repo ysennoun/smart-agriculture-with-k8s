@@ -12,6 +12,9 @@ mcImage:
 
 mode: standalone
 
+existingSecret: ""
+accessKey: "TO_BE_REPLACED"
+secretKey: "TO_BE_REPLACED"
 certsPath: "/etc/minio/certs/"
 configPathmc: "/etc/minio/mc/"
 mountPath: "/export"
@@ -46,8 +49,8 @@ defaultBucket:
   policy: none
   purge: false
 
-tls:
-  enabled: true
-  certSecret: "minio-certificates-secret"
-  publicCrt: tls.crt
-  privateKey: tls.key
+#tls:
+#  enabled: false
+#  certSecret: "minio-certificates-secret"
+#  publicCrt: tls.crt
+#  privateKey: tls.key

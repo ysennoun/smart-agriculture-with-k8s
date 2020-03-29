@@ -1,15 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime
 
 DEFAULT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-def get_current_date_as_string(date_format: str=DEFAULT_DATE_FORMAT) -> str:
+def get_current_date(date_format: str = DEFAULT_DATE_FORMAT) -> str:
     return f"{datetime.now():{date_format}}"
 
 
-def get_current_timestamp() -> int:
-    return int(datetime.now().timestamp())
-
-
-def get_past_timestamp(days: int = 7) -> int: # by default it is 7 days
-    return int(datetime.now().timestamp() - timedelta(days=days).total_seconds())
+def get_date_at_midnight(date_format: str = DEFAULT_DATE_FORMAT) -> str:
+    date_today = date.today()
+    date_at_midnight = datetime.combine(date_today, datetime.min.time())
+    return f"{date_at_midnight:{date_format}}"

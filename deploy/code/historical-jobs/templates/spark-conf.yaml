@@ -19,7 +19,12 @@ stringData:
     spark.executor.instances                2
     spark.kubernetes.namespace              {{ .Values.namespace }}
     spark.kubernetes.authenticate.driver.serviceAccountName spark-sa
+    spark.yarn.jars                         file:///opt/spark/jars/*.jar
+    spark.hadoop.fs.s3a.fast.upload         true
     spark.hadoop.fs.s3a.endpoint            http://smart-agriculture-minio:9000
+    spark.hadoop.fs.s3.awsAccessKeyId       {{ .Values.s3aAccessKey }}
+    spark.hadoop.fs.s3.awsSecretAccessKey   {{ .Values.s3aSecretKey }}
+    spark.hadoop.fs.s3.impl                 org.apache.hadoop.fs.s3a.S3AFileSystem
     spark.hadoop.fs.s3a.access.key          {{ .Values.s3aAccessKey }}
     spark.hadoop.fs.s3a.secret.key          {{ .Values.s3aSecretKey }}
     spark.hadoop.fs.s3a.path.style.access   true

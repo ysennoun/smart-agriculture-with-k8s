@@ -92,6 +92,7 @@ function install_infrastructure(){
   s3aSecretKey=$3
   mqttIndexerPass=$4
   mqttDevicePass=$5
+  backEndUserPass=$6
 
   echo "Install VerneMQ with LoadBalancer and TLS disabled"
   helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
@@ -105,11 +106,10 @@ function install_infrastructure(){
   mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
   mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
   mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
-  ingressCA=$(get_ssl_certificates_in_base64 "api" "ca.crt")
-  ingressTLS=$(get_ssl_certificates_in_base64 "api" "tls.crt")
-  ingressKey=$(get_ssl_certificates_in_base64 "api" "tls.key")
-  minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
-  minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
+  backEndTLS=$(get_ssl_certificates_in_base64 "back_end" "tls.crt")
+  backEndKey=$(get_ssl_certificates_in_base64 "back_end" "tls.key")
+  #minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
+  #minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
 
   echo "Install Secrets, Elasticsearch"
   kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
@@ -121,15 +121,14 @@ function install_infrastructure(){
     --set mqttCA="$mqttCA" \
     --set mqttTLS="$mqttTLS" \
     --set mqttKey="$mqttKey" \
-    --set ingressCA="$ingressCA" \
-    --set ingressTLS="$ingressTLS" \
-    --set ingressKey="$ingressKey" \
-    --set minioTLS="$minioTLS" \
-    --set minioKey="$minioKey" \
+    --set backEndTLS="$backEndTLS" \
+    --set backEndKey="$backEndKey" \
     --set s3aAccessKey="$s3aAccessKey" \
     --set s3aSecretKey="$s3aSecretKey" \
-    --set mqttIndexerPassBase64="$(echo mqttIndexerPass | base64)" \
-    --set mqttNotifierPassBase64="$(echo mqttNotifierPass | base64)"
+    --set mqttIndexerPassBase64="$(echo "$mqttIndexerPass" | base64)" \
+    --set backEndUserPassBase64="$(echo "$backEndUserPass" | base64)"
+   #--set minioTLS="$minioTLS" \
+    #--set minioKey="$minioKey" \
 
   echo "Upgrade VerneMQ with new SSL certificate and new users"
   helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
@@ -139,16 +138,12 @@ function install_infrastructure(){
     --set additionalEnv[1].name=DOCKER_VERNEMQ_USER_device \
     --set additionalEnv[1].value="$mqttDevicePass"
 
-  #echo "Install Minio"
-  #helm upgrade --install --namespace "$env" "smart-agriculture-minio" \
-  #  -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
-  #  --set accessKey="$s3aAccessKey" \
-  #  --set secretKey="$s3aSecretKey" \
-  # stable/minio
-
-  #echo "Install Nginx Ingress"
-  #helm upgrade --install --namespace "$env" "smart-agriculture-nginx-ingress" \
-  # stable/nginx-ingress --set rbac.create=true
+  echo "Install Minio"
+  helm upgrade --install --namespace "$env" "smart-agriculture-minio" \
+    -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
+    --set accessKey="$s3aAccessKey" \
+    --set secretKey="$s3aSecretKey" \
+   stable/minio
 }
 
 function delete_modules_infrastructure(){

@@ -40,7 +40,7 @@ spec:
             - name: ELASTICSEARCH_PASSWORD_PATH
               value: "/etc/credentials/elasticsearch/elastic"
             - name: ES_ALIAS
-              value: "smart-agriculture"
+              value: "iot-farming"
           ports:
           - containerPort: 80
           resources:

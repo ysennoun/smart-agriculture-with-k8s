@@ -17,8 +17,8 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 ACTION=$1
 ENVIRONMENT=$2
 export PROJECT_ID="ysennoun-iot" #"your-project-id"
-export COMPUTE_ZONE="europe-west2-b" #"your-selected-zone"
-export COMPUTE_REGION="europe-west2" #"your-selected-region"
+export COMPUTE_ZONE="europe-west1-b" #"your-selected-zone"
+export COMPUTE_REGION="europe-west1" #"your-selected-region"
 export HOSTNAME="eu.gcr.io"
 export CONTAINER_REPOSITORY="$HOSTNAME/$PROJECT_ID" #"your docker repository"
 export PROJECT_NAME="ysennoun-iot" #"your project name on gcp"
@@ -28,6 +28,7 @@ S3A_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE"
 S3A_SECRET_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 MQTT_INDEXER_PASS="3ywbCs2uB4"
 MQTT_DEVICE_PASS="9Fex2nqdqe"
+BACK_END_USER_PASS="4hxGaN34KQ"
 ES_TRUSTORE_PASS="ChI2OfIpGuq0be5X"
 
 
@@ -59,8 +60,8 @@ function setup-cluster(){
 
 function create-certificates(){
   echo "Create certificates"
-  create_ssl_certificates "api" "api.smart-agriculture.com"
-  create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
+  create_ssl_certificates "back_end" "back-end.$ENVIRONMENT.svc.cluster.local"
+  #create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
   create_ssl_certificates "minio" "smart-agriculture-minio.$ENVIRONMENT.svc.cluster.local"
 }
 
@@ -69,41 +70,42 @@ function deploy-modules(){
     create_namespace "$ENVIRONMENT"
 
     ## Set helm repos
-    #set_helm_repos
+    set_helm_repos
 
-    ## Create Secrets, Elasticsearch, VerneMQ and Minio clusters
+    # Create Secrets, Elasticsearch, VerneMQ and Minio clusters
     install_infrastructure \
       "$ENVIRONMENT" \
       "$S3A_ACCESS_KEY" \
       "$S3A_SECRET_KEY" \
       "$MQTT_INDEXER_PASS" \
-      "$MQTT_DEVICE_PASS"
+      "$MQTT_DEVICE_PASS" \
+      "$BACK_END_USER_PASS"
 
-    ### Set Docker login
-    #set_docker "$HOSTNAME"
-#
-    ### Deploy Put Jars in Minio image and release And alias in Elasticsearch
-    #deploy_jars_alias_deployment_image_and_release \
-    #  "$ENVIRONMENT" \
-    #  "$CONTAINER_REPOSITORY" \
-    #  "$DOCKER_VERSION"
-#
-    ## Deploy Application images and release
-    #deploy_application_images_and_release \
-    #      "$ENVIRONMENT" \
-    #      "$CONTAINER_REPOSITORY"  \
-    #      "$DOCKER_VERSION"
-#
-    ### Deploy Spark and Historical jobs images and release
-    #k8_apiserver_url=$(get_k8_apiserver_url)
-    #deploy_historical_jobs_docker_images_and_release \
-    #  "$ENVIRONMENT" \
-    #  "$CONTAINER_REPOSITORY" \
-    #  "$DOCKER_VERSION" \
-    #  "$k8_apiserver_url" \
-    #  "$S3A_ACCESS_KEY" \
-    #  "$S3A_SECRET_KEY" \
-    #  "$ES_TRUSTORE_PASS"
+    ## Set Docker login
+    set_docker "$HOSTNAME"
+
+    # Deploy Put Jars in Minio image and release And alias in Elasticsearch
+    deploy_jars_alias_deployment_image_and_release \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION"
+
+    # Deploy Application images and release
+    deploy_application_images_and_release \
+          "$ENVIRONMENT" \
+          "$CONTAINER_REPOSITORY"  \
+          "$DOCKER_VERSION"
+
+    # Deploy Spark and Historical jobs images and release
+    k8_apiserver_url=$(get_k8_apiserver_url)
+    deploy_historical_jobs_docker_images_and_release \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION" \
+      "$k8_apiserver_url" \
+      "$S3A_ACCESS_KEY" \
+      "$S3A_SECRET_KEY" \
+      "$ES_TRUSTORE_PASS"
 }
 
 function delete-cluster(){

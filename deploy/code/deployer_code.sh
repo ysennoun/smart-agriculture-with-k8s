@@ -83,9 +83,9 @@ function deploy_application_images_and_release(){
     dockerVersion=$3
 
     # Deploy docker images
-    docker build -f "$BASE_PATH/deploy/code/serverless/application/dockerfiles/api/Dockerfile-api" \
-      -t "$containerRepository/api:$dockerVersion" .
-    docker push "$containerRepository/api:$dockerVersion"
+    docker build -f "$BASE_PATH/deploy/code/serverless/application/dockerfiles/back_end/Dockerfile-back-end" \
+      -t "$containerRepository/back-end:$dockerVersion" .
+    docker push "$containerRepository/back-end:$dockerVersion"
 
     docker build -f "$BASE_PATH/deploy/code/serverless/application/dockerfiles/indexer/Dockerfile-indexer" \
       -t "$containerRepository/indexer:$dockerVersion" .
@@ -113,8 +113,8 @@ function deploy_historical_jobs_docker_images_and_release(){
     esNodes="https://smart-agriculture-elasticsearch-es-http"
     esPort=9200
     fsS3aEndpoint="smart-agriculture-minio:9000"
-    esAliasIncomingData="smart-agriculture"
-    esAliasForHistoricalJobs="historical-jobs"
+    esAliasIncomingData="iot-farming"
+    esAliasForHistoricalJobs="iot-farming-historical-jobs"
     esTruststoreContent=$(get_elasticsearch_truststore_content_in_base64 "$namespace" "$esTruststorePass")
     esUserPass=$(get_elastic_user_password "$namespace")
 

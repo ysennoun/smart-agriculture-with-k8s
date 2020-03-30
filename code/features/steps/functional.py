@@ -10,9 +10,9 @@ def step_impl(context, device, temperature, topic):
     iot_data = json.dumps({
         "device": device,
         "timestamp": utils.get_current_timestamp(),
-        "temperature": temperature,
-        "pressure": "10",
-        "moisture": "10"
+        "temperature": int(temperature),
+        "pressure": 10,
+        "moisture": 10
     })
     core_v1 = utils.get_core_v1()
     mqtt_pod_manifest = utils.get_mqtt_pod_manifest("mqtt_pod", iot_data, topic)

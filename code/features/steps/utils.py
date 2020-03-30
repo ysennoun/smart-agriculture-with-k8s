@@ -9,7 +9,7 @@ from steps import variables as var
 
 
 def get_current_timestamp() -> str:
-    return f'{datetime.now():"%Y-%m-%dT%H:%M:%SZ"}'
+    return f"{datetime.now():%Y-%m-%dT%H:%M:%SZ}"
 
 
 def get_core_v1():
@@ -44,7 +44,7 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: dict, mqtt_topic: di
     mqtt_broker_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
 
     mqtt_cmd = f'mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 ' \
-               f'-t "{mqtt_topic}" -m {json.dumps(mqtt_payload)} --cafile /etc/ssl/vernemq/tls.crt'
+               f'-t "{mqtt_topic}" -m {mqtt_payload} --cafile /etc/ssl/vernemq/tls.crt'
 
     mqtt_pod_manifest = {
         'apiVersion': 'v1',

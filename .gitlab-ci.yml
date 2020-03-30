@@ -78,7 +78,7 @@ dev:deploy:
     #- dev
     - master
   script:
-    ## Get credentials for helm
+    ## Get credentials for kubectl and helm
     - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     ## Install helm
     - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -97,6 +97,8 @@ dev:e2e-test:
     - dev
     - master
   script:
+    ## Get credentials for kubectl
+    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     - cat ~/.kube/config
     - chmod +x deploy/cicd_e2e_test.sh
     - ./deploy/cicd_e2e_test.sh

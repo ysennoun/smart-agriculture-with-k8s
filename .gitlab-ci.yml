@@ -45,7 +45,7 @@ build:unit-test:
   stage: unit_test
   allow_failure: false
   except:
-    - setup_cluster
+    - setup-cluster
   script:
     - pip3 install virtualenv
     - virtualenv venv
@@ -54,13 +54,13 @@ build:unit-test:
     - ./deploy/cicd_unit_test.sh
 
 ########################################################################################################################
-# SETUP CLUSTER (Create branch setup_cluster at the beginning to create k8s cluster)
+# SETUP CLUSTER (Create branch setup-cluster at the beginning to create k8s cluster)
 ########################################################################################################################
 setup_cluster:deploy:
   stage: setup_cluster_deploy
   allow_failure: false
   only:
-    - setup_cluster
+    - setup-cluster
   script:
     - chmod +x deploy/cicd_setup_cluster_deploy.sh
     - ./deploy/cicd_setup_cluster_deploy.sh

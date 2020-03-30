@@ -46,7 +46,7 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: dict, mqtt_topic: di
     mqtt_cmd = f'mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 ' \
                f'-t "{mqtt_topic}" -m {json.dumps(mqtt_payload)} --cafile /etc/ssl/vernemq/tls.crt'
 
-    return {
+    mqtt_pod_manifest = {
         'apiVersion': 'v1',
         'kind': 'Pod',
         'metadata': {
@@ -77,6 +77,9 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: dict, mqtt_topic: di
             'restartPolicy': 'Never'
         }
     }
+
+    print(f"mqtt_pod_manifest: {mqtt_pod_manifest}")
+    return mqtt_pod_manifest
 
 
 def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:

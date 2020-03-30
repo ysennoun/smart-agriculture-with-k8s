@@ -98,8 +98,6 @@ dev:e2e-test:
     - dev
     - master
   script:
-    - pip3 install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
+    - alias pip=pip3
     - chmod +x deploy/cicd_e2e_test.sh
     - ./deploy/cicd_e2e_test.sh

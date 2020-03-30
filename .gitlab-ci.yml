@@ -40,7 +40,7 @@ before_script:
 after_script:
   - rm /tmp/$CI_PIPELINE_ID.json
 
-# Run on all branches
+# Run on all branches except setup-cluster
 build:unit-test:
   stage: unit_test
   allow_failure: false

@@ -99,4 +99,4 @@ dev:e2e-test:
     - master
   script:
     - chmod +x deploy/cicd_e2e_test.sh
-    - ./deploy/cicd_e2e.sh
+    - ./deploy/cicd_e2e_test.sh

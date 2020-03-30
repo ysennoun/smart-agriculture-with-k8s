@@ -27,7 +27,9 @@ before_script:
   - apk update && apk fetch openjdk8
   - apk add --update coreutils # To update base64 in order to use option --decode
   - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
-  - alias python=python3
+  - pip3 install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
   - curl https://sdk.cloud.google.com > install.sh # Download gcloud installer
   - bash install.sh --disable-prompts # Install gcloud
   - export PATH=$PATH:/root/google-cloud-sdk/bin # Add gcloud to PATH
@@ -48,9 +50,6 @@ build:unit-test:
     - dev
     - setup-cluster
   script:
-    - pip3 install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
 
@@ -98,6 +97,5 @@ dev:e2e-test:
     - dev
     - master
   script:
-    - alias pip=pip3
     - chmod +x deploy/cicd_e2e_test.sh
     - ./deploy/cicd_e2e_test.sh

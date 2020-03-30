@@ -45,6 +45,7 @@ build:unit-test:
   stage: unit_test
   allow_failure: false
   except:
+    - dev
     - setup-cluster
   script:
     - pip3 install virtualenv
@@ -75,7 +76,7 @@ dev:deploy:
   stage: dev_deploy
   allow_failure: false
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Get credentials for helm
@@ -97,5 +98,5 @@ dev:e2e-test:
     - dev
     - master
   script:
-    - chmod +x deploy/cicd_e2e.sh
+    - chmod +x deploy/cicd_e2e_test.sh
     - ./deploy/cicd_e2e.sh

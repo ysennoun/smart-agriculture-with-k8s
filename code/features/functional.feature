@@ -1,4 +1,4 @@
-Feature: showing off behave
+Feature: Smart Agriculture
 
   Scenario: Send a IoT message to the platform and request through API the last value
      Given An IoT message is sent to the platform for device R2D1 with temperature 11 in topic iot/farming

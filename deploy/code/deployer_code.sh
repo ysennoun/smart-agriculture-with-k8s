@@ -65,7 +65,7 @@ function deploy_jars_alias_deployment_image_and_release(){
 
     # Deploy release
     helm upgrade --install --debug \
-      "jars-alias-deployment" \
+      "smart-agriculture-jars-alias-deployment" \
       "$BASE_PATH/deploy/code/serverless/deployment" \
       --namespace "$namespace" \
       --set namespace="$namespace" \
@@ -93,7 +93,7 @@ function deploy_application_images_and_release(){
 
     # Deploy release
     helm upgrade --install --debug \
-      "serverless" \
+      "smart-agriculture-serverless" \
       "$BASE_PATH/deploy/code/serverless/application" \
       --namespace "$namespace" \
       --set namespace="$namespace" \
@@ -145,7 +145,7 @@ function deploy_historical_jobs_docker_images_and_release(){
 
     # Deploy release
     helm upgrade --install --debug \
-    "historical-jobs" \
+    "smart-agriculture-historical-jobs" \
     "$BASE_PATH/deploy/code/historical-jobs" \
     --namespace "$namespace" \
     --set namespace="$namespace" \
@@ -161,8 +161,8 @@ function deploy_historical_jobs_docker_images_and_release(){
 function delete_modules_code(){
   env=$1
   echo "Delete Modules code"
-  helm del "serverless" --namespace "$env"
-  helm del "historical-jobs" --namespace "$env"
+  helm del "smart-agriculture-serverless" --namespace "$env"
+  helm del "smart-agriculture-historical-jobs" --namespace "$env"
 }
 
 function get_elasticsearch_truststore_content_in_base64(){

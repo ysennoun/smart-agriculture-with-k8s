@@ -96,7 +96,7 @@ function install_infrastructure(){
 
   echo "Install VerneMQ with LoadBalancer and TLS disabled"
   helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
-    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq-tls-disabed.yaml"
+    -f "$BASE_PATH/deploy/infrastructure/vernemq/values-tls-disabled.yaml"
 
   echo "Retrieve VerneMQ LoadBalancer External IP address to update with TLS"
   vernemqExternalIp=$(get_vernemq_external_ip "$env")
@@ -111,11 +111,10 @@ function install_infrastructure(){
   #minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
   #minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
 
-  echo "Install Secrets, Elasticsearch"
-  kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
+  echo "Install roles and secrets"
   helm upgrade --install --debug \
-    "infra-secrets-and-elasticsearch" \
-    "$BASE_PATH/deploy/infrastructure" \
+    "smart-agriculture-roles-secrets" \
+    "$BASE_PATH/deploy/infrastructure/roles-secrets" \
     --namespace "$env" \
     --set namespace="$env" \
     --set mqttCA="$mqttCA" \
@@ -132,15 +131,23 @@ function install_infrastructure(){
 
   echo "Upgrade VerneMQ with new SSL certificate and new users"
   helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
-    -f "$BASE_PATH/deploy/infrastructure/configuration/vernemq-tls-enabed.yaml" \
+    -f "$BASE_PATH/deploy/infrastructure/vernemq/values-tls-enabled.yaml" \
     --set additionalEnv[0].name=DOCKER_VERNEMQ_USER_indexer \
     --set additionalEnv[0].value="$mqttIndexerPass" \
     --set additionalEnv[1].name=DOCKER_VERNEMQ_USER_device \
     --set additionalEnv[1].value="$mqttDevicePass"
 
+  echo "Install Elasticsearch"
+  kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
+  helm upgrade --install --debug \
+    "smart-agriculture-elasticsearch" \
+    "$BASE_PATH/deploy/infrastructure/elasticsearch" \
+    --namespace "$env" \
+    --set namespace="$env"
+
   echo "Install Minio"
   helm upgrade --install --namespace "$env" "smart-agriculture-minio" \
-    -f "$BASE_PATH/deploy/infrastructure/configuration/minio.yaml" \
+    -f "$BASE_PATH/deploy/infrastructure/minio/values.yaml" \
     --set accessKey="$s3aAccessKey" \
     --set secretKey="$s3aSecretKey" \
    stable/minio
@@ -149,14 +156,17 @@ function install_infrastructure(){
 function delete_modules_infrastructure(){
   env=$1
 
-  echo "Delete Secrets and Elasticsearch"
-  helm del "infra-secrets-and-elasticsearch" --namespace "$env"
+  echo "Delete VerneMQ"
+  helm del "smart-agriculture-vernemq" --namespace "$env"
+
+  echo "Delete Elasticsearch"
+  helm del "smart-agriculture-elasticsearch" --namespace "$env"
 
   echo "Delete Minio"
   helm del "smart-agriculture-minio" --namespace "$env"
 
-  echo "Delete VerneMQ"
-  helm del "smart-agriculture-vernemq" --namespace "$env"
+  echo "Delete Roles and Secrets"
+  helm del "smart-agriculture-roles-secrets" --namespace "$env"
 }
 
 function set_helm_repos(){

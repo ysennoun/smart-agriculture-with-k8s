@@ -17,8 +17,8 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 ACTION=$1
 ENVIRONMENT=$2
 export PROJECT_ID="ysennoun-iot" #"your-project-id"
-export COMPUTE_ZONE="europe-west1-b" #"your-selected-zone"
-export COMPUTE_REGION="europe-west1" #"your-selected-region"
+export COMPUTE_ZONE="europe-west3-b" #"your-selected-zone"
+export COMPUTE_REGION="europe-west3" #"your-selected-region"
 export HOSTNAME="eu.gcr.io"
 export CONTAINER_REPOSITORY="$HOSTNAME/$PROJECT_ID" #"your docker repository"
 export PROJECT_NAME="ysennoun-iot" #"your project name on gcp"
@@ -61,7 +61,7 @@ function setup-cluster(){
 function create-certificates(){
   echo "Create certificates"
   create_ssl_certificates "back_end" "back-end.$ENVIRONMENT.svc.cluster.local"
-  #create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
+  create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
   create_ssl_certificates "minio" "smart-agriculture-minio.$ENVIRONMENT.svc.cluster.local"
 }
 

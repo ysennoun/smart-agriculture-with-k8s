@@ -15,13 +15,3 @@ Feature: showing off behave
       Then For device R2D2, timeseries should contain 2 elements and temperatures should be
        | 11              |
        | 12              |
-
-  Scenario: Send a IoT message to the platform and request through API the summarized historic
-     Given An IoT message is sent to the platform for device R2D3 with temperature 11 in topic iot/farming
-       and An IoT message is sent to the platform for device R2D3 with temperature 12 in topic iot/farming
-       and An IoT message is sent to the platform for device R2D3 with temperature 13 in topic iot/farming
-       and An IoT message is sent to the platform for device R2D3 with temperature 14 in topic iot/farming
-       and wait 20 min to let system handle data
-      When Request through API the summarized historic for device R2D3
-      Then For device R2D3, summarized should contain 1 elements and temperatures should be
-       | 12.5            |

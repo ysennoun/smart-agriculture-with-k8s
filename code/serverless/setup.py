@@ -8,7 +8,7 @@ setup(
     description=("An IoT platform built on Kubernetes"),
     license="BSD",
     keywords="IoT, Kubernetes, Knative",
-    url="https://github.com/ysennoun/smart-agriculture-with-k8s",
+    url="https://gitlab.com/ysennoun/smart-agriculture-with-k8s",
     packages=find_packages('src'),
     package_dir={'': 'src'},
     classifiers=[

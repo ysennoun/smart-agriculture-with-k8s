@@ -135,10 +135,13 @@ function test-unit(){
 
 function test-e2e(){
     # Run e2e tests
-    export ENVIRONMENT=$2
-    cd "$BASE_PATH/code/features/"
-    behave
-    cd ../../
+    env=$2
+    launch_e2e_tests \
+      "$env" \
+      "back-end" \
+      "$BACK_END_USER_PASS" \
+      "indexer" \
+      "$MQTT_INDEXER_PASS"
 }
 
 fn_exists() {

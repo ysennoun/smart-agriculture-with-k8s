@@ -1,7 +1,7 @@
 import json
 import time
 from behave import *
-from steps import utils, environment
+from steps import utils
 
 
 @given('An IoT message is sent to the platform for device {device} with temperature '
@@ -9,13 +9,15 @@ from steps import utils, environment
 def step_impl(context, device, temperature, topic):
     iot_data = json.dumps({
         "device": device,
-        "timestamp": str(utils.get_current_timestamp()),
+        "timestamp": utils.get_current_timestamp(),
         "temperature": temperature,
         "pressure": "10",
         "moisture": "10"
     })
-    mqtt_broker_ip, mqtt_broker_port = utils.get_service_url(environment.MQTT_SERVICE_NAME, environment.ENVIRONMENT)
-    utils.send_mqtt_message(iot_data, topic, mqtt_broker_ip, mqtt_broker_port)
+    core_v1 = utils.get_core_v1()
+    mqtt_pod_manifest = utils.get_mqtt_pod_manifest("mqtt_pod", iot_data, topic)
+    utils.run_pod(core_v1, "mqtt_pod", mqtt_pod_manifest)
+    utils.delete_pod(core_v1, "mqtt_pod")
 
 
 @given('wait {min} min to let system handle data')
@@ -25,29 +27,21 @@ def step_impl(context, min):
 
 @then('For device {device}, the temperature of the last value should be equal to {temperature}')
 def step_impl(context, device, temperature):
-    api_ip, api_port = utils.get_service_url(environment.API_SERVICE_NAME, environment.ENVIRONMENT)
-    api_url = api_ip + ":" + str(api_port)
-    last_value = utils.get_endpoint_value(api_url, "/device/last-value/", device)
-    assert last_value["temperature"] is temperature
+    core_v1 = utils.get_core_v1()
+    back_end_pod_manifest = utils.get_back_end_pod_manifest("back_end_pod_1", f"/device/last-value/{device}")
+    result = utils.run_pod(core_v1, "back_end_pod_1", back_end_pod_manifest)
+    utils.delete_pod(core_v1, "back_end_pod_1")
+    assert json.loads(result)["rows"][0]["temperature"] is temperature
 
 
 @then('For device {device}, timeseries should contain {number_of_elements} elements '
       'and temperatures should be in')
 def step_impl(context, device, number_of_elements):
-    api_ip, api_port = utils.get_service_url(environment.API_SERVICE_NAME, environment.ENVIRONMENT)
-    api_url = api_ip + ":" + str(api_port)
-    timeseries = utils.get_endpoint_value(api_url, "/device/timeseries/", device)
-    temperatures = [timeserie["temperature"] for timeserie in timeseries]
+    core_v1 = utils.get_core_v1()
+    back_end_pod_manifest = utils.get_back_end_pod_manifest("back_end_pod_2", f"/device/timeseries/{device}")
+    result = utils.run_pod(core_v1, "back_end_pod_2", back_end_pod_manifest)
+    utils.delete_pod(core_v1, "back_end_pod_2")
+    timeseries = json.loads(result)["rows"]
+    temperatures = [element["temperature"] for element in timeseries]
     assert number_of_elements is len(timeseries)
-    assert temperatures is context.table
-
-
-@then('For device {device}, summarized should contain {number_of_elements} elements '
-      'and temperatures should be in')
-def step_impl(context, device, number_of_elements):
-    api_ip, api_port = utils.get_service_url(environment.API_SERVICE_NAME, environment.ENVIRONMENT)
-    api_url = api_ip + ":" + str(api_port)
-    summarized = utils.get_endpoint_value(api_url, "/device/summarized/", device)
-    temperatures = [timeserie["temperature"] for timeserie in summarized]
-    assert number_of_elements is len(summarized)
     assert temperatures is context.table

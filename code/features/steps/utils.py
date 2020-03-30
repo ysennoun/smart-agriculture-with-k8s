@@ -1,33 +1,116 @@
 import os
 import json
+import time
 from datetime import datetime
-import requests
-import paho.mqtt.client as mqtt
+from kubernetes import config
+from kubernetes.client import Configuration
+from kubernetes.client.api import core_v1_api
+from steps import variables as var
 
 
-def send_mqtt_message(payload: str, topic: str, mqtt_broker_url: str, port: int=1883, keep_alive: int=60):
-    client = mqtt.Client()
-    client.connect(mqtt_broker_url, port, keep_alive)
-    client.loop_start()
-    client.publish(topic, payload)
+def get_current_timestamp() -> str:
+    return f'{datetime.now():"%Y-%m-%dT%H:%M:%SZ"}'
 
 
-def get_current_timestamp() -> int:
-    return int(datetime.now().timestamp())
+def get_core_v1():
+    config.load_kube_config()
+    c = Configuration()
+    c.assert_hostname = False
+    Configuration.set_default(c)
+    return core_v1_api.CoreV1Api()
 
 
-def get_service_url(service_name: str, env: str) -> (str, int):
-    result = os.popen(f'kubectl get service {service_name} -n {env} -o json').read()
-    json_result = json.loads(result)
-    print(json_result)
-    external_ip = json_result["status"]["loadBalancer"]["ingress"][0]["ip"]
-    port = json_result["status"]["loadBalancer"]["ingress"][0]["port"]
-    return external_ip, port
+def run_pod(api_instance, pod_name: str, pod_manifest: dict) -> str:
+    print("Pod %s does not exist. Creating it..." % pod_name)
+    namespace = var.get_environment()
+    api_instance.create_namespaced_pod(body=pod_manifest, namespace=namespace)
+    while True:
+        resp = api_instance.read_namespaced_pod(name=pod_name, namespace=namespace)
+        if resp.status.phase != 'Pending':
+            break
+        time.sleep(1)
+    print("Done.")
+
+    return api_instance.read_namespaced_pod_log(name=pod_name, namespace=namespace)
 
 
-def get_endpoint_value(api_url: str, api_uri: str, device: str) -> dict:
-    url = api_url if api_url[len(api_url) - 1] != "/" else api_url[:-1]
-    uri = api_uri if api_uri[len(api_url) - 1] != "/" else api_uri[:-1]
-    endpoint = url + uri + device
-    api_response = requests.get(endpoint)
-    return api_response.json()
+def delete_pod(api_instance, pod_name: str):
+    api_instance.delete_namespaced_pod(name=pod_name,
+                                       namespace=var.get_environment())
+
+
+def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: dict, mqtt_topic: dict) -> dict:
+    result = os.popen(f'kubectl get service smart-agriculture-vernemq -n {var.get_environment()} -o json').read()
+    mqtt_broker_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
+
+    mqtt_cmd = f'mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 ' \
+               f'-t "{mqtt_topic}" -m {json.dumps(mqtt_payload)} --cafile /etc/ssl/vernemq/tls.crt'
+
+    return {
+        'apiVersion': 'v1',
+        'kind': 'Pod',
+        'metadata': {
+            'name': mqtt_pod_name
+        },
+        'spec': {
+            'containers': [{
+                'image': 'radial/busyboxplus:curl',
+                'name': 'curl',
+                "args": [
+                    "/bin/sh",
+                    "-c",
+                    f"apt-get update && apt-get install -y mosquitto-clients;{mqtt_cmd};sleep 120"
+                ],
+                'volumeMounts':[{
+                    'name': 'vernemq-certificates',
+                    'mountPath': '/etc/ssl/vernemq/tls.crt',
+                    'subPath': 'tls.crt',
+                    'readOnly': 'true'
+                }]
+            }],
+            'volumes': [{
+                'name': 'vernemq-certificates',
+                'secret': {
+                    'secretName': 'vernemq-certificates-secret'
+                }
+            }],
+            'restartPolicy': 'Never'
+        }
+    }
+
+
+def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:
+    back_end_cmd = f'curl -u "{var.get_back_end_user()}:{var.get_back_end_user_pass()}" ' \
+    f'https://back-end.{var.get_environment()}.svc.cluster.local:443{uri} --cacert /etc/ssl/back-end/tls.crt'
+
+    return {
+        'apiVersion': 'v1',
+        'kind': 'Pod',
+        'metadata': {
+            'name': back_end_pod_name
+        },
+        'spec': {
+            'containers': [{
+                'image': 'radial/busyboxplus:curl',
+                'name': 'curl',
+                "args": [
+                    "/bin/sh",
+                    "-c",
+                    f"{back_end_cmd};sleep 120"
+                ],
+                'volumeMounts':[{
+                    'name': 'back-end-certificates',
+                    'mountPath': '/etc/ssl/back-end/tls.crt',
+                    'subPath': 'tls.crt',
+                    'readOnly': 'true'
+                }]
+            }],
+            'volumes': [{
+                'name': 'back-end-certificates',
+                'secret': {
+                    'secretName': 'back-end-certificates-secret'
+                }
+            }],
+            'restartPolicy': 'Never'
+        }
+    }

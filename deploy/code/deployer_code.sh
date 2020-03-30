@@ -11,6 +11,7 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 function install_python_requirements(){
     cd "$BASE_PATH/code/serverless/"
     pip install -r requirements.txt
+    pip install -r setup_requirements.txt
     pip install -r test_requirements.txt
     cd ../../
 }
@@ -39,6 +40,11 @@ function launch_spark_unit_tests(){
 
 function launch_e2e_tests(){
     # Run e2e tests
+    export ENVIRONMENT=$1
+    export BACK_END_USER=$2
+    export BACK_END_USER_PASS=$3
+    export MQTT_USER=$4
+    export MQTT_USER_PASS=$5
     cd "$BASE_PATH/code/features/"
     behave
     cd ../../

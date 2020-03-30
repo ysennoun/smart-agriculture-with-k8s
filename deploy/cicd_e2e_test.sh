@@ -8,4 +8,9 @@ source deploy/code/deployer_code.sh
 install_python_requirements
 
 # Run e2e tests
-launch_e2e_tests
+launch_e2e_tests \
+  "$ENVIRONMENT" \
+  "back-end" \
+  "$BACK_END_USER_PASS" \
+  "indexer" \
+  "$MQTT_INDEXER_PASS"

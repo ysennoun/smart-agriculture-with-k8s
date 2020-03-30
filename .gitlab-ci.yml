@@ -97,5 +97,6 @@ dev:e2e-test:
     - dev
     - master
   script:
+    - cat ~/.kube/config
     - chmod +x deploy/cicd_e2e_test.sh
     - ./deploy/cicd_e2e_test.sh

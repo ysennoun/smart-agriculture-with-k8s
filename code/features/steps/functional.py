@@ -17,13 +17,11 @@ def step_impl(context, device, temperature, topic):
         "moisture": 10
     })
     mqtt_pod_name = f"mqtt-pod-{randint(0, 10000)}"
-    print(f"mqtt_pod_name : {mqtt_pod_name}")
     core_v1 = utils.get_core_v1()
     mqtt_pod_manifest = utils.get_mqtt_pod_manifest(mqtt_pod_name, iot_data, topic)
-    print(f"mqtt_pod_manifest : {mqtt_pod_manifest}")
     utils.run_pod(core_v1, mqtt_pod_name, mqtt_pod_manifest)
     print("delete pod")
-    utils.delete_pod(core_v1, mqtt_pod_name)
+    #utils.delete_pod(core_v1, mqtt_pod_name)
 
 
 @given('wait {min} min to let system handle data')
@@ -44,9 +42,10 @@ def step_impl(context, device, temperature):
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/last-value/{device}")
+    print(f"back_end_pod_manifest: {back_end_pod_manifest}")
     result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     print(f"result: {result}")
-    utils.delete_pod(core_v1, back_end_pod_name)
+    #utils.delete_pod(core_v1, back_end_pod_name)
     assert json.loads(result)["rows"][0]["temperature"] is temperature
 
 
@@ -57,8 +56,9 @@ def step_impl(context, device, number_of_elements):
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/timeseries/{device}")
+    print(f"back_end_pod_manifest: {back_end_pod_manifest}")
     result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
-    utils.delete_pod(core_v1, back_end_pod_name)
+    #utils.delete_pod(core_v1, back_end_pod_name)
     print(f"result: {result}")
     timeseries = json.loads(result)["rows"]
     temperatures = [element["temperature"] for element in timeseries]

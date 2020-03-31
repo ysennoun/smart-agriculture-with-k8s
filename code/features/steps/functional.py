@@ -33,6 +33,11 @@ def step_impl(context, min):
     time.sleep(time_to_sleep)
 
 
+@when('Request through API the {endpoint_type} for device {device}')
+def step_impl(context, endpoint_type, device):
+    print(f"Request through API the {endpoint_type} for device {device}")
+
+
 @then('For device {device}, the temperature of the last value should be equal to {temperature}')
 def step_impl(context, device, temperature):
     print(f"then last value")
@@ -45,8 +50,8 @@ def step_impl(context, device, temperature):
     assert json.loads(result)["rows"][0]["temperature"] is temperature
 
 
-@then('For device {device}, timeseries should contain {number_of_elements} elements '
-      'and temperatures should be in')
+
+@then('For device {device}, timeseries should contain {number_of_elements} elements and temperatures should be in')
 def step_impl(context, device, number_of_elements):
     print(f"then timeseries")
     core_v1 = utils.get_core_v1()

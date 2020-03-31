@@ -93,11 +93,12 @@ def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:
         'apiVersion': 'v1',
         'kind': 'Pod',
         'metadata': {
-            'name': back_end_pod_name
+            'name': back_end_pod_name,
+            'namespace': var.get_environment()
         },
         'spec': {
             'containers': [{
-                'image': {var.get_docker_image()},
+                'image': var.get_docker_image(),
                 'name': back_end_pod_name,
                 "args": [
                     "/bin/sh",

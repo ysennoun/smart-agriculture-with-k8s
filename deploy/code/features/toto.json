@@ -14,7 +14,7 @@
         "name": "vernemq-certificates",
         "mountPath": "/etc/ssl/vernemq/tls.crt",
         "subPath": "tls.crt",
-        "readOnly": "true"
+        "readOnly": true
       }]
     }],
     "volumes": [{

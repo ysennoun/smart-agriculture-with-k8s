@@ -52,11 +52,12 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
         'apiVersion': 'v1',
         'kind': 'Pod',
         'metadata': {
-            'name': mqtt_pod_name
+            'name': mqtt_pod_name,
+            'namespace': var.get_environment()
         },
         'spec': {
             'containers': [{
-                'image': {var.get_docker_image()},
+                'image': var.get_docker_image(),
                 'name': mqtt_pod_name,
                 'args': [
                     '/bin/sh',

@@ -24,7 +24,8 @@ def step_impl(context, device, temperature, topic):
 
 @given('wait {min} min to let system handle data')
 def step_impl(context, min):
-    time.sleep(min * 60)
+    time_to_sleep = int(min) * 60
+    time.sleep(time_to_sleep)
 
 
 @then('For device {device}, the temperature of the last value should be equal to {temperature}')

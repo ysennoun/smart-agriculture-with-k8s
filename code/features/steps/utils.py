@@ -29,9 +29,9 @@ def run_pod(api_instance, pod_name: str, pod_manifest: dict) -> str:
         if resp.status.phase != 'Pending':
             break
         time.sleep(1)
-    print("Done.")
+    print("Pod created done.")
 
-    time.sleep(90)
+    time.sleep(200)
 
     return api_instance.read_namespaced_pod_log(name=pod_name, namespace=namespace)
 
@@ -62,7 +62,7 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
                 'args': [
                     '/bin/sh',
                     '-c',
-                    f'{mqtt_cmd};sleep 300'
+                    f'{mqtt_cmd};sleep 600'
                 ],
                 'volumeMounts':[{
                     'name': 'vernemq-certificates',
@@ -103,7 +103,7 @@ def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:
                 "args": [
                     "/bin/sh",
                     "-c",
-                    f"{back_end_cmd};sleep 120"
+                    f"{back_end_cmd};sleep 600"
                 ],
                 'volumeMounts':[{
                     'name': 'back-end-certificates',

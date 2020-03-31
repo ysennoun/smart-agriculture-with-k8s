@@ -20,14 +20,12 @@ def step_impl(context, device, temperature, topic):
     core_v1 = utils.get_core_v1()
     mqtt_pod_manifest = utils.get_mqtt_pod_manifest(mqtt_pod_name, iot_data, topic)
     utils.run_pod(core_v1, mqtt_pod_name, mqtt_pod_manifest)
-    print("delete pod")
-    #utils.delete_pod(core_v1, mqtt_pod_name)
+    utils.delete_pod(core_v1, mqtt_pod_name)
 
 
 @given('wait {min} min to let system handle data')
 def step_impl(context, min):
     time_to_sleep = int(min) * 60
-    print(f"time_to_sleep : {time_to_sleep}")
     time.sleep(time_to_sleep)
 
 
@@ -38,11 +36,9 @@ def step_impl(context, endpoint_type, device):
 
 @then('For device {device}, the temperature of the last value should be equal to {temperature}')
 def step_impl(context, device, temperature):
-    print(f"then last value")
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/last-value/{device}")
-    print(f"back_end_pod_manifest: {back_end_pod_manifest}")
     result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     print(f"result:{result}")
     #utils.delete_pod(core_v1, back_end_pod_name)
@@ -52,11 +48,9 @@ def step_impl(context, device, temperature):
 
 @then('For device {device}, timeseries should contain {number_of_elements} elements and temperatures should be in')
 def step_impl(context, device, number_of_elements):
-    print(f"then timeseries")
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/timeseries/{device}")
-    print(f"back_end_pod_manifest: {back_end_pod_manifest}")
     result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     #utils.delete_pod(core_v1, back_end_pod_name)
     print(f"result: {result}")

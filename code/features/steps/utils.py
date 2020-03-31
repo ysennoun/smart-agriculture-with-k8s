@@ -31,7 +31,7 @@ def run_pod(api_instance, pod_name: str, pod_manifest: dict) -> str:
         time.sleep(1)
     print("Done.")
 
-    time.sleep(20)
+    time.sleep(90)
 
     return api_instance.read_namespaced_pod_log(name=pod_name, namespace=namespace)
 
@@ -62,7 +62,7 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
                 'args': [
                     '/bin/sh',
                     '-c',
-                    f'{mqtt_cmd};sleep 120'
+                    f'{mqtt_cmd};sleep 300'
                 ],
                 'volumeMounts':[{
                     'name': 'vernemq-certificates',
@@ -86,7 +86,7 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
 
 
 def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:
-    back_end_cmd = f'curl -u "{var.get_back_end_user()}:{var.get_back_end_user_pass()}" ' \
+    back_end_cmd = f'curl -s -u "{var.get_back_end_user()}:{var.get_back_end_user_pass()}" ' \
     f'https://back-end.{var.get_environment()}.svc.cluster.local:443{uri} --cacert /etc/ssl/back-end/tls.crt'
 
     return {

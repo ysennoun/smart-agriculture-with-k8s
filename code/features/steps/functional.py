@@ -44,7 +44,7 @@ def step_impl(context, device, temperature):
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/last-value/{device}")
     print(f"back_end_pod_manifest: {back_end_pod_manifest}")
     result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
-    print(f"result: {result}")
+    print(f"result:{result}")
     #utils.delete_pod(core_v1, back_end_pod_name)
     assert json.loads(result)["rows"][0]["temperature"] is temperature
 

@@ -126,6 +126,7 @@ function install_infrastructure(){
     --set s3aSecretKey="$s3aSecretKey" \
     --set mqttIndexerPassBase64="$(echo "$mqttIndexerPass" | base64)" \
     --set backEndUserPassBase64="$(echo "$backEndUserPass" | base64)"
+
    #--set minioTLS="$minioTLS" \
     #--set minioKey="$minioKey" \
 

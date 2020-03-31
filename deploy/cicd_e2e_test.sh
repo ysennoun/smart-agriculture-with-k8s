@@ -17,6 +17,6 @@ launch_e2e_tests \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION" \
   "back-end" \
-  "$BACK_END_USER_PASS" \
+  "9Fex2nqdqe" \
   "indexer" \
   "$MQTT_INDEXER_PASS"

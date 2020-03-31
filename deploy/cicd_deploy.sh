@@ -18,8 +18,8 @@ install_infrastructure \
   "$S3A_ACCESS_KEY" \
   "$S3A_SECRET_KEY" \
   "$MQTT_INDEXER_PASS" \
-  "$MQTT_NOTIFIER_PASS" \
-  "$MQTT_DEVICE_PASS"
+  "$MQTT_DEVICE_PASS" \
+  "$BACK_END_USER_PASS"
 
 ## Set Docker login
 set_docker "$HOSTNAME"

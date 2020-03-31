@@ -1,0 +1,28 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "mqtt-pod-test",
+    "namespace": "dev"
+  },
+  "spec": {
+    "containers": [{
+      "image": "radial/busyboxplus:curl",
+      "name": "curl",
+      "args": ["/bin/sh", "-c", "echo 'toto';sleep 120"],
+      "volumeMounts": [{
+        "name": "vernemq-certificates",
+        "mountPath": "/etc/ssl/vernemq/tls.crt",
+        "subPath": "tls.crt",
+        "readOnly": "true"
+      }]
+    }],
+    "volumes": [{
+      "name": "vernemq-certificates",
+      "secret": {
+        "secretName": "vernemq-certificates-secret"
+      }
+    }],
+    "restartPolicy": "Never"
+  }
+}

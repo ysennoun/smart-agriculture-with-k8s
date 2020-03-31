@@ -39,7 +39,7 @@ def delete_pod(api_instance, pod_name: str):
                                        namespace=var.get_environment())
 
 
-def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: dict, mqtt_topic: dict) -> dict:
+def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dict) -> dict:
     result = os.popen(f'kubectl get service smart-agriculture-vernemq -n {var.get_environment()} -o json').read()
     mqtt_broker_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
 
@@ -65,7 +65,7 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: dict, mqtt_topic: di
                     'name': 'vernemq-certificates',
                     'mountPath': '/etc/ssl/vernemq/tls.crt',
                     'subPath': 'tls.crt',
-                    'readOnly': 'true'
+                    'readOnly': True
                 }]
             }],
             'volumes': [{
@@ -105,7 +105,7 @@ def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:
                     'name': 'back-end-certificates',
                     'mountPath': '/etc/ssl/back-end/tls.crt',
                     'subPath': 'tls.crt',
-                    'readOnly': 'true'
+                    'readOnly': True
                 }]
             }],
             'volumes': [{

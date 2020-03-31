@@ -41,8 +41,9 @@ def step_impl(context, device, temperature):
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/last-value/{device}")
     result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     print(f"result:{result}")
+    print(f"type:{type(result)}")
     #utils.delete_pod(core_v1, back_end_pod_name)
-    assert json.loads(result)["rows"][0]["temperature"] is temperature
+    assert result["rows"][0]["temperature"] is temperature
 
 
 
@@ -54,6 +55,7 @@ def step_impl(context, device, number_of_elements):
     result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     #utils.delete_pod(core_v1, back_end_pod_name)
     print(f"result: {result}")
+    print(f"type:{type(result)}")
     timeseries = json.loads(result)["rows"]
     temperatures = [element["temperature"] for element in timeseries]
     assert number_of_elements is len(timeseries)

@@ -49,6 +49,8 @@ function launch_e2e_tests(){
     export MQTT_USER_PASS=$7
     export DOCKER_IMAGE="$containerRepository/features:$dockerVersion"
 
+    kubectl apply -f "$BASE_PATH/deploy/code/features/toto.json"
+
     ## Deplopy docker image
     docker build -f "$BASE_PATH/deploy/code/features/dockerfiles/Dockerfile-features" \
       -t "$containerRepository/features:$dockerVersion" .

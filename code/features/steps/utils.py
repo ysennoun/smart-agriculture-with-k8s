@@ -31,6 +31,8 @@ def run_pod(api_instance, pod_name: str, pod_manifest: dict) -> str:
         time.sleep(1)
     print("Done.")
 
+    time.sleep(20)
+
     return api_instance.read_namespaced_pod_log(name=pod_name, namespace=namespace)
 
 
@@ -43,8 +45,8 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
     result = os.popen(f'kubectl get service smart-agriculture-vernemq -n {var.get_environment()} -o json').read()
     mqtt_broker_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
 
-    mqtt_cmd = f'mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 ' \
-               f'-t "{mqtt_topic}" -m {mqtt_payload} --cafile /etc/ssl/vernemq/tls.crt'
+    mqtt_cmd = f"mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 " \
+               f"-t '{mqtt_topic}' -m '{mqtt_payload}' --cafile /etc/ssl/vernemq/tls.crt"
 
     mqtt_pod_manifest = {
         'apiVersion': 'v1',
@@ -56,10 +58,10 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
             'containers': [{
                 'image': {var.get_docker_image()},
                 'name': mqtt_pod_name,
-                "args": [
-                    "/bin/sh",
-                    "-c",
-                    f"{mqtt_cmd};sleep 120"
+                'args': [
+                    '/bin/sh',
+                    '-c',
+                    f'{mqtt_cmd};sleep 120'
                 ],
                 'volumeMounts':[{
                     'name': 'vernemq-certificates',

@@ -54,12 +54,12 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
         },
         'spec': {
             'containers': [{
-                'image': 'radial/busyboxplus:curl',
-                'name': 'curl',
+                'image': {var.get_docker_image()},
+                'name': mqtt_pod_name,
                 "args": [
                     "/bin/sh",
                     "-c",
-                    f"apt-get update && apt-get install -y mosquitto-clients;{mqtt_cmd};sleep 120"
+                    f"{mqtt_cmd};sleep 120"
                 ],
                 'volumeMounts':[{
                     'name': 'vernemq-certificates',
@@ -94,8 +94,8 @@ def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:
         },
         'spec': {
             'containers': [{
-                'image': 'radial/busyboxplus:curl',
-                'name': 'curl',
+                'image': {var.get_docker_image()},
+                'name': back_end_pod_name,
                 "args": [
                     "/bin/sh",
                     "-c",

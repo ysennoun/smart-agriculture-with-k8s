@@ -60,6 +60,6 @@ def step_impl(context, device, number_of_elements):
     print(f"temperatures: {temperatures}")
     print([int(row['temperatures']) for row in context.table])
     assert (len(result["rows"]) == int(number_of_elements))
-    assert temperatures is [int(row['temperatures']) for row in context.table]
+    assert (temperatures == [int(row['temperatures']) for row in context.table])
 
 

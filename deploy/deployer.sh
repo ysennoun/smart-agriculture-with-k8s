@@ -65,6 +65,9 @@ function create-certificates(){
   create_ssl_certificates "minio" "smart-agriculture-minio.$ENVIRONMENT.svc.cluster.local"
 }
 
+#kubectl get secret vernemq-certificates-secret -n dev -o jsonpath="{.data.tls\.crt}" | base64 --decode > toto.crt
+
+
 function deploy-modules(){
     ## Create Namespace
     create_namespace "$ENVIRONMENT"

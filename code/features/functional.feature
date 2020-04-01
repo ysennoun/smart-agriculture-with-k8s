@@ -11,5 +11,6 @@ Feature: Smart Agriculture
        and An IoT message is sent to the platform for device rd2d with temperature 12 in topic iot/farming
       When Request through API the timeseries for device rd2d
       Then For device rd2d, timeseries should contain 2 elements and temperatures should be
+       | temperatures    |
        | 11              |
        | 12              |

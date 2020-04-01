@@ -49,7 +49,8 @@ def step_impl(context, device, temperature):
 def step_impl(context, device, number_of_elements):
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
-    back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/timeseries/{device}")
+    timeseries_uri = f"/device/timeseries/{device}?from_date={utils.get_past_timestamp(12)}&to_date={utils.get_current_timestamp()}"
+    back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, timeseries_uri)
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     #utils.delete_pod(core_v1, back_end_pod_name)
     print(f"result: {raw_result}")
@@ -57,8 +58,8 @@ def step_impl(context, device, number_of_elements):
     temperatures = [element["temperature"] for element in result["rows"]]
     print(f"result: {result}")
     print(f"temperatures: {temperatures}")
-    print(f'context.table: {context.table}')
+    print([int(row['temperatures']) for row in context.table])
     assert (len(result["rows"]) == int(number_of_elements))
-    assert temperatures is context.table
+    assert temperatures is [int(row['temperatures']) for row in context.table]
 
 

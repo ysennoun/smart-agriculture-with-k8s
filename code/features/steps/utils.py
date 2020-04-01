@@ -1,7 +1,7 @@
 import os
 import json
 import time
-from datetime import datetime
+import datetime
 from kubernetes import config
 from kubernetes.client import Configuration
 from kubernetes.client.api import core_v1_api
@@ -9,7 +9,11 @@ from steps import variables as var
 
 
 def get_current_timestamp() -> str:
-    return f"{datetime.now():%Y-%m-%dT%H:%M:%SZ}"
+    return f"{datetime.datetime.now():%Y-%m-%dT%H:%M:%SZ}"
+
+
+def get_past_timestamp(minutes: int) -> str:
+    return f"{(datetime.datetime.now() - datetime.timedelta(minutes=minutes)):%Y-%m-%dT%H:%M:%SZ}"
 
 
 def get_core_v1():

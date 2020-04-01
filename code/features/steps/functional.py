@@ -45,7 +45,7 @@ def step_impl(context, device, temperature):
 
 
 
-@then('For device {device}, timeseries should contain {number_of_elements} elements and temperatures should be in')
+@then('For device {device}, timeseries should contain {number_of_elements} elements and temperatures should be')
 def step_impl(context, device, number_of_elements):
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
@@ -58,7 +58,7 @@ def step_impl(context, device, number_of_elements):
     print(f"result: {result}")
     print(f"temperatures: {temperatures}")
     print(f'context.table: {context.table}')
-    assert (len(result["rows"]) == number_of_elements)
+    assert (len(result["rows"]) == int(number_of_elements))
     assert temperatures is context.table
 
 

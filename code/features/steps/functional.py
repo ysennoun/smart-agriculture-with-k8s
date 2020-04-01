@@ -41,7 +41,7 @@ def step_impl(context, device, temperature):
     print(f"type temperature: {type(temperature)}")
     print(f'type temperature in row: {type(result["rows"][0]["temperature"])}')
     #utils.delete_pod(core_v1, back_end_pod_name)
-    assert (result["rows"][0]["temperature"] == temperature)
+    assert (result["rows"][0]["temperature"] == int(temperature))
 
 
 

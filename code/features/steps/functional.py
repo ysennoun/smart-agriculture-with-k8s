@@ -37,9 +37,11 @@ def step_impl(context, device, temperature):
     result = json.loads(raw_result.replace("\'", "\""))
     print(f"result: {result}")
     print(f"temperature: {temperature}")
-    print(f'temperature: {result["rows"][0]["temperature"]}')
+    print(f'temperature in row: {result["rows"][0]["temperature"]}')
+    print(f"type temperature: {type(temperature)}")
+    print(f'type temperature in row: {type(result["rows"][0]["temperature"])}')
     #utils.delete_pod(core_v1, back_end_pod_name)
-    assert result["rows"][0]["temperature"] is temperature
+    assert (result["rows"][0]["temperature"] == temperature)
 
 
 
@@ -56,5 +58,7 @@ def step_impl(context, device, number_of_elements):
     print(f"result: {result}")
     print(f"temperatures: {temperatures}")
     print(f'context.table: {context.table}')
-    assert number_of_elements is len(result["rows"])
+    assert (len(result["rows"]) == number_of_elements)
     assert temperatures is context.table
+
+

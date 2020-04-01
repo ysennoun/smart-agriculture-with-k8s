@@ -90,8 +90,8 @@ def get_mqtt_pod_manifest(mqtt_pod_name: str, mqtt_payload: str, mqtt_topic: dic
 
 
 def get_back_end_pod_manifest(back_end_pod_name: str, uri: str) -> dict:
-    back_end_cmd = f'curl -s -u "{var.get_back_end_user()}:{var.get_back_end_user_pass()}" ' \
-    f'https://back-end.{var.get_environment()}.svc.cluster.local:443{uri} --cacert /etc/ssl/back-end/tls.crt'
+    back_end_cmd = f'curl -s --cacert /etc/ssl/back-end/tls.crt -u "{var.get_back_end_user()}:{var.get_back_end_user_pass()}" ' \
+    f'"https://back-end.{var.get_environment()}.svc.cluster.local:443{uri}"'
     print(f"back_end_cmd : {back_end_cmd}")
     return {
         'apiVersion': 'v1',

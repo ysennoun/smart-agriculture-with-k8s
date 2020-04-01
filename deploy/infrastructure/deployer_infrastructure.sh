@@ -94,41 +94,47 @@ function install_infrastructure(){
   mqttDevicePass=$5
   backEndUserPass=$6
 
-  echo "Install VerneMQ with LoadBalancer and TLS disabled"
-  helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
-    -f "$BASE_PATH/deploy/infrastructure/vernemq/values-tls-disabled.yaml"
 
-  echo "Retrieve VerneMQ LoadBalancer External IP address to update with TLS"
-  vernemqExternalIp=$(get_vernemq_external_ip "$env")
-  refresh_vernemq_ssl_certificates "$env" "$vernemqExternalIp"
+  if [ "$(should_vernemq_be_initialized "$env")" == "true" ]
+  then
+      echo "Install VerneMQ with LoadBalancer and TLS disabled"
+      helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
+        -f "$BASE_PATH/deploy/infrastructure/vernemq/values-tls-disabled.yaml"
 
-  echo "Get certificates with new certificate for vernemq"
-  mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
-  mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
-  mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
-  backEndTLS=$(get_ssl_certificates_in_base64 "back_end" "tls.crt")
-  backEndKey=$(get_ssl_certificates_in_base64 "back_end" "tls.key")
-  #minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
-  #minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
+      echo "Retrieve VerneMQ LoadBalancer External IP address to update with TLS"
+      vernemqExternalIp=$(get_vernemq_external_ip "$env")
+      refresh_vernemq_ssl_certificates "$env" "$vernemqExternalIp"
 
-  echo "Install roles and secrets"
-  helm upgrade --install --debug \
-    "smart-agriculture-roles-secrets" \
-    "$BASE_PATH/deploy/infrastructure/roles-secrets" \
-    --namespace "$env" \
-    --set namespace="$env" \
-    --set mqttCA="$mqttCA" \
-    --set mqttTLS="$mqttTLS" \
-    --set mqttKey="$mqttKey" \
-    --set backEndTLS="$backEndTLS" \
-    --set backEndKey="$backEndKey" \
-    --set s3aAccessKey="$s3aAccessKey" \
-    --set s3aSecretKey="$s3aSecretKey" \
-    --set mqttIndexerPassBase64="$(echo "$mqttIndexerPass" | base64)" \
-    --set backEndUserPassBase64="$(echo "$backEndUserPass" | base64)"
+      echo "Get certificates with new certificate for vernemq"
+      mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
+      mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
+      mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
+      backEndTLS=$(get_ssl_certificates_in_base64 "back_end" "tls.crt")
+      backEndKey=$(get_ssl_certificates_in_base64 "back_end" "tls.key")
+      #minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
+      #minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
 
-   #--set minioTLS="$minioTLS" \
-    #--set minioKey="$minioKey" \
+      echo "Install roles and secrets"
+      helm upgrade --install --debug \
+        "smart-agriculture-roles-secrets" \
+        "$BASE_PATH/deploy/infrastructure/roles-secrets" \
+        --namespace "$env" \
+        --set namespace="$env" \
+        --set mqttCA="$mqttCA" \
+        --set mqttTLS="$mqttTLS" \
+        --set mqttKey="$mqttKey" \
+        --set backEndTLS="$backEndTLS" \
+        --set backEndKey="$backEndKey" \
+        --set s3aAccessKey="$s3aAccessKey" \
+        --set s3aSecretKey="$s3aSecretKey" \
+        --set mqttIndexerPassBase64="$(echo "$mqttIndexerPass" | base64)" \
+        --set backEndUserPassBase64="$(echo "$backEndUserPass" | base64)"
+
+       #--set minioTLS="$minioTLS" \
+        #--set minioKey="$minioKey" \
+  else
+      echo "VerneMQ is already initialized"
+  fi
 
   echo "Upgrade VerneMQ with new SSL certificate and new users"
   helm upgrade --install --namespace "$env" "smart-agriculture-vernemq" vernemq/vernemq \
@@ -186,6 +192,17 @@ function get_ssl_certificates_in_base64(){
   server=$1
   file=$2
   echo $(cat "$BASE_PATH/deploy/certificates/$server/$file" | base64 | tr -d '\n')
+}
+
+function should_vernemq_be_initialized(){
+  env=$1
+  secretName=$(kubectl get secret -n "$env" vernemq-certificates-secret -o name 2>/dev/null)
+  if [ -z "$secretName" ]
+  then
+    echo true
+  else
+    echo false
+  fi
 }
 
 function get_vernemq_external_ip(){

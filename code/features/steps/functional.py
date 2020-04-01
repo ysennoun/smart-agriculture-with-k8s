@@ -1,5 +1,4 @@
 import json
-import time
 from random import randint
 from behave import *
 from steps import utils
@@ -35,12 +34,7 @@ def step_impl(context, device, temperature):
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/last-value/{device}")
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     result = json.loads(raw_result.replace("\'", "\""))
-    print(f"result: {result}")
-    print(f"temperature: {temperature}")
-    print(f'temperature in row: {result["rows"][0]["temperature"]}')
-    print(f"type temperature: {type(temperature)}")
-    print(f'type temperature in row: {type(result["rows"][0]["temperature"])}')
-    #utils.delete_pod(core_v1, back_end_pod_name)
+    utils.delete_pod(core_v1, back_end_pod_name)
     assert (result["rows"][0]["temperature"] == int(temperature))
 
 
@@ -52,12 +46,9 @@ def step_impl(context, device, number_of_elements):
     timeseries_uri = f"/device/timeseries/{device}?from_date={utils.get_past_timestamp(15)}&to_date={utils.get_current_timestamp()}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, timeseries_uri)
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
-    #utils.delete_pod(core_v1, back_end_pod_name)
-    print(f"result: {raw_result}")
+    utils.delete_pod(core_v1, back_end_pod_name)
     result = json.loads(raw_result.replace("\'", "\""))
     temperatures = [element["temperature"] for element in result["rows"]]
-    print(f"result: {result}")
-    print(f"temperatures: {temperatures}")
     print([int(row['temperatures']) for row in context.table])
     assert (len(result["rows"]) == int(number_of_elements))
     assert (temperatures == [int(row['temperatures']) for row in context.table])

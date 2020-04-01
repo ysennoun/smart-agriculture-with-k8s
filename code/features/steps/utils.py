@@ -31,7 +31,7 @@ def run_pod(api_instance, pod_name: str, pod_manifest: dict) -> str:
         time.sleep(1)
     print("Pod created done.")
 
-    time.sleep(120)
+    time.sleep(120) # let system handle pod logs
 
     return api_instance.read_namespaced_pod_log(name=pod_name, namespace=namespace)
 

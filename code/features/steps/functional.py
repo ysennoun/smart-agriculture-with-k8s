@@ -23,12 +23,6 @@ def step_impl(context, device, temperature, topic):
     utils.delete_pod(core_v1, mqtt_pod_name)
 
 
-@given('wait {min} min to let system handle data')
-def step_impl(context, min):
-    time_to_sleep = int(min) * 60
-    time.sleep(time_to_sleep)
-
-
 @when('Request through API the {endpoint_type} for device {device}')
 def step_impl(context, endpoint_type, device):
     print(f"Request through API the {endpoint_type} for device {device}")
@@ -40,8 +34,10 @@ def step_impl(context, device, temperature):
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/last-value/{device}")
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
-    print(f"result: {raw_result}")
     result = json.loads(raw_result.replace("\'", "\""))
+    print(f"result: {result}")
+    print(f"temperature: {temperature}")
+    print(f'temperature: {result["rows"][0]["temperature"]}')
     #utils.delete_pod(core_v1, back_end_pod_name)
     assert result["rows"][0]["temperature"] is temperature
 
@@ -57,5 +53,8 @@ def step_impl(context, device, number_of_elements):
     print(f"result: {raw_result}")
     result = json.loads(raw_result.replace("\'", "\""))
     temperatures = [element["temperature"] for element in result["rows"]]
+    print(f"result: {result}")
+    print(f"temperatures: {temperatures}")
+    print(f'context.table: {context.table}')
     assert number_of_elements is len(result["rows"])
     assert temperatures is context.table

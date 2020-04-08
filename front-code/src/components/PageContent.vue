@@ -30,8 +30,8 @@
         </b-row>
         <b-row class="mt-2">
             <b-col>
-                 <div class="card">
-                    <h5 class="card-header">Temperature vs Time</h5>
+                 <div id="card-temperature-timeseries" class="card">
+                    <h5 id="card-header-temperature-timeseries" class="card-header">Temperature vs Time</h5>
                     <div>
                         <line-chart :chart-data="temperatureData" :height="height"></line-chart>
                     </div>
@@ -40,8 +40,8 @@
         </b-row>
         <b-row class="mt-2">
             <b-col>
-                 <div class="card">
-                    <h5 class="card-header">Moisture vs Time</h5>
+                 <div id="card-moisture-timeseries" class="card">
+                    <h5 id="card-header-moisture-timeseries" class="card-header">Moisture vs Time</h5>
                     <div>
                         <line-chart :chart-data="moistureData" :height="height"></line-chart>
                     </div>
@@ -83,8 +83,8 @@ export default {
                 {
                     
                     label: 'Temperature',
-                    borderColor: '#8fad57',
-                    backgroundColor: 'rgba(71, 183,132,.5)',
+                    borderColor: '#d77c7c',
+                    backgroundColor: 'rgba(225,157,157, 0.5)',
                     fill: true,
                     data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
                 }]
@@ -96,7 +96,7 @@ export default {
                     
                     label: 'Moisture',
                     borderColor: '#627aac',
-                    backgroundColor: 'rgba(54,73,93,.5)',
+                    backgroundColor: 'rgba(41,73,93, 0.5)',
                     fill: true,
                     data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
                 }]
@@ -123,23 +123,33 @@ export default {
 }
 
 #card-device-value {
-    background-color: #fda834;
-    color: white;
-    border-color: white;
-}
-
-#card-body-device-value{
-    background-color: #fdb95c;
-}
-
-#card-temperature-value {
     background-color: #74992e;
     color: white;
     border-color: white;
 }
 
-#card-body-temperature-value{
+#card-body-device-value {
     background-color: #8fad57;
+}
+
+#card-temperature-value {
+    background-color: #cd5c5c;
+    color: white;
+    border-color: white;
+}
+
+#card-body-temperature-value {
+    background-color: #d77c7c;
+}
+
+#card-temperature-timeseries {
+    border-color: #cd5c5c;
+}
+
+#card-header-temperature-timeseries {
+    background-color: #cd5c5c;
+    color: white;
+    border-color: white;
 }
 
 #card-moisture-value {
@@ -148,7 +158,17 @@ export default {
     border-color: white;
 }
 
-#card-body-moisture-value{
+#card-body-moisture-value {
     background-color: #627aac;
+}
+
+#card-moisture-timeseries {
+    border-color: #627aac;
+}
+
+#card-header-moisture-timeseries {
+    background-color: #3b5998;
+    color: white;
+    border-color: white;
 }
 </style>

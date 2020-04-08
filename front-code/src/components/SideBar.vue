@@ -1,14 +1,14 @@
 <template>
-    <div class="bg-dark border-right" id="sidebar-app">
-        <div class="text-light sidebar-heading">
-            <img v-bind:src="logo" width="25" height="25" class="d-inline-block align-top" alt="">
+    <div class="bg-light border-right" id="sidebar-app">
+        <div class="text-dark sidebar-heading">
+            <img v-bind:src="logo" width="33" height="33" class="d-inline-block align-top" alt="">
             {{title}}
         </div>
         <div id="search-device" class="text-light sidebar-heading">
             <input class="form-control" type="text" v-model="search" placeholder="Search Device" aria-label="Search">
         </div> 
         <div v-if="devices.length > 0" id="devicesNotEmpty" class="list-group list-group-flush">
-            <a href="#" class="text-light list-group-item list-group-item-action bg-dark" v-for="device in filteredDevices" v-bind:key="device" @click="sendDeviceName(device)" >{{ device }}</a>
+            <a href="#" class="text-dark list-group-item list-group-item-action bg-light" v-for="device in filteredDevices" v-bind:key="device" @click="sendDeviceName(device)" >{{ device }}</a>
         </div>
         <div v-else id="devicesEmpty" class="list-group list-group-flush">
             <h5  class="text-light sidebar-heading"> No devices</h5>

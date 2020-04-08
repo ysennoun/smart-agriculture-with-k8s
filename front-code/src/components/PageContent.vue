@@ -31,7 +31,7 @@
         <b-row class="mt-2">
             <b-col>
                  <div id="card-temperature-timeseries" class="card">
-                    <h5 id="card-header-temperature-timeseries" class="card-header">Temperature vs Time</h5>
+                    <h5 id="card-header-temperature-timeseries" class="card-header">Temperatures (°C) over time</h5>
                     <div>
                         <line-chart :chart-data="temperatureData" :height="height"></line-chart>
                     </div>
@@ -41,7 +41,7 @@
         <b-row class="mt-2">
             <b-col>
                  <div id="card-moisture-timeseries" class="card">
-                    <h5 id="card-header-moisture-timeseries" class="card-header">Moisture vs Time</h5>
+                    <h5 id="card-header-moisture-timeseries" class="card-header">Moisture (%) over time</h5>
                     <div>
                         <line-chart :chart-data="moistureData" :height="height"></line-chart>
                     </div>
@@ -126,6 +126,7 @@ export default {
     background-color: #74992e;
     color: white;
     border-color: white;
+    height: 100%;
 }
 
 #card-body-device-value {

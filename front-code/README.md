@@ -37,6 +37,6 @@ npm install i -g @vue/cli
 cd d3-vue-example
 npm install bootstrap-vue bootstrap axios
 npm install vue-chartjs chart.js --save
-npm run serve
-
 npm install leaflet vue2-leaflet --save
+
+npm run serve

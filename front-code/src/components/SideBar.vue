@@ -17,6 +17,9 @@
 </template>
 <script>
 import axios from "axios";
+
+//const httpsAgent = new https.Agent({cert: fs.readFileSync("./usercert.pem")})
+
 export default {
     data() {
         return {
@@ -38,12 +41,21 @@ export default {
             this.title = title;
         },
         sendDeviceName(device){
-            this.$emit("send-device-name", device)
+            this.$emit("send-device-name", device);
         }
     },
     mounted() {
         axios
-        .get("https://www.themealdb.com/api/json/v1/1/categories.php")
+        .get(
+            "https://www.themealdb.com/api/json/v1/1/categories.php"
+            //config={
+            //    auth: {
+            //        username: 'janedoe',
+            //        password: 's00pers3cret'
+            //    },
+            //    httpsAgent
+            //}
+        )
         .then(response => {
             //this.meals = response.data.categories;
             console.log(response.data.categories);

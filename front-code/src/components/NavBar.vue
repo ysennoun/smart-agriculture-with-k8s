@@ -23,12 +23,11 @@ export default {
         return {
             toggleMenuName: 'Toggle Menu',
             exit: 'Log Out',
-            exitRef: 'toto',
+            exitRef: 'logout',
         }
     },
     methods: {
         clickOnToggleMenu(){
-          console.log(process.env.TOTO)
           this.$emit("set-side-bar-activity")
         }
     }

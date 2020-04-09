@@ -31,9 +31,9 @@
         <b-row class="mt-2">
             <b-col>
                  <div id="card-temperature-timeseries" class="card">
-                    <h5 id="card-header-temperature-timeseries" class="card-header">Temperatures (°C) over time</h5>
+                    <h5 id="card-header-temperature-timeseries" class="card-header">Temperatures (°C) over the past 7 days</h5>
                     <div>
-                        <line-chart :chart-data="temperatureData" :height="height"></line-chart>
+                        <line-chart :chart-data="temperatureData"></line-chart>
                     </div>
                 </div>                 
             </b-col>
@@ -41,9 +41,9 @@
         <b-row class="mt-2">
             <b-col>
                  <div id="card-moisture-timeseries" class="card">
-                    <h5 id="card-header-moisture-timeseries" class="card-header">Moisture (%) over time</h5>
+                    <h5 id="card-header-moisture-timeseries" class="card-header">Moisture (%) over the past 7 days</h5>
                     <div>
-                        <line-chart :chart-data="moistureData" :height="height"></line-chart>
+                        <line-chart :chart-data="moistureData"></line-chart>
                     </div>
                 </div>                 
             </b-col>
@@ -56,7 +56,7 @@ import LineChart from './../mixins/LineChart.js'
 
 export default {
     components: {
-        LineChart
+        LineChart,
     },
     data() {
         return {
@@ -70,7 +70,7 @@ export default {
     },
     methods: {
         setValue: function(deviceName) {
-            this.deviceName = deviceName;
+            this.deviceName =  deviceName;
             this.fillData();
         },
         fillData () {
@@ -137,6 +137,7 @@ export default {
     background-color: #cd5c5c;
     color: white;
     border-color: white;
+    height: 100%;
 }
 
 #card-body-temperature-value {
@@ -157,6 +158,7 @@ export default {
     background-color: #3b5998;
     color: white;
     border-color: white;
+    height: 100%;
 }
 
 #card-body-moisture-value {

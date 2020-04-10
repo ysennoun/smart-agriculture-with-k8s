@@ -1,26 +1,24 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import App from "../App.vue";
-import Login from "../views/Login.vue";
+import Login from "../components/Login.vue";
+import AppContent from "../components/AppContent.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "App",
-    component: App
-  },
-  {
-    path: "/login",
-    name: "login",
+    name: "Login",
     component: Login
   },
   {
-    path: "/logout",
-    redirect: {
-        name: "login"
-    }
+    path: "/content",
+    name: "Content",
+    component: AppContent
+  },
+  {
+    path: "/*",
+    component: Login
   }
 ];
 

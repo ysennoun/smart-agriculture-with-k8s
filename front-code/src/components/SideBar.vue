@@ -26,7 +26,9 @@ export default {
             logo: require('../assets/images/plant.png'),
             search: '',
             devices: [],
-            title: 'Smart Agriculture'
+            title: 'Smart Agriculture',
+            login: null,
+            password: null
         }
     },
     computed: {
@@ -37,6 +39,10 @@ export default {
       }
     },
     methods: {
+        setLoginPassword() {
+            this.login = this.$store.getters.getCredentials.login,
+            this.password = this.$store.getters.getCredentials.password
+        },
         setValue: function(title) {
             this.title = title;
         },
@@ -45,6 +51,7 @@ export default {
         }
     },
     mounted() {
+        this.setLoginPassword();
         axios
         .get(
             "https://www.themealdb.com/api/json/v1/1/categories.php"

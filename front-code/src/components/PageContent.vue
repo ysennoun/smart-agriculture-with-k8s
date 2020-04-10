@@ -70,7 +70,7 @@ export default {
     },
     methods: {
         setValue: function(deviceName) {
-            this.deviceName =  deviceName;
+            this.deviceName =  deviceName
             this.fillData();
         },
         fillData () {

@@ -11,7 +11,7 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
-          <b-link class="text-dark" v-bind:to="exitRef">{{ exit }}</b-link>
+          <b-link class="text-dark" @click="clickOnLogOut">{{ exit }}</b-link>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -22,13 +22,17 @@ export default {
     data() {
         return {
             toggleMenuName: 'Toggle Menu',
-            exit: 'Log Out',
-            exitRef: 'logout',
+            exit: 'Log Out'
         }
     },
     methods: {
-        clickOnToggleMenu(){
+        clickOnToggleMenu() {
           this.$emit("set-side-bar-activity")
+        },
+        clickOnLogOut() {
+          this.$store.dispatch('setCredentials', {login: null, password: null}).then(() => {
+            this.$router.push({ path: 'login'});
+          });   
         }
     }
 }    

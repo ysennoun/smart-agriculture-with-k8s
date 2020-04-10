@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div id="login" class="container h-100 d-flex justify-content-center">
+    <div class="jumbotron my-auto">
     <b-card>
         <h5 class="text-center">
             <img v-bind:src="logo" width="25" height="25" style="vertical-align: top;" alt="">
@@ -7,7 +8,7 @@
             <hr>
         </h5>
         
-        <b-form @submit="onSubmit" @reset="onReset">
+        <b-form @submit="onSubmit">
         <b-form-group>
             <b-form-input
             id="text-login"
@@ -29,6 +30,7 @@
         <b-button id="button-register" block type="submit">Register</b-button>
         </b-form>
     </b-card>   
+    </div>
   </div>
 </template>
 
@@ -38,20 +40,26 @@
       return {
         logo: require('../assets/images/plant.png'),
         form: {
-          login: '',
-          password: ''
+          login: null,
+          password: null
         }
       }
     },
     methods: {
       onSubmit(evt) {
         evt.preventDefault()
-        alert(JSON.stringify(this.form))
+        this.$store.dispatch('setCredentials', this.form).then(() => {
+          this.$router.push({ path: 'content'});
+        });
       }
     }
   }
 </script>
 <style>
+html, body {
+    height: 100%;
+}
+
 #button-register {
     background-color: #74992e;
     border-color: white;

@@ -1,7 +1,7 @@
 <template>
     <div class="bg-light border-right" id="sidebar-app">
         <div class="text-dark sidebar-heading">
-            <img v-bind:src="logo" width="33" height="33" class="d-inline-block align-top" alt="">
+            <img v-bind:src="logo" width="25" height="25" style="vertical-align: top;" alt="">
             {{title}}
         </div>
         <div id="search-device" class="text-light sidebar-heading">
@@ -85,7 +85,6 @@ export default {
         )
         .then(response => {
             //this.meals = response.data.categories;
-            console.log(response.data.categories);
             this.devices = ['device1', 'device2'];
             if (this.devices.length) {
                 console.log('Devices found, emit first device: ' + this.devices[0]);
@@ -95,7 +94,6 @@ export default {
             }
         })
         .catch(err => {
-            console.log(err);
             if (err.response.status == 401) {
                 console.log('Failed to login')
                 this.sendAuthenticationFailed();

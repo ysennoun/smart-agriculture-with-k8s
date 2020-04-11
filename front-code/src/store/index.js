@@ -22,8 +22,6 @@ export default new Vuex.Store({
   },
   mutations: {
     setCredentials(state, credentials) {
-        console.log("1");
-        console.log(credentials);
         state.credentials = credentials
     },
     setAuthenticationFailed(state, status) {

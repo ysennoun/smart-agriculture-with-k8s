@@ -11,14 +11,24 @@
             <a href="#" class="text-dark list-group-item list-group-item-action bg-light" v-for="device in filteredDevices" v-bind:key="device" @click="sendDeviceName(device)" >{{ device }}</a>
         </div>
         <div v-else id="devicesEmpty" class="list-group list-group-flush">
-            <h5  class="text-light sidebar-heading"> No devices</h5>
-        </div>     
+            <h5  class="text-dark sidebar-heading"> No devices</h5>
+        </div> 
+        <b-modal id="dialog-box-alert" hide-footer>
+            <template v-slot:modal-title>
+                ERROR
+            </template>
+            <div class="d-block text-center">
+            <h3>Application can not retrieve data</h3>
+            </div>
+            <b-button class="mt-3" block @click="$bvModal.hide('dialog-box-alert')">Close</b-button>
+        </b-modal> 
     </div>
 </template>
 <script>
 import axios from "axios";
-
-//const httpsAgent = new https.Agent({cert: fs.readFileSync("./usercert.pem")})
+//const fs = require('fs');
+//const httpsAgent = "" //new https.Agent({cert: fs.readFileSync("../../public/certificates/tls.crt")})
+const apiUrl = process.env.VUE_APP_API_URL
 
 export default {
     data() {
@@ -48,34 +58,53 @@ export default {
         },
         sendDeviceName(device){
             this.$emit("send-device-name", device);
+        },
+        sendAuthenticationFailed(){
+            this.$store.dispatch('setAuthenticationFailed', true).then(() => {
+                this.$router.push('/login')
+            })
+        },
+        getHttpConfig() {
+            return {
+                auth: {
+                    username: this.$store.getters.getCredentials.login,
+                    password: this.$store.getters.getCredentials.password
+                },
+                //httpsAgent
+            }            
         }
     },
     mounted() {
         this.setLoginPassword();
+        console.log(apiUrl);
+
         axios
         .get(
-            "https://www.themealdb.com/api/json/v1/1/categories.php"
-            //config={
-            //    auth: {
-            //        username: 'janedoe',
-            //        password: 's00pers3cret'
-            //    },
-            //    httpsAgent
-            //}
+            apiUrl,
+            //this.getHttpConfig()
         )
         .then(response => {
             //this.meals = response.data.categories;
             console.log(response.data.categories);
-            this.devices = ["device1", "device2", "device3"];
+            this.devices = ['device1', 'device2'];
             if (this.devices.length) {
-                console.log("Devices found, emit first device: " + this.devices[0]);
+                console.log('Devices found, emit first device: ' + this.devices[0]);
                 this.sendDeviceName(this.devices[0]);
             } else {
-                console.log("No devices found");
+                console.log('No devices found');
             }
         })
         .catch(err => {
             console.log(err);
+            if (err.response.status == 401) {
+                console.log('Failed to login')
+                this.sendAuthenticationFailed();
+            }
+            else {
+                console.log('Error ! Application can not retrieve data')
+                this.$bvModal.show("dialog-box-alert")
+            }
+            
         });
     }
 }    

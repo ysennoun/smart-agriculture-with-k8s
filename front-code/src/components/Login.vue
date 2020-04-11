@@ -31,6 +31,15 @@
         </b-form>
     </b-card>   
     </div>
+      <b-modal id="dialog-box-alert" hide-footer>
+        <template v-slot:modal-title>
+            ERROR
+        </template>
+        <div class="d-block text-center">
+        <h3>Authentication Failed</h3>
+        </div>
+        <b-button class="mt-3" block @click="$bvModal.hide('dialog-box-alert')">Close</b-button>
+    </b-modal> 
   </div>
 </template>
 
@@ -51,7 +60,20 @@
         this.$store.dispatch('setCredentials', this.form).then(() => {
           this.$router.push({ path: 'content'});
         });
+      },
+      checkAuthentication() {
+        setTimeout(() => {
+          if (this.$store.getters.isAuthenticationFailed === true){
+            this.$store.dispatch('setAuthenticationFailed', false).then(() => {
+              this.$bvModal.show("dialog-box-alert")
+            })
+          }
+        }, 500) // wait 500 ms to display alert when returning on login page
+
       }
+    },
+    mounted() {
+      this.checkAuthentication()
     }
   }
 </script>

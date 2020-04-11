@@ -28,7 +28,7 @@
 import axios from "axios";
 //const fs = require('fs');
 //const httpsAgent = "" //new https.Agent({cert: fs.readFileSync("../../public/certificates/tls.crt")})
-const apiUrl = process.env.VUE_APP_API_URL
+const API_URL_DEVICES = process.env.VUE_APP_API_URL_DEVICES
 
 export default {
     data() {
@@ -63,47 +63,42 @@ export default {
             this.$store.dispatch('setAuthenticationFailed', true).then(() => {
                 this.$router.push('/login')
             })
-        },
-        getHttpConfig() {
-            return {
-                auth: {
-                    username: this.$store.getters.getCredentials.login,
-                    password: this.$store.getters.getCredentials.password
-                },
-                //httpsAgent
-            }            
+        },         
+        getDevices() {
+            axios.get(
+                    API_URL_DEVICES,
+                    {
+                        auth: {
+                            username: this.$store.getters.getCredentials.login,
+                            password: this.$store.getters.getCredentials.password
+                        }
+                    }
+                )
+                .then(response => {
+                    console.log(response.data.categories)
+                    this.devices = ['device1', 'device2']; //response.data.devices
+                    if (this.devices.length) {
+                        console.log('Devices found, emit first device: ' + this.devices[0]);
+                        this.sendDeviceName(this.devices[0]);
+                    } else {
+                        console.log('No devices found');
+                    }
+                })
+                .catch(err => {
+                    if (err.response && err.response.status == 401) {
+                        console.log('Failed to login')
+                        this.sendAuthenticationFailed();
+                    }
+                    else {
+                        console.log('Error ! Application can not retrieve data')
+                        this.$bvModal.show('dialog-box-alert')
+                    }
+                });
         }
     },
     mounted() {
         this.setLoginPassword();
-        console.log(apiUrl);
-
-        axios
-        .get(
-            apiUrl,
-            //this.getHttpConfig()
-        )
-        .then(response => {
-            //this.meals = response.data.categories;
-            this.devices = ['device1', 'device2'];
-            if (this.devices.length) {
-                console.log('Devices found, emit first device: ' + this.devices[0]);
-                this.sendDeviceName(this.devices[0]);
-            } else {
-                console.log('No devices found');
-            }
-        })
-        .catch(err => {
-            if (err.response.status == 401) {
-                console.log('Failed to login')
-                this.sendAuthenticationFailed();
-            }
-            else {
-                console.log('Error ! Application can not retrieve data')
-                this.$bvModal.show("dialog-box-alert")
-            }
-            
-        });
+        this.getDevices();
     }
 }    
 </script>

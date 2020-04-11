@@ -31,8 +31,6 @@
         this.isActive = !this.isActive
       },
       checkCredentials() {
-        console.log(" credentials return to login page")
-        console.log(this.$store.getters.areCredentialsSet)
         if(this.$store.getters.areCredentialsSet == false){
           console.log("No credentials return to login page")
           this.$router.push({ path: 'login'})
@@ -40,7 +38,6 @@
       }
     },
     mounted() {
-      console.log("ttoto")
       this.checkCredentials()
     }
   }

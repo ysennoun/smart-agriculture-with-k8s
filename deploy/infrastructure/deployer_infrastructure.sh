@@ -36,8 +36,19 @@ function enable_apis(){
 function create_k8s_cluster() {
     echo "Let's create k8s cluster"
     clusterName=$1
+    #gcloud beta container clusters create "$clusterName" \
+    #  --addons=HorizontalPodAutoscaling,HttpLoadBalancing,Istio \
+    #  --machine-type="$MACHINE_TYPE" \
+    #  --cluster-version=latest --zone="$COMPUTE_ZONE" \
+    #  --enable-stackdriver-kubernetes \
+    #  --enable-ip-alias \
+    #  --enable-autoscaling --min-nodes="$MIN_NODES" --num-nodes "$NUM_NODES" --max-nodes="$MAX_NODES" \
+    #  --enable-autorepair \
+    #  --scopes cloud-platform \
+    #   --quiet
+
     gcloud beta container clusters create "$clusterName" \
-      --addons=HorizontalPodAutoscaling,HttpLoadBalancing,Istio \
+      --addons=HorizontalPodAutoscaling,HttpLoadBalancing \
       --machine-type="$MACHINE_TYPE" \
       --cluster-version=latest --zone="$COMPUTE_ZONE" \
       --enable-stackdriver-kubernetes \
@@ -45,7 +56,7 @@ function create_k8s_cluster() {
       --enable-autoscaling --min-nodes="$MIN_NODES" --num-nodes "$NUM_NODES" --max-nodes="$MAX_NODES" \
       --enable-autorepair \
       --scopes cloud-platform \
-       --quiet
+       --quiet       
 
     # Create an RBAC service account
     kubectl create clusterrolebinding cluster-admin-binding \

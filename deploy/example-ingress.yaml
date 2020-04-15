@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: api-certificates-secret # for CN api.smart-agriculture.com
+type: kubernetes.io/tls
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURRekNDQWl1Z0F3SUJBZ0lKQVBzQm9JaWluUUM5TUEwR0NTcUdTSWIzRFFFQkJRVUFNR0V4Q3pBSkJnTlYKQkFZVEFrWlNNUTh3RFFZRFZRUUtEQVpHY21GdVkyVXhEakFNQmdOVkJBc01CWE50WVhKME1URXdMd1lEVlFRRApEQ2hoY0drdWMyMWhjblF0WVdkeWFXTjFiSFIxY21WbGNtcG1jRzlxY21admNHcGxZWEl1WTI5dE1CNFhEVEl3Ck1EUXhNakUwTlRJMU0xb1hEVE13TURReE1ERTBOVEkxTTFvd1lURUxNQWtHQTFVRUJoTUNSbEl4RHpBTkJnTlYKQkFvTUJrWnlZVzVqWlRFT01Bd0dBMVVFQ3d3RmMyMWhjblF4TVRBdkJnTlZCQU1NS0dGd2FTNXpiV0Z5ZEMxaApaM0pwWTNWc2RIVnlaV1Z5YW1ad2IycHlabTl3YW1WaGNpNWpiMjB3Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBCkE0SUJEd0F3Z2dFS0FvSUJBUUNiMUtoOEwzVGV1OFllYU5HQlU2SmZVdEJ0dFVrelIwK2tYakVMQnRsbU0xcXoKZHdYRlk3YlpiQ3hnMUJLZDZvem9BNDIrWUdqVjhaODgxMytFK0tOL0x3ZkRDNHd2aXpuU0FNZHJ2dTVKd1ludgpydDhtcFQ5cGxHUExmQlZmTkZGb0t3Y25hUlR4T20xVW5mLzBwSnA2QzE4TG5wM2Z5RlM3YTBJenRyTlduS1NQClBienFQa2tDa01WaHlDNWpGWUFiajV3ekFqbERhSGF0UEVCQ2J2NWxXb2FjOHJ1aWZnODZlZ3BpdHRiSUdLSTkKRlF4ejljUUg0TTV5TG9oQWtIRzUxbjAwQ0NuREdDd0pyOUR6NmloOGJYaC91dW9wVWozMHBlQnZkdEgyY0p6SApLOU9PcTdEeEpab3ZPSnpDWVpiMWZza24xZ1Z1eFhqaUJFZUZldWt6QWdNQkFBRXdEUVlKS29aSWh2Y05BUUVGCkJRQURnZ0VCQUxRRkJvTmpZeWp5SFhzcEpxMzlOUnpxQkhWdTZ3cUFNSC9RRlFoanB5R2s0T3dORlVLQzNYMzMKZnNtNk9nSGdrZy80dlgzYnBGMjQzR2YwdFdGaDhSNURmKzlBSU8zMkpxUjVvc2ZSbk5UaTQ4anNoak52V2hWcgptWlRQSlBJZEEvQjNwVldCZVJZRUJUZHoycXNtYVdicHQxSVpCMjEwdkZveWpOYzdyWnllcVhRd01ET1Z4SmxxCmIrS0haTVV0YndYS1l1S3FGVnNjQnh4cENudDM3bFYrK3pOKy9HTkhwQ21TUmVtMjdrTzhyZFNuQ05TK09UZ2MKV1hPSEVEeEpnSHNDOE92OENKRVdYc0RYQ255bTlhWnZiM21CWUZzdUliNHVzalE1T1NmT2JjcnRmR3RQRTlsaQpmUEc0V0JaWU45a29NbkhNaStDcEloU0NIZE1VUHowPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+  tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBbTlTb2ZDOTAzcnZHSG1qUmdWT2lYMUxRYmJWSk0wZFBwRjR4Q3diWlpqTmFzM2NGCnhXTzIyV3dzWU5RU25lcU02QU9Odm1CbzFmR2ZQTmQvaFBpamZ5OEh3d3VNTDRzNTBnREhhNzd1U2NHSjc2N2YKSnFVL2FaUmp5M3dWWHpSUmFDc0hKMmtVOFRwdFZKMy85S1NhZWd0ZkM1NmQzOGhVdTJ0Q003YXpWcHlranoyOAo2ajVKQXBERlljZ3VZeFdBRzQrY013STVRMmgyclR4QVFtNytaVnFHblBLN29uNFBPbm9LWXJiV3lCaWlQUlVNCmMvWEVCK0RPY2k2SVFKQnh1ZFo5TkFncHd4Z3NDYS9ROCtvb2ZHMTRmN3JxS1ZJOTlLWGdiM2JSOW5DY3h5dlQKanF1dzhTV2FMemljd21HVzlYN0pKOVlGYnNWNDRnUkhoWHJwTXdJREFRQUJBb0lCQUFHQ2h2dGxEbEhXS2U1RApmN3dzRGtlMEtyYlZhZGNvV3JveCszR3E2RkpZTHduTUhtOHlMeVJlS3ZQcE9pRHprOWZ2cU9EdVdEV3llS09EClJ3WUh6clc5dytwODR5Zld4b0dsWmtsQitWY1htL21KalRuM29leW85bXFUVWpXdzhSVDhUYjV4QXpYdkpmNEsKNWQ3OTlVMDNiUDFVMVJ6RStTVXp2ZGw0YkxackhFRzIrS29WNHI4T3RMRVE3MzRFbEhXOGFlTUY3eDVIVTE3OQpnQytuTTE5ZHRyNVJCNHlZdDlQRzN4ZFYvblZuRXY5cnJNNExZaWNWNDJEQm50d0Z4WWhWTEhWK09Dc0ZvSElqCjlFelFDNXMxL0lYVW9MZFcrdHluQ1NUYm9MWGFKcXhJMEc2SDR2MlUwMjdReitJZ1NiNUVkallERHhaWnNHeTMKU0Z2c0tDa0NnWUVBempUcU5XTkpZRHJiNkoyMWp6STRBbjI3b1k0RHk2dktPb0NXV1JSU09ZK05BNWdFZHRsSQpkRWk2dXFxZy9BNlNKMDY1M3IyY1VEd09zb1p2S3N3QXBXZi81ZXJ4em1TQytaZWdrbVVMUDR2UmsvSHZVZm9zCnVmd0hmcEJMSlpQZTFxeUVoSTR5VmZuU1pFU0dLdkZNM2gwbm0rSEZGUzhoMGZTMFRubXdNcFVDZ1lFQXdYV20KQmJDcGxvOThoY2NMaXcxYjR4VTJHTFJpd1Z5VVRDeEw3Zmk5bllCTTNPak5RN292WXh3ekVZenAvbkh6K2JsRgp1SUpFYUxqYk1kV1RMR282Z29CUm9yVkMxd29CRFhNYmtIM01tV3FHT3ViVXBZQk5XSlJHaytlNmovaVkwWjZ3CnNnbWVQQ05YbzdmTkxILzZrZXMwdDF6djF4YWJyZ1UzV2JnaHdxY0NnWUFuVWgzTEdtaTJpZUsvUTd1SVY4b28KWjNOdEJoaWhNTnY2TmVUMWpaTjBXSFJLV0NXWnlDc3h5V0NhRWNscTV4aGxtSFNIRGQ4TnliWC93dlRWMDFyWQpMN0d6VlE3UkRZZVFNcUt5NThPeVZXWWNjUWp5dCtMcGdDNnBxcmc1clMzVC84ZXhRekJFQnNSZ3pGUk5RZ0FuClpxWFQ2c1JiR3NhM001TmlWNEFLMVFLQmdRQzkrZTg0SlR6VVNrRnBDWWJQWFNYL3dHT29MUFBSbUQxVTlDYjQKSU16cmJ3T0w1OTB5aGhKa3pGdGwvN0FGR3hnUUFoMXlUQklybUdRLzh0Q2N6QkI2K05HeDZ6Z2cvWVQ5RlMxYgpYZjNlSmhwOG14TDFGeUpkT3ZaMzVoWnhyUms4dUE0aU40bTQycWdFY01rOXlzdGdJYzVaeGgwTVpmb3BFSnhECk1hdU5md0tCZ0Rha0sxWXhnbEpjRlhTRnFqWndzdWpEbTBsajBFZmVHaEtDREE3dEsvN3I3R3FHTUpJWWF5bFAKYzlqMDRyaGFuSFRvR3M2bnE0elZSOXB3ZjNXaHY0a2ZvbWlncWpKb1VGWXBNTU9hMTV0a0lDWENkZHc2NGhLTgp1cTRXOUgrQXAwZ0NLYkZ2TndUZjRocDlOT000dXJjOHNwaTZiN1BHQmwzTUxiaVhuRVBGCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-1
+spec:
+  selector:
+    matchLabels:
+      run: nginx-1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: nginx-1
+    spec:
+      containers:
+        - name: nginx-1
+          image: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-1
+  labels:
+    run: nginx-1
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    run: nginx-1
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-hello
+spec:
+  selector:
+    matchLabels:
+      run: flask-hello
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: flask-hello
+    spec:
+      containers:
+        - name: flask-hello
+          image: gcr.io/hello-minikube-zero-install/hello-node
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-hello
+  labels:
+    run: flask-hello
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    run: flask-hello
+
+---
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: my-ingress-nginx
+  annotations:
+    # use the shared ingress-nginx
+    kubernetes.io/ingress.class: "nginx" 
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header Access-Control-Allow-Origin $http_origin;
+      add_header Access-Control-Allow-Methods "POST, GET, OPTIONS";
+      add_header Access-Control-Allow-Credentials true;
+      add_header Access-Control-Allow-Headers "*";
+    #nginx.ingress.kubernetes.io/rewrite-target: /
+    #nginx.ingress.kubernetes.io/enable-cors: "true"
+    #nginx.ingress.kubernetes.io/cors-allow-methods: "GET"
+    #nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    #nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    #nginx.ingress.kubernetes.io/cors-allow-headers: "User-Agent,Content-Type,Authorization,Host"
+spec:
+  #tls:
+  #- hosts:
+  #  - api.smart-agricultureerjfpojrfopjear.com
+  #  secretName: api-certificates-secret  
+  rules:
+  - host: api.smart-agricultureerjfpojrfopjear.com
+    http:
+      paths:
+      - backend:
+          serviceName: nginx-1
+          servicePort: 80
+        path: /

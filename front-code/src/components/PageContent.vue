@@ -54,6 +54,9 @@
 <script>
 import axios from "axios";
 import LineChart from './../mixins/LineChart.js'
+//import https from 'https'
+
+//const agent = new https.Agent({rejectUnauthorized: false});
 const API_URL_LAST_VALUE = process.env.VUE_APP_API_URL_LAST_VALUE
 const API_URL_TIMESERIES = process.env.VUE_APP_API_URL_TIMESERIES
 
@@ -90,16 +93,25 @@ export default {
         },
         getLastValueData() {
             var url = API_URL_LAST_VALUE + this.deviceName
+            console.log(url)
             axios.get(
-                    url,
-                    {
-                        auth: {
-                            username: this.$store.getters.getCredentials.login,
-                            password: this.$store.getters.getCredentials.password
-                        }
-                    }
+                    API_URL_LAST_VALUE,
+                    //{ 
+                    //    headers: {
+                    //        Host: "api.smart-agricultureerjfpojrfopjear.com",
+                    //        'Access-Control-Allow-Origin': '*'
+                    //    }//, 
+                        //httpsAgent: agent    
+                    //}
+                    //{
+                    //    auth: {
+                    //        username: this.$store.getters.getCredentials.login,
+                    //        password: this.$store.getters.getCredentials.password
+                    //    }
+                    //}
                 )
                 .then(response => {
+                    alert(response)
                     console.log(response.data)
                     //var lastValue = response.data
                     this.lastDate = "2020/04/07 12:34:44"; //lastValue.rows[0].timestamp
@@ -107,22 +119,24 @@ export default {
                     this.lastMoisture = this.getRandomInt() + "%"; //lastValue.rows[0].moisture + "%"
                 })
                 .catch(err => {
-                    if(err.response && err.response.status == 401) {
-                        alert("toto")
-                    }
                     alert(err)
+                    if(err.response && err.response.status == 401) {
+                        console.log('Failed to login')
+                        this.sendAuthenticationFailed();
+                    }
                 });
         },
         getTimeseriesData() {
             var url = API_URL_TIMESERIES + this.deviceName + this.getQueryParams()
+            console.log(url)
             axios.get(
-                    url,
-                    {
-                        auth: {
-                            username: this.$store.getters.getCredentials.login,
-                            password: this.$store.getters.getCredentials.password
-                        }
-                    }
+                    API_URL_TIMESERIES,
+                    //{
+                    //    auth: {
+                    //        username: this.$store.getters.getCredentials.login,
+                    //        password: this.$store.getters.getCredentials.password
+                    //    }
+                    //}
                 )
                 .then(response => {
                     console.log(response.data)

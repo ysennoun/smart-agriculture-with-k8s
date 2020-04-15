@@ -1,0 +1,21 @@
+[ req ]
+default_bits       = 2048
+default_md         = sha512
+default_keyfile    = tls.key
+prompt             = no
+encrypt_key        = no
+distinguished_name = req_distinguished_name
+
+[ req_distinguished_name ]
+countryName                 = FR
+stateOrProvinceName         = France
+localityName               = Paris
+organizationName           = Xebia
+commonName                 = APP_TO_REPLACE
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = APP_TO_REPLACE
+IP.1 = 35.198.161.137

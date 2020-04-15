@@ -26,6 +26,9 @@
 </template>
 <script>
 import axios from "axios";
+//import https from 'https'
+
+//const agent = new https.Agent({rejectUnauthorized: false});
 //const fs = require('fs');
 //const httpsAgent = "" //new https.Agent({cert: fs.readFileSync("../../public/certificates/tls.crt")})
 const API_URL_DEVICES = process.env.VUE_APP_API_URL_DEVICES
@@ -65,17 +68,12 @@ export default {
             })
         },         
         getDevices() {
+            console.log(API_URL_DEVICES)
             axios.get(
-                    API_URL_DEVICES,
-                    {
-                        auth: {
-                            username: this.$store.getters.getCredentials.login,
-                            password: this.$store.getters.getCredentials.password
-                        }
-                    }
+                    "http://35.234.78.209:8080/hello"
                 )
                 .then(response => {
-                    console.log(response.data.categories)
+                    console.log(response)
                     this.devices = ['device1', 'device2']; //response.data.devices
                     if (this.devices.length) {
                         console.log('Devices found, emit first device: ' + this.devices[0]);

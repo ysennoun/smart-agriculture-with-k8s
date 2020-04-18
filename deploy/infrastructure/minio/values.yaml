@@ -27,7 +27,7 @@ persistence:
   storageClass: ""
   VolumeName: ""
   accessMode: ReadWriteOnce
-  size: 2Gi
+  size: 5Gi
   subPath: ""
 
 service:
@@ -49,8 +49,8 @@ defaultBucket:
   policy: none
   purge: false
 
-#tls:
-#  enabled: false
-#  certSecret: "minio-certificates-secret"
-#  publicCrt: tls.crt
-#  privateKey: tls.key
+tls:
+  enabled: false
+  certSecret: "minio-certificates-secret"
+  publicCrt: tls.crt
+  privateKey: tls.key

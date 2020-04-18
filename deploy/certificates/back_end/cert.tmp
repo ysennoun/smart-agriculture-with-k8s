@@ -19,3 +19,4 @@ subjectAltName = @alt_names
 [ alt_names ]
 DNS.1 = APP_TO_REPLACE
 DNS.2 = back-end
+IP.1 = 0.0.0.0

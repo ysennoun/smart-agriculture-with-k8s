@@ -31,7 +31,7 @@ def get_minio_client(endpoint, access_key, secret_key):
     return Minio(endpoint,
                access_key=access_key,
                secret_key=secret_key,
-               secure=False)
+               secure=True)
 
 
 def put_object(client, bucket_name):

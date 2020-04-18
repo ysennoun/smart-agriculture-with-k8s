@@ -60,14 +60,10 @@ function setup-cluster(){
 
 function create-certificates(){
   echo "Create certificates"
-  #create_ssl_certificates "back_end" "back-end.$ENVIRONMENT.svc.cluster.local"
-  #create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
-  #create_ssl_certificates "minio" "smart-agriculture-minio.$ENVIRONMENT.svc.cluster.local"
-  create_ssl_certificates "api" "flask-hello"
+  create_ssl_certificates "back_end" "back-end.$ENVIRONMENT.svc.cluster.local"
+  create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
+  create_ssl_certificates "minio" "smart-agriculture-minio.$ENVIRONMENT.svc.cluster.local"
 }
-
-#kubectl get secret vernemq-certificates-secret -n dev -o jsonpath="{.data.tls\.crt}" | base64 --decode > toto.crt
-
 
 function deploy-modules(){
     ## Create Namespace

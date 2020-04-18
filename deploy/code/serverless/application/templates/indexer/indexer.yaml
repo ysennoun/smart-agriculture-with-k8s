@@ -79,21 +79,6 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: indexer
-  namespace: {{ .Values.namespace }}
-  labels:
-    run: indexer
-spec:
-  ports:
-    - port: 80
-  selector:
-    run: indexer
-
----
-
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -113,3 +98,18 @@ spec:
         target:
           type: Utilization
           averageUtilization: 50
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: indexer
+  namespace: {{ .Values.namespace }}
+  labels:
+    run: indexer
+spec:
+  ports:
+    - port: 80
+  selector:
+    run: indexer

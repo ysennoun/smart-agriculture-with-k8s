@@ -60,5 +60,5 @@ kubectl create deployment flask-hello --image=eu.gcr.io/ysennoun-iot/flask-hello
 kubectl expose deployment flask-hello --type=LoadBalancer --port=8080
 
 
-docker build -f Dockerfile-flask -t eu.gcr.io/ysennoun-iot/flask-hello . && docker push eu.gcr.io/ysennoun-iot/flask-hello
+docker build -f Dockerfile-flask -t eu.gcr.io/ysennoun-iot/flask-hello:tls . && docker push eu.gcr.io/ysennoun-iot/flask-hello:tls
 kubectl apply -f flask-hello.yaml

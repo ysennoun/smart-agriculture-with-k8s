@@ -18,52 +18,41 @@ MACHINE_TYPE=n1-standard-4
 
 ## FUNCTIONS
 function activate_billing(){
-    PROJECT=$1
-    echo "Activate billing"
-    gcloud config set core/project "$PROJECT"
+  PROJECT=$1
+  echo "Activate billing"
+  gcloud config set core/project "$PROJECT"
 }
 
 function enable_apis(){
-    echo "Activate APIs"
-    gcloud services enable \
-         cloudapis.googleapis.com \
-         cloudbuild.googleapis.com \
-         container.googleapis.com \
-         containerregistry.googleapis.com \
-         --quiet
+  echo "Activate APIs"
+  gcloud services enable \
+       cloudapis.googleapis.com \
+       cloudbuild.googleapis.com \
+       container.googleapis.com \
+       containerregistry.googleapis.com \
+       --quiet
 }
 
 function create_k8s_cluster() {
-    echo "Let's create k8s cluster"
-    clusterName=$1
-    #gcloud beta container clusters create "$clusterName" \
-    #  --addons=HorizontalPodAutoscaling,HttpLoadBalancing,Istio \
-    #  --machine-type="$MACHINE_TYPE" \
-    #  --cluster-version=latest --zone="$COMPUTE_ZONE" \
-    #  --enable-stackdriver-kubernetes \
-    #  --enable-ip-alias \
-    #  --enable-autoscaling --min-nodes="$MIN_NODES" --num-nodes "$NUM_NODES" --max-nodes="$MAX_NODES" \
-    #  --enable-autorepair \
-    #  --scopes cloud-platform \
-    #   --quiet
+  echo "Let's create k8s cluster"
+  clusterName=$1
+  gcloud beta container clusters create "$clusterName" \
+    --addons=HorizontalPodAutoscaling,HttpLoadBalancing \
+    --machine-type="$MACHINE_TYPE" \
+    --cluster-version=latest --zone="$COMPUTE_ZONE" \
+    --enable-stackdriver-kubernetes \
+    --enable-ip-alias \
+    --enable-autoscaling --min-nodes="$MIN_NODES" --num-nodes "$NUM_NODES" --max-nodes="$MAX_NODES" \
+    --enable-autorepair \
+    --scopes cloud-platform \
+     --quiet
 
-    gcloud beta container clusters create "$clusterName" \
-      --addons=HorizontalPodAutoscaling,HttpLoadBalancing \
-      --machine-type="$MACHINE_TYPE" \
-      --cluster-version=latest --zone="$COMPUTE_ZONE" \
-      --enable-stackdriver-kubernetes \
-      --enable-ip-alias \
-      --enable-autoscaling --min-nodes="$MIN_NODES" --num-nodes "$NUM_NODES" --max-nodes="$MAX_NODES" \
-      --enable-autorepair \
-      --scopes cloud-platform \
-       --quiet       
+  # Create an RBAC service account
+  kubectl create clusterrolebinding cluster-admin-binding \
+    --clusterrole=cluster-admin \
+    --user=$(gcloud config get-value core/account)
 
-    # Create an RBAC service account
-    kubectl create clusterrolebinding cluster-admin-binding \
-      --clusterrole=cluster-admin \
-      --user=$(gcloud config get-value core/account)
-
-    echo "End creation"
+  echo "End creation"
 }
 
 function get_k8_apiserver_url() {
@@ -72,10 +61,10 @@ function get_k8_apiserver_url() {
 }
 
 function delete_k8s_cluster() {
-    echo "Let's delete k8s cluster"
-    clusterName=$1
-    gcloud beta container clusters delete "$clusterName" --zone "$COMPUTE_ZONE" --quiet
-    echo "End deletion"
+  echo "Let's delete k8s cluster"
+  clusterName=$1
+  gcloud beta container clusters delete "$clusterName" --zone "$COMPUTE_ZONE" --quiet
+  echo "End deletion"
 }
 
 function create_namespace(){
@@ -122,8 +111,8 @@ function install_infrastructure(){
       mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
       backEndTLS=$(get_ssl_certificates_in_base64 "back_end" "tls.crt")
       backEndKey=$(get_ssl_certificates_in_base64 "back_end" "tls.key")
-      #minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
-      #minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
+      minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
+      minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
 
       echo "Install roles and secrets"
       helm upgrade --install --debug \
@@ -134,6 +123,8 @@ function install_infrastructure(){
         --set mqttCA="$mqttCA" \
         --set mqttTLS="$mqttTLS" \
         --set mqttKey="$mqttKey" \
+        --set minioTLS="$minioTLS" \
+        --set minioKey="$minioKey" \
         --set backEndTLS="$backEndTLS" \
         --set backEndKey="$backEndKey" \
         --set s3aAccessKey="$s3aAccessKey" \
@@ -141,8 +132,6 @@ function install_infrastructure(){
         --set mqttIndexerPassBase64="$(echo "$mqttIndexerPass" | base64)" \
         --set backEndUserPassBase64="$(echo "$backEndUserPass" | base64)"
 
-       #--set minioTLS="$minioTLS" \
-        #--set minioKey="$minioKey" \
   else
       echo "VerneMQ is already initialized"
   fi

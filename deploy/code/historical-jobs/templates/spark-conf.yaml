@@ -16,30 +16,29 @@ metadata:
 type: Opaque
 stringData:
   spark-defaults.conf: |
-    spark.executor.instances                2
-    spark.kubernetes.namespace              {{ .Values.namespace }}
-    spark.kubernetes.authenticate.driver.serviceAccountName spark-sa
-    spark.yarn.jars                         file:///opt/spark/jars/*.jar
-    spark.hadoop.fs.s3a.fast.upload         true
-    spark.hadoop.fs.s3a.endpoint            http://smart-agriculture-minio:9000
-    spark.hadoop.fs.s3.awsAccessKeyId       {{ .Values.s3aAccessKey }}
-    spark.hadoop.fs.s3.awsSecretAccessKey   {{ .Values.s3aSecretKey }}
-    spark.hadoop.fs.s3.impl                 org.apache.hadoop.fs.s3a.S3AFileSystem
-    spark.hadoop.fs.s3a.access.key          {{ .Values.s3aAccessKey }}
-    spark.hadoop.fs.s3a.secret.key          {{ .Values.s3aSecretKey }}
-    spark.hadoop.fs.s3a.path.style.access   true
-    spark.hadoop.fs.s3a.impl                org.apache.hadoop.fs.s3a.S3AFileSystem
-    spark.es.nodes.wan.only                 true
-    spark.es.index.auto.create              true
-    spark.es.nodes                          smart-agriculture-elasticsearch-es-http
-    spark.es.port                           9200
-    spark.es.net.http.auth.user             elastic
-    spark.es.net.http.auth.pass             {{ .Values.esUserPass }}
-    spark.es.net.ssl                        true
-    spark.es.net.ssl.cert.allow.self.signed true
-    spark.es.net.ssl.truststore.location    file:///opt/spark/conf/truststore/truststore.jks
-    spark.es.net.ssl.truststore.pass        {{ .Values.esTruststorePass }}
-    spark.kubernetes.driver.secrets.elasticsearch-truststore-secret /opt/spark/conf/truststore
+    spark.executor.instances                                          2
+    spark.kubernetes.namespace                                        {{ .Values.namespace }}
+    spark.kubernetes.authenticate.driver.serviceAccountName           spark-sa
+    spark.yarn.jars                                                   file:///opt/spark/jars/*.jar
+    spark.hadoop.fs.s3a.connection.ssl.enabled                        true
+    spark.hadoop.fs.s3a.fast.upload                                   true
+    spark.hadoop.fs.s3a.endpoint                                      http://smart-agriculture-minio:9000
+    spark.hadoop.fs.s3.awsAccessKeyId                                 {{ .Values.s3aAccessKey }}
+    spark.hadoop.fs.s3.awsSecretAccessKey                             {{ .Values.s3aSecretKey }}
+    spark.hadoop.fs.s3.impl                                           org.apache.hadoop.fs.s3a.S3AFileSystem
+    spark.hadoop.fs.s3a.access.key                                    {{ .Values.s3aAccessKey }}
+    spark.hadoop.fs.s3a.secret.key                                    {{ .Values.s3aSecretKey }}
+    spark.hadoop.fs.s3a.path.style.access                             true
+    spark.hadoop.fs.s3a.impl                                          org.apache.hadoop.fs.s3a.S3AFileSystem
+    spark.es.nodes.wan.only                                           true
+    spark.es.index.auto.create                                        true
+    spark.es.nodes                                                    smart-agriculture-elasticsearch-es-http
+    spark.es.port                                                     9200
+    spark.es.net.http.auth.user                                       elastic
+    spark.es.net.http.auth.pass                                       {{ .Values.esUserPass }}
+    spark.es.net.ssl                                                  true
+    spark.es.net.ssl.cert.allow.self.signed                           true
+    spark.es.net.ssl.truststore.location                              file:///opt/spark/conf/truststore/truststore.jks
+    spark.es.net.ssl.truststore.pass                                  {{ .Values.esTruststorePass }}
+    spark.kubernetes.driver.secrets.elasticsearch-truststore-secret   /opt/spark/conf/truststore
     spark.kubernetes.executor.secrets.elasticsearch-truststore-secret /opt/spark/conf/truststore
-
-#    spark.hadoop.fs.s3a.connection.ssl.enabled true

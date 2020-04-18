@@ -32,14 +32,21 @@ def validate_request(body_request: dict, schema: dict):
 
 def register_routes(app: Flask, auth: HTTPBasicAuth, back_end_service: BackEndService):
 
-    @app.route('/device/last-value/<string:device>', methods=['GET'])
+    @app.route('/devices', methods=['GET'])
+    @auth.login_required
+    def handle_get_last_value():
+        logger.debug(f"GET list of devices")
+        devices = back_end_service.get_devices()
+        return Response(json.dumps(devices), mimetype='application/json')
+
+    @app.route('/devices/<string:device>/last-value', methods=['GET'])
     @auth.login_required
     def handle_get_last_value(device):
         logger.debug(f"GET last value for device: {device}")
         last_value = back_end_service.get_last_value(device)
         return Response(json.dumps(last_value), mimetype='application/json')
 
-    @app.route('/device/timeseries/<string:device>', methods=['GET'])
+    @app.route('/devices/<string:device>/timeseries', methods=['GET'])
     @auth.login_required
     def handle_get_timeseries(device):
         logger.debug(f"GET request for device: {device}", extra={"arguments": request.args})

@@ -22,6 +22,21 @@ class TestBackEndService(unittest.TestCase):
         self.assertEqual(query_arguments.offset, 11)
         self.assertEqual(query_arguments.max_results, 11)
 
+    def test_get_devices_query(self):
+        ######### Given #########
+        query_arguments = QueryArguments(
+            offset=0,
+            max_results=2,
+            from_date=get_date_at_midnight(),
+            to_date=get_current_date()
+        )
+
+        ######### When #########
+        result = BackEndService.get_devices_query(query_arguments)
+
+        ######### Then #########
+        self.assertEqual(result["aggs"]["devices"]["terms"]["size"], query_arguments.max_results)
+
     def test_get_last_value_query(self):
         ######### Given #########
         device = "device"
@@ -63,6 +78,39 @@ class TestBackEndService(unittest.TestCase):
         self.assertEqual(result["from"], query_arguments.offset)
         self.assertEqual(result["size"], query_arguments.max_results)
         self.assertEqual(result["query"]["bool"]["must"][0]["term"], {"device": device})
+
+    def test_get_devices(self):
+        ######### Given #########
+        arguments = {
+            "next_token": 0,
+            "max_results": 2
+        }
+        aggregations = {
+            "aggregations": {
+                "devices": {
+                    "doc_count_error_upper_bound": 46,
+                    "sum_other_doc_count": 79,
+                    "buckets": [
+                        {
+                            "key": "Device A",
+                            "doc_count": 100
+                        },
+                        {
+                            "key": "Device B",
+                            "doc_count": 52
+                        }
+                    ]
+                }
+            }
+        }
+        self.es_client.search = Mock(return_value=aggregations)
+        back_end_service = BackEndService(self.es_client, "es_alias")
+
+        ######### When #########
+        devices = back_end_service.get_devices(arguments)
+
+        ######### Then #########
+        self.assertEqual(devices, {"rows": ["Device A", "Device B"]})
 
     def test_get_search_result(self):
         ######### Given #########

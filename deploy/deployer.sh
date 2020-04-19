@@ -9,7 +9,7 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 
 # IMPORTS
-. "$BASE_PATH/deploy/certificates/deployer_certificates.sh"
+. "$BASE_PATH/deploy/cluster/deployer_cluster.sh"
 . "$BASE_PATH/deploy/infrastructure/deployer_infrastructure.sh"
 . "$BASE_PATH/deploy/code/deployer_code.sh"
 
@@ -30,6 +30,7 @@ MQTT_INDEXER_PASS="3ywbCs2uB4"
 MQTT_DEVICE_PASS="9Fex2nqdqe"
 BACK_END_USER_PASS="4hxGaN34KQ"
 ES_TRUSTORE_PASS="ChI2OfIpGuq0be5X"
+MINIO_TRUSTORE_PASS="vkM8ssfK5fv4JQ9k"
 
 
 ######## FUNCTIONS ########
@@ -38,8 +39,8 @@ usage() {
     echo " ." `basename "$0"` "<ACTION> <ENVIRONMENT> "
     echo ""
     echo "ACTION:"
+    echo "  - create-certificates <ENVIRONMENT>: create certificates with external statis ip addresses"
     echo "  - setup-cluster: create k8s cluster"
-    echo "  - create-certificates <ENVIRONMENT>: create certificates for environment"
     echo "  - deploy-modules <ENVIRONMENT>: deploy all modules (infrastructure, docker images, applications)"
     echo "  - delete-cluster: delete cluster"
     echo "  - delete-namespace <ENVIRONMENT>: delete namespace"
@@ -48,21 +49,19 @@ usage() {
     echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
 }
 
+function create-certificates(){
+  # Create certificates
+  create_certificates "$ENVIRONMENT" "$COMPUTE_REGION"
+}
+
 function setup-cluster(){
     # Enable APIs
     enable_apis
     # Activate billing and enable APIs
-    activate_billing ${PROJECT_ID}
+    activate_billing "$PROJECT_ID"
 
     # Create Kubernetes Cluster
-    create_k8s_cluster "$CLUSTER_NAME"
-}
-
-function create-certificates(){
-  echo "Create certificates"
-  create_ssl_certificates "back_end" "back-end.$ENVIRONMENT.svc.cluster.local"
-  create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$ENVIRONMENT.svc.cluster.local"
-  create_ssl_certificates "minio" "smart-agriculture-minio.$ENVIRONMENT.svc.cluster.local"
+    create_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"
 }
 
 function deploy-modules(){
@@ -75,6 +74,7 @@ function deploy-modules(){
     # Create Secrets, Elasticsearch, VerneMQ and Minio clusters
     install_infrastructure \
       "$ENVIRONMENT" \
+      "$COMPUTE_REGION" \
       "$S3A_ACCESS_KEY" \
       "$S3A_SECRET_KEY" \
       "$MQTT_INDEXER_PASS" \
@@ -92,25 +92,25 @@ function deploy-modules(){
 
     # Deploy Application images and release
     deploy_application_images_and_release \
-          "$ENVIRONMENT" \
-          "$CONTAINER_REPOSITORY"  \
-          "$DOCKER_VERSION"
+      "$ENVIRONMENT" \
+      "$COMPUTE_REGION" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION"
 
     # Deploy Spark and Historical jobs images and release
-    k8_apiserver_url=$(get_k8_apiserver_url)
     deploy_historical_jobs_docker_images_and_release \
       "$ENVIRONMENT" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION" \
-      "$k8_apiserver_url" \
       "$S3A_ACCESS_KEY" \
       "$S3A_SECRET_KEY" \
-      "$ES_TRUSTORE_PASS"
+      "$ES_TRUSTORE_PASS" \
+      "$MINIO_TRUSTORE_PASS"
 }
 
 function delete-cluster(){
     # Delete Kubernetes Cluster
-    delete_k8s_cluster "$CLUSTER_NAME"
+    delete_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"
 }
 
 function delete-namespace(){

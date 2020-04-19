@@ -19,3 +19,4 @@ subjectAltName = @alt_names
 [ alt_names ]
 DNS.1 = back-end.dev.svc.cluster.local
 DNS.2 = back-end
+IP.1 = 34.89.231.139

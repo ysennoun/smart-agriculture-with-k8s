@@ -94,6 +94,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   type: LoadBalancer
+  loadBalancerIP: {{ .Values.backEndIp }}
   selector:
     app: back-end
   ports:

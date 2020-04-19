@@ -8,3 +8,4 @@ requests>=2.22.0
 gunicorn>=19.9.0
 elasticsearch==7.1.0
 minio==5.0.7
+urllib3>=1.25.9

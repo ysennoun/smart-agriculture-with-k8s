@@ -11,7 +11,7 @@ spec:
       image: {{ .Values.containerRepository }}/put-jars-in-minio:{{ .Values.dockerVersion }}
       env:
         - name: MINIO_ENDPOINT
-          value: https://smart-agriculture-minio:9000
+          value: smart-agriculture-minio:9000
         - name: MINIO_BUCKET_NAME
           value: "bucket"
         - name: MINIO_OBJECT_PREFIX
@@ -19,15 +19,24 @@ spec:
         - name: MINIO_ACCESS_KEY_PATH
           value: "bucket"
         - name: MINIO_ACCESS_KEY_PATH
-          value: "/etc/minio/access_key"
+          value: "/etc/minio/secrets/access_key"
         - name: MINIO_SECRET_KEY_PATH
-          value: "/etc/minio/secret_key"
+          value: "/etc/minio/secrets/secret_key"
+        - name: MINIO_CERT_PATH
+          value: "/etc/minio/certificates/public.crt"
       volumeMounts:
         - name: minio-secret-volume
-          mountPath: /etc/minio/
+          mountPath: /etc/minio/secrets
+          readOnly: true
+        - name: minio-certificates-secret-volume
+          mountPath: /etc/minio/certificates/public.crt
+          subPath: public.crt
           readOnly: true
   volumes:
     - name: minio-secret-volume
       secret:
         secretName: minio-secret
+    - name: minio-certificates-secret-volume
+      secret:
+        secretName: minio-certificates-secret
   restartPolicy: Never

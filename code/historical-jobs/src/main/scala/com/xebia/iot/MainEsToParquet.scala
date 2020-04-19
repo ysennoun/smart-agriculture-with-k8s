@@ -7,11 +7,22 @@ import com.xebia.iot.job.JobProcess
 import com.xebia.iot.transformation.DataFrameTransformation.{saveDataFrameInElasticsearch, saveDataFrameInObjectStore}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
-
+import sys.process._
 
 object MainEsToParquet extends Logging{
 
   def main(args: Array[String]): Unit = {
+    try{
+      println("ls -al /opt/spark/conf/".!!)
+      println("ee")
+      println("ls -al /opt/spark/conf/minio/".!!)
+      println("ee")
+      println("ls -al /opt/spark/conf/minio/truststore".!!)
+      println("ee")
+      println("ls -al /opt/spark/conf/minio/truststore/truststore.jks".!!)
+    }catch{
+      case e: Exception => e.printStackTrace
+    }
     val dataPath = getDataPath(args)
     implicit val spark = SparkSession.builder.getOrCreate()
     implicit val sc = spark.sparkContext

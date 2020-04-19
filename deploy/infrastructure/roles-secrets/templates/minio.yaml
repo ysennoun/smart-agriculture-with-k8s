@@ -4,9 +4,9 @@ metadata:
   name: minio-certificates-secret
   namespace: {{ .Values.namespace }}
 type: Opaque # Minio does not support so far kubernetes.io/tls
-data:
-  tls.crt: {{ .Values.minioTLS }}
-  tls.key: {{ .Values.minioKey }}
+data: # according to Minio spec with have to create public.crt and private.key
+  public.crt: {{ .Values.minioTLS }}
+  private.key: {{ .Values.minioKey }}
 
 ---
 

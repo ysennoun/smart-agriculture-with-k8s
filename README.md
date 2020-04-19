@@ -74,6 +74,7 @@ To deploy all application either with the Gitlab CICD pipeline (see the followin
     MQTT_NOTIFIER_PASS="password-for-user-notifier-into-vernemq"  # for instance qvQsSpg3tk
     MQTT_DEVICE_PASS="password-for-user-device-into-vernemq"  # for instance 9Fex2nqdqe
     ES_TRUSTORE_PASS="password-for-trustore-generated-for-spark-elasticsearch"  # for instance ChI2OfIpGuq0be5X
+    MINIO_TRUSTORE_PASS="password-for-trustore-generated-for-spark-minio"  # for instance vkM8ssfK5fv4JQ9k
 
 ![Set environment variables in Gitlab](documents/set_environment_variables_in_gitlab.png)
 
@@ -87,11 +88,16 @@ Run the following script to run all unit tests:
 
 ### Install IoT Platform with command lines
 
-Run the following script to install this IoT platform on your GCP Account:
+Run the following command to allocate external static IP addresses and create localy self signed ssl certificates
+
+    ./deploy/deployer.sh create-certificates <environment> # 
+
+Then, either run the following script to install this IoT platform on your GCP Account:
 
     ./deploy/deployer.sh setup-cluster # create Kuberntes cluster
-    ./deploy/deployer.sh create-certificates <environment> # Create localy self signed ssl certificates 
     ./deploy/deployer.sh deploy-modules <environment> # Deploy all modules 
+    
+Or use the gitlab ci thanks to the `gitlab-ci.yaml` file
     
 ### Delete IoT Platform with command lines
 

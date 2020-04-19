@@ -7,7 +7,9 @@ SCRIPT_PATH=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
+. "$BASE_PATH/deploy/cluster/deployer_cluster.sh"
 
+## FUNCTIONS
 function install_python_requirements(){
     cd "$BASE_PATH/code/serverless/"
     pip install -r requirements.txt
@@ -94,8 +96,9 @@ function deploy_jars_alias_deployment_image_and_release(){
 
 function deploy_application_images_and_release(){
     namespace=$1
-    containerRepository=$2
-    dockerVersion=$3
+    region=$2
+    containerRepository=$3
+    dockerVersion=$4
 
     # Deploy docker images
     docker build -f "$BASE_PATH/deploy/code/serverless/application/dockerfiles/back_end/Dockerfile-back-end" \
@@ -112,6 +115,7 @@ function deploy_application_images_and_release(){
       "$BASE_PATH/deploy/code/serverless/application" \
       --namespace "$namespace" \
       --set namespace="$namespace" \
+      --set backEndIp=$(get_back_end_ip "$region") \
       --set containerRepository="$containerRepository" \
       --set dockerVersion="$dockerVersion"
 }
@@ -120,11 +124,12 @@ function deploy_historical_jobs_docker_images_and_release(){
     namespace=$1
     containerRepository=$2
     dockerVersion=$3
-    k8ApiserverUrl=$4
-    s3aAccessKey=$5
-    s3aSecretKey=$6
-    esTruststorePass=$7
-    s3_prepared_data_path="s3://bucket/prepared/"
+    s3aAccessKey=$4
+    s3aSecretKey=$5
+    esTruststorePass=$6
+    minioTruststorePass=$7
+    k8ApiserverUrl=$(get_k8_apiserver_url)
+    s3PreparedDataPath="s3://bucket/prepared/"
     esNodes="https://smart-agriculture-elasticsearch-es-http"
     esPort=9200
     fsS3aEndpoint="smart-agriculture-minio:9000"
@@ -134,9 +139,11 @@ function deploy_historical_jobs_docker_images_and_release(){
     esUserPass=$(get_elastic_user_password "$namespace")
 
     # Deploy docker images
+    cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/code/historical-jobs/dockerfiles/"
     cd "$BASE_PATH/deploy/code/historical-jobs/dockerfiles/"
     docker build \
       -f Dockerfile-spark \
+      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
       -t "$containerRepository/spark:2.4.5" .
     docker push "$containerRepository/spark:2.4.5"
     cd "$BASE_PATH/"
@@ -151,12 +158,15 @@ function deploy_historical_jobs_docker_images_and_release(){
       --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
       --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
       --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
-      --build-arg S3_PREPARED_DATA_PATH="$s3_prepared_data_path" \
+      --build-arg S3_PREPARED_DATA_PATH="$s3PreparedDataPath" \
+      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
       --build-arg ENVIRONMENT="$namespace" \
       -f "Dockerfile-es-to-parquet" \
       -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
     cd "$BASE_PATH/"
+
+    rm "$BASE_PATH/deploy/code/historical-jobs/dockerfiles/tls.crt"
 
     # Deploy release
     helm upgrade --install --debug \
@@ -170,7 +180,8 @@ function deploy_historical_jobs_docker_images_and_release(){
     --set s3aAccessKey="$s3aAccessKey" \
     --set s3aSecretKey="$s3aSecretKey" \
     --set esUserPass="$esUserPass" \
-    --set esTruststorePass="$esTruststorePass"
+    --set esTruststorePass="$esTruststorePass" \
+    --set minioTruststorePass="$minioTruststorePass"
 }
 
 function delete_modules_code(){

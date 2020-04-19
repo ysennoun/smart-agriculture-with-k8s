@@ -1,4 +1,5 @@
 import os
+import urllib3
 from minio import Minio
 from common.utils.logger import Logger
 
@@ -27,11 +28,19 @@ def get_minio_secret_key():
     return open(password_path, 'r').read().rstrip('\n')
 
 
-def get_minio_client(endpoint, access_key, secret_key):
+def get_minio_cert_path():
+    return os.environ["MINIO_CERT_PATH"]
+
+
+def get_minio_client(endpoint, access_key, secret_key, cert_path):
+    http_client = urllib3.PoolManager(
+        cert_reqs='CERT_REQUIRED',
+        ca_certs=cert_path)
     return Minio(endpoint,
-               access_key=access_key,
-               secret_key=secret_key,
-               secure=True)
+                 access_key=access_key,
+                 secret_key=secret_key,
+                 secure=True,
+                 http_client=http_client)
 
 
 def put_object(client, bucket_name):
@@ -48,8 +57,9 @@ if __name__ == "__main__":
         minio_endpoint = get_minio_endpoint()
         minio_access_key = get_minio_access_key()
         minio_secret_key = get_minio_secret_key()
+        minio_cert_path = get_minio_cert_path()
         bucket_name = get_minio_bucket_name()
-        minio_client = get_minio_client(minio_endpoint, minio_access_key, minio_secret_key)
+        minio_client = get_minio_client(minio_endpoint, minio_access_key, minio_secret_key, minio_cert_path)
         put_object(minio_client, bucket_name)
     except Exception as ex:
         logger.error("Put jars in minio failed", extra={"exception": str(ex)})

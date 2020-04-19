@@ -34,7 +34,7 @@ def register_routes(app: Flask, auth: HTTPBasicAuth, back_end_service: BackEndSe
 
     @app.route('/devices', methods=['GET'])
     @auth.login_required
-    def handle_get_last_value():
+    def handle_get_devices():
         logger.debug(f"GET list of devices")
         devices = back_end_service.get_devices()
         return Response(json.dumps(devices), mimetype='application/json')

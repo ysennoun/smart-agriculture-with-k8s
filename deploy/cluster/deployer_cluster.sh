@@ -97,6 +97,13 @@ function allocate_external_static_ip(){
   gcloud compute addresses create front-end-ip --region "$region"
 }
 
+function deallocate_external_static_ip(){
+  region=$1
+  gcloud compute addresses delete vernemq-ip --region "$region" --quiet
+  gcloud compute addresses delete back-end-ip --region "$region" --quiet
+  gcloud compute addresses delete front-end-ip --region "$region" --quiet
+}
+
 function get_vernemq_ip(){
   region=$1
   echo "$(gcloud compute addresses describe vernemq-ip --region "$region" | head -1 | awk '{print $2}')"

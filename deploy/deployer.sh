@@ -40,6 +40,7 @@ usage() {
     echo ""
     echo "ACTION:"
     echo "  - create-certificates <ENVIRONMENT>: create certificates with external statis ip addresses"
+    echo "  - delete-external-static-ip-addresses: delete external static ip address"
     echo "  - setup-cluster: create k8s cluster"
     echo "  - deploy-modules <ENVIRONMENT>: deploy all modules (infrastructure, docker images, applications)"
     echo "  - delete-cluster: delete cluster"
@@ -52,6 +53,11 @@ usage() {
 function create-certificates(){
   # Create certificates
   create_certificates "$ENVIRONMENT" "$COMPUTE_REGION"
+}
+
+function delete-external-static-ip-addresses(){
+  # Delete external static ip address
+  deallocate_external_static_ip "$COMPUTE_REGION"
 }
 
 function setup-cluster(){

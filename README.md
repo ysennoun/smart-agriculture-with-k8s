@@ -92,12 +92,12 @@ Run the following command to allocate external static IP addresses and create lo
 
     ./deploy/deployer.sh create-certificates <environment> # 
 
-Then, either run the following script to install this IoT platform on your GCP Account:
+Then, either use the cli to install this IoT platform on your GCP Account:
 
     ./deploy/deployer.sh setup-cluster # create Kuberntes cluster
     ./deploy/deployer.sh deploy-modules <environment> # Deploy all modules 
     
-Or use the gitlab ci thanks to the `gitlab-ci.yaml` file
+Or use the gitlab ci thanks to the `gitlab-ci.yaml` file. (Add, commit and push into the branch <environment> or master)
     
 ### Delete IoT Platform with command lines
 

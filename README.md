@@ -1,6 +1,6 @@
 # Project `smart-agriculture-with-k8s`
 
-Build a smart agriculture project with Kubernetes and Knative
+Build a smart agriculture project with Kubernetes
 
 ## How to begin ?
 
@@ -16,12 +16,15 @@ Create a [GCP account](https://console.cloud.google.com/)
 Create a GCP project by given a project-id
 - example: my-iot-project
 
-### Increase quota for IP addresses
-- Go to `IAM and Administration/quota/` (as indicated below)
-- Search for `In-use IP addresses` and request to increase quota from 8 IP to 20 IP
-- Unfortunately, it takes almost two days to be validated by GCP 
+### Requirements for project CLI
 
-![Increase number of external IP](documents/increase-ip-quota.png)
+This project offers its own CLI `./deploy/deployer.sh` to test, create the cluster, deploy applications or delete all.
+
+In case you want to use project CLI, you need to install:
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/quickstarts), then run: `gcloud auth login`
+- [helm](https://helm.sh/docs/intro/install/), the package manager for Kubernetes
+- [Docker](https://docs.docker.com/get-docker/), configure Docker for a specific repository
+    - Here we used GCP Container Repository: `gcloud auth configure-docker`
      
 ### Get private key file
 - Go to `IAM and Administration/quota/` (as indicated below)
@@ -32,7 +35,7 @@ Create a GCP project by given a project-id
 
 ### Give admin role to your service account
 - Go to `IAM and Administration/IAM/` (as indicated below)
-- Give role `owner` to your service account to be able to deploy with Gitlab CICD
+- Give role `owner` to your service account to be able to deploy with Gitlab CI/CD
 
 ![Admin role for service account](documents/give_admin_role_to_service_account.png)
      
@@ -43,8 +46,7 @@ First we divide our plateform into microservices, here below the representation:
 ![Architecture of IoT Project](documents/microservices.png)
 
 - Device management: manage reception of data from device
-- Notification: send a notification (for example: email) to some users when a data received exceeds some thresholds
-- Storage: store data received in different data storages
+- Storage: store data received in different data storages (Elasticsearch and Minio)
 - Data processing: Predefined Batch processes
 - Data Access: Expose data to users through API REST
 
@@ -78,19 +80,17 @@ To deploy all application either with the Gitlab CICD pipeline (see the followin
 
 ![Set environment variables in Gitlab](documents/set_environment_variables_in_gitlab.png)
 
-
 ### Run unit tests for IoT Platform with command lines
 
 Run the following script to run all unit tests:
 
     ./deploy/deployer.sh test-unit
 
-
 ### Install IoT Platform with command lines
 
-Run the following command to allocate external static IP addresses and create localy self signed ssl certificates
+Run the following command to allocate external static IP addresses and create locally self signed ssl certificates
 
-    ./deploy/deployer.sh create-certificates <environment> # 
+    ./deploy/deployer.sh create-certificates <environment>
 
 Then, either use the cli to install this IoT platform on your GCP Account:
 

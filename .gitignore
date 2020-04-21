@@ -10,3 +10,5 @@ __pycache__/
 target/
 wal/
 meta/
+node_modules/
+.env.local

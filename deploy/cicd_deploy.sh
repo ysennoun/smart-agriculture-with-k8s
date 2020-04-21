@@ -4,6 +4,7 @@ set -eax
 
 source deploy/infrastructure/deployer_infrastructure.sh
 source deploy/code/deployer_code.sh
+source deploy/front-end-code/deployer_front_end_code.sh
 
 
 ## Create Namespace
@@ -12,9 +13,10 @@ create_namespace "$ENVIRONMENT"
 ## Set helm repos
 set_helm_repos
 
-## Create Secrets, Elasticsearch, VerneMQ and Minio clusters
+# Create Secrets, Elasticsearch, VerneMQ and Minio clusters
 install_infrastructure \
   "$ENVIRONMENT" \
+  "$COMPUTE_REGION" \
   "$S3A_ACCESS_KEY" \
   "$S3A_SECRET_KEY" \
   "$MQTT_INDEXER_PASS" \
@@ -24,7 +26,7 @@ install_infrastructure \
 ## Set Docker login
 set_docker "$HOSTNAME"
 
-## Deploy Put Jars in Minio image and release And alias in Elasticsearch
+# Deploy Put Jars in Minio image and release And alias in Elasticsearch
 deploy_jars_alias_deployment_image_and_release \
   "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
@@ -33,16 +35,23 @@ deploy_jars_alias_deployment_image_and_release \
 # Deploy Application images and release
 deploy_application_images_and_release \
   "$ENVIRONMENT" \
-  "$CONTAINER_REPOSITORY"  \
+  "$COMPUTE_REGION" \
+  "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION"
 
-## Deploy Spark and Historical jobs images and release
-k8_apiserver_url=$(get_k8_apiserver_url)
+# Deploy Spark and Historical jobs images and release
 deploy_historical_jobs_docker_images_and_release \
   "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION" \
-  "$k8_apiserver_url" \
   "$S3A_ACCESS_KEY" \
   "$S3A_SECRET_KEY" \
-  "$ES_TRUSTORE_PASS"
+  "$ES_TRUSTORE_PASS" \
+  "$MINIO_TRUSTORE_PASS"
+
+# Deploy front-end image and release
+deploy_front_end_images_and_release \
+  "$ENVIRONMENT" \
+  "$COMPUTE_REGION" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION"

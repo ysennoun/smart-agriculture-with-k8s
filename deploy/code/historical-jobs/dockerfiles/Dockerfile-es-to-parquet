@@ -20,6 +20,7 @@ ENV S3_PREPARED_DATA_PATH=${S3_PREPARED_DATA_PATH}
 ENV MINIO_TRUSTSTORE_PASS=${MINIO_TRUSTSTORE_PASS}
 
 # spark - Minio self-signed certificate: https://github.com/minio/cookbook/blob/master/docs/apache-spark-with-minio.md
+# JVM which runs Hadoop needs a custom ca certificate
 COPY tls.crt .
 RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/jssecacerts -storepass ${MINIO_TRUSTSTORE_PASS} -noprompt -alias tls -file tls.crt
 

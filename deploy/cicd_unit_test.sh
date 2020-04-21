@@ -3,11 +3,14 @@
 set -eax
 
 source deploy/code/deployer_code.sh
+source deploy/front-end-code/deployer_front_end_code.sh
 
-# Install python and maven requirements
+# Install python, maven and nodejs requirements
 install_python_requirements
 install_deps
+install_vue_deps
 
-# Run python and spark unit tests
+# Run python, spark and vue unit tests
 launch_python_unit_tests
 launch_spark_unit_tests
+launch_vue_unit_tests

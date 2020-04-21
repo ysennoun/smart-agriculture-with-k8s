@@ -25,7 +25,7 @@
     },
     methods: {
       setDeviceName(device){
-        this.$refs.pageContentComponent.setValue(device);
+        this.$refs.pageContentComponent.setCharts(device);
       },
       setSideBarActivity(){
         this.isActive = !this.isActive

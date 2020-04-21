@@ -54,11 +54,8 @@
 <script>
 import axios from "axios";
 import LineChart from './../mixins/LineChart.js'
-//import https from 'https'
 
-//const agent = new https.Agent({rejectUnauthorized: false});
-const API_URL_LAST_VALUE = process.env.VUE_APP_API_URL_LAST_VALUE
-const API_URL_TIMESERIES = process.env.VUE_APP_API_URL_TIMESERIES
+const BACK_END_URL = process.env.VUE_APP_BACK_END_URL
 
 export default {
     components: {
@@ -83,40 +80,30 @@ export default {
             oneWeekAgo.setDate(pastDate);
             return "?from_date=" + today.toISOString().slice(0,-5)+"Z" + "&to_date=" + oneWeekAgo.toISOString().slice(0,-5)+"Z"
         },
-        setValue: function(deviceName) {
+        setCharts: function(deviceName) {
             this.deviceName =  deviceName;
             this.getLastValueData();
             this.getTimeseriesData();
         },
-        getRandomInt () {
-            return Math.floor(Math.random() * (50 - 5 + 1)) + 5
-        },
         getLastValueData() {
-            var url = API_URL_LAST_VALUE + this.deviceName
+            var url = BACK_END_URL + "/devices/last-value/" + this.deviceName
             console.log(url)
             axios.get(
-                    API_URL_LAST_VALUE,
-                    //{ 
-                    //    headers: {
-                    //        Host: "api.smart-agricultureerjfpojrfopjear.com",
-                    //        'Access-Control-Allow-Origin': '*'
-                    //    }//, 
-                        //httpsAgent: agent    
-                    //}
-                    //{
-                    //    auth: {
-                    //        username: this.$store.getters.getCredentials.login,
-                    //        password: this.$store.getters.getCredentials.password
-                    //    }
-                    //}
+                    url,
+                    {
+                        auth: {
+                            username: this.$store.getters.getCredentials.login,
+                            password: this.$store.getters.getCredentials.password
+                        }
+                    }
                 )
                 .then(response => {
                     alert(response)
                     console.log(response.data)
-                    //var lastValue = response.data
-                    this.lastDate = "2020/04/07 12:34:44"; //lastValue.rows[0].timestamp
-                    this.lastTemperature = this.getRandomInt() + "°"; //lastValue.rows[0].temperature + "°C"
-                    this.lastMoisture = this.getRandomInt() + "%"; //lastValue.rows[0].moisture + "%"
+                    var lastValue = response.data
+                    this.lastDate = lastValue.rows[0].timestamp
+                    this.lastTemperature = lastValue.rows[0].temperature + "°C"
+                    this.lastMoisture = lastValue.rows[0].moisture + "%"
                 })
                 .catch(err => {
                     alert(err)
@@ -127,48 +114,48 @@ export default {
                 });
         },
         getTimeseriesData() {
-            var url = API_URL_TIMESERIES + this.deviceName + this.getQueryParams()
+            var url = BACK_END_URL + "/devices/timeseries/" + this.deviceName + this.getQueryParams()
             console.log(url)
             axios.get(
-                    API_URL_TIMESERIES,
-                    //{
-                    //    auth: {
-                    //        username: this.$store.getters.getCredentials.login,
-                    //        password: this.$store.getters.getCredentials.password
-                    //    }
-                    //}
+                    url,
+                    {
+                        auth: {
+                            username: this.$store.getters.getCredentials.login,
+                            password: this.$store.getters.getCredentials.password
+                        }
+                    }
                 )
                 .then(response => {
                     console.log(response.data)
-                    //var timestamps = response.data
-                    //var timestamps = []
-                    //var temperatures = []
-                    //var moistures = []
-                    //timeseries.rows.forEach(element => {
-                    //    timestamps.push(element.timestamp)
-                    //    temperatures.push(element.temperature)
-                    //    moistures.push(element.moisture)
-                    //});
+                    var timeseries = response.data
+                    var timestamps = []
+                    var temperatures = []
+                    var moistures = []
+                    timeseries.rows.forEach(element => {
+                        timestamps.push(element.timestamp)
+                        temperatures.push(element.temperature)
+                        moistures.push(element.moisture)
+                    });
                     this.temperatureData = {
-                        labels: ["2020-04-01 12:00:00", "2020-04-01 13:00:00", "2020-04-01 14:00:00", "2020-04-01 15:00:00", "2020-04-01 16:00:00"], //timestamps
+                        labels: timestamps,
                         datasets: [
                         {
                             label: 'Temperature',
                             borderColor: '#d77c7c',
                             backgroundColor: 'rgba(225,157,157, 0.5)',
                             fill: true,
-                            data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt()] //temperatures
+                            data: temperatures
                         }]
                     };
                     this.moistureData = {
-                        labels: ["2020-04-01 12:00:00", "2020-04-01 13:00:00", "2020-04-01 14:00:00", "2020-04-01 15:00:00", "2020-04-01 16:00:00"], //timestamps
+                        labels: timestamps,
                         datasets: [
                         {
                             label: 'Moisture',
                             borderColor: '#627aac',
                             backgroundColor: 'rgba(41,73,93, 0.5)',
                             fill: true,
-                            data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt()] //moistures
+                            data: moistures
                         }]
                     }
 

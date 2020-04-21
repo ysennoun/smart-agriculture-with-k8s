@@ -11,4 +11,4 @@ enable_apis
 activate_billing "$PROJECT_ID"
 
 # Create Kubernetes Cluster
-create_k8s_cluster "$CLUSTER_NAME"
+create_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"

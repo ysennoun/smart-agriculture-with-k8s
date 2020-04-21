@@ -28,7 +28,7 @@
 import axios from "axios";
 const https = require('https');
 
-const API_URL_DEVICES = process.env.VUE_APP_API_URL_DEVICES
+const BACK_END_URL = process.env.VUE_APP_BACK_END_URL
 
 export default {
     data() {
@@ -53,9 +53,6 @@ export default {
             this.login = this.$store.getters.getCredentials.login,
             this.password = this.$store.getters.getCredentials.password
         },
-        setValue: function(title) {
-            this.title = title;
-        },
         sendDeviceName(device){
             this.$emit("send-device-name", device);
         },
@@ -65,16 +62,16 @@ export default {
             })
         },         
         getDevices() {
-            console.log(API_URL_DEVICES)
+            console.log(BACK_END_URL)
             axios.get(
-                    "https://35.234.78.209:443/hello",
+                    BACK_END_URL + "/devices",
                     {
                         httpsAgent: new https.Agent({rejectUnauthorized: false})
                     }
                 )
                 .then(response => {
                     console.log(response)
-                    this.devices = ['device1', 'device2']; //response.data.devices
+                    this.devices = response.data.rows
                     if (this.devices.length) {
                         console.log('Devices found, emit first device: ' + this.devices[0]);
                         this.sendDeviceName(this.devices[0]);

@@ -2,6 +2,21 @@
 
 Build a smart agriculture project with Kubernetes
 
+## Architecture of IoT platform 
+
+First we divide our plateform into microservices, here below the representation:
+
+![Architecture of IoT Project](documents/microservices.png)
+
+- Device management: manage reception of data from device
+- Storage: store data received in different data storages (Elasticsearch and Minio)
+- Data processing: Predefined Batch processes
+- Data Access: Expose data to users through API REST
+
+The corresponding architecture we build to solve the previous representation is as below:
+
+![Architecture of IoT Project](documents/architecture.png)
+
 ## How to begin ?
 
 ### Create a Gmail 
@@ -23,38 +38,25 @@ In case you want to use project CLI, you need to install:
 - [helm](https://helm.sh/docs/intro/install/), the package manager for Kubernetes
 - [Docker](https://docs.docker.com/get-docker/), configure Docker for a specific repository
     - Here we used GCP Container Repository: `gcloud auth configure-docker`
-     
-### Get private key file
+ 
+### Requirements for Gitlab CI/CD
+
+This project offers the possibility to use a GItlab CI/CD to test, create the cluster, deploy applications. See file `gitlab-ci.yaml`. 
+   
+#### Get private key file
 - Go to `IAM and Administration/quota/` (as indicated below)
 - Create a service account if it is not already done
 - Download private key file to be used in gitlab CICD. Indeed, store the content as global environment variable `PRIVATE_KEY_FILE_CONTENT`
 
 ![Private key file](documents/get-private-key-file.png)
 
-### Give admin role to your service account
+#### Give admin role to your service account
 - Go to `IAM and Administration/IAM/` (as indicated below)
 - Give role `owner` to your service account to be able to deploy with Gitlab CI/CD
 
 ![Admin role for service account](documents/give_admin_role_to_service_account.png)
-     
-## Architecture of IoT platform 
 
-First we divide our plateform into microservices, here below the representation:
-
-![Architecture of IoT Project](documents/microservices.png)
-
-- Device management: manage reception of data from device
-- Storage: store data received in different data storages (Elasticsearch and Minio)
-- Data processing: Predefined Batch processes
-- Data Access: Expose data to users through API REST
-
-The corresponding architecture we build to solve the previous representation is as below:
-
-![Architecture of IoT Project](documents/architecture.png)
-
-## Configure IoT platform 
-
-### Environment variables
+#### Environment variables 
 
 To deploy all application either with the Gitlab CICD pipeline (see the following picture to know where) or  with `deploy/deployer.sh` cli , you have to set the following environment variables:
 
@@ -78,13 +80,15 @@ To deploy all application either with the Gitlab CICD pipeline (see the followin
 
 ![Set environment variables in Gitlab](documents/set_environment_variables_in_gitlab.png)
 
-### Run unit tests for IoT Platform with command lines
+### Deployment
+
+#### Run unit tests for IoT Platform with command lines
 
 Run the following script to run all unit tests:
 
     ./deploy/deployer.sh test-unit
 
-### Install IoT Platform with command lines
+#### Install IoT Platform (Command lines or Gitlab CI/CD)
 
 Run the following command to allocate external static IP addresses and create locally self signed ssl certificates
 
@@ -97,7 +101,7 @@ Then, either use the cli to install this IoT platform on your GCP Account:
     
 Or use the gitlab ci thanks to the `gitlab-ci.yaml` file. (Add, commit and push into the branch <environment> or master)
     
-### Delete IoT Platform with command lines
+#### Delete IoT Platform with command lines
 
 Run the following script to delete the IoT platform on your GCP Account:
 

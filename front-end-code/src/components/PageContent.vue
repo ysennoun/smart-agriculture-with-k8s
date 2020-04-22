@@ -86,7 +86,7 @@ export default {
             this.getTimeseriesData();
         },
         getLastValueData() {
-            var url = BACK_END_URL + "/devices/" + this.deviceName + "/last-value?"
+            var url = BACK_END_URL + "/devices/" + this.deviceName + "/lastValue"
             console.log(url)
             axios.get(
                     url,

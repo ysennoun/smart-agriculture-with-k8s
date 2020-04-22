@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_cors import CORS
 from flask_httpauth import HTTPBasicAuth
 from common.utils.logger import Logger
 from common.env import get_port
@@ -39,6 +40,7 @@ def create_app():
     logger.info("STARTING FLASK APPLICATION...")
 
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     auth = HTTPBasicAuth()
 
     # Basic Authentication

@@ -2,6 +2,8 @@ setuptools
 paho-mqtt==1.4.0
 jsonschema>=3.0.2
 flask>=1.1.1
+flask_restful
+flask-cors
 flask-classful>=0.14.2
 Flask-HTTPAuth>=3.3.0
 requests>=2.22.0

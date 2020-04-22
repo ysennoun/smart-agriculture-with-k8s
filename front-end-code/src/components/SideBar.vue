@@ -62,7 +62,7 @@ export default {
             })
         },         
         getDevices() {
-            console.log(BACK_END_URL)
+            console.log(BACK_END_URL + "/devices")
             axios.get(
                     BACK_END_URL + "/devices",
                     {

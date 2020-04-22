@@ -4,10 +4,8 @@ Build a smart agriculture project with Kubernetes
 
 ## How to begin ?
 
-### Creat a Gmail 
-activate Gmail API for python
-
-https://developers.google.com/gmail/api/quickstart/python
+### Create a Gmail 
+If you do not have a Gmail account, [follow this link](https://accounts.google.com/signup/v2/webcreateaccount?flowName=GlifWebSignIn&flowEntry=SignUp)
 
 ### GCP Account
 Create a [GCP account](https://console.cloud.google.com/)

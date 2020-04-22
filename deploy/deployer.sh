@@ -48,6 +48,7 @@ usage() {
     echo "  - delete-modules <ENVIRONMENT>: delete all modules"
     echo "  - test-unit <ENVIRONMENT>: launch unit tests"
     echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
+    echo "  - get-front-end-ip <ENVIRONMENT>: get front end ip"
 }
 
 function create-certificates(){
@@ -148,6 +149,12 @@ function test-e2e(){
       "$BACK_END_USER_PASS" \
       "indexer" \
       "$MQTT_INDEXER_PASS"
+}
+
+function get-front-end-ip(){
+    # Get front end ip
+    env=$2
+    echo $(get_front_end_ip "$env")
 }
 
 fn_exists() {

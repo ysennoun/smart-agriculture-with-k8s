@@ -77,6 +77,7 @@ To deploy all application either with the Gitlab CICD pipeline (see the followin
     MQTT_DEVICE_PASS="password-for-user-device-into-vernemq"  # for instance 9Fex2nqdqe
     ES_TRUSTORE_PASS="password-for-trustore-generated-for-spark-elasticsearch"  # for instance ChI2OfIpGuq0be5X
     MINIO_TRUSTORE_PASS="password-for-trustore-generated-for-spark-minio"  # for instance vkM8ssfK5fv4JQ9k
+    BACK_END_USER_PASS="passwor-for-back-end-api" # for instance 4hxGaN34KQ
 
 ![Set environment variables in Gitlab](documents/set_environment_variables_in_gitlab.png)
 
@@ -106,3 +107,26 @@ Or use the gitlab ci thanks to the `gitlab-ci.yaml` file. (Add, commit and push 
 Run the following script to delete the IoT platform on your GCP Account:
 
     ./deploy/deployer.sh delete-all
+    
+### Visualize Data
+
+#### Add certificate to Chrome
+
+Open chrome and go to `chrome://settings/`. Then, search for HTTPS/SSL in order to add certificate `deploy/cluster/certificates/back-end/tls.crt`.
+
+#### Access to front end (see images below)
+
+Run the following command to get the front end application ip address:
+
+    ./deploy/deployer.sh get-front-end-ip <environment>
+    
+In chrome go to the following URL `http://<front-end-ip>:8080`. 
+
+In the login page, enter:
+
+    login="back-end"
+    password=<BACK_END_USER_PASS>
+
+![Login page](documents/login-page.png)
+
+![Content page](documents/content-page.png)

@@ -86,7 +86,7 @@ export default {
             this.getTimeseriesData();
         },
         getLastValueData() {
-            var url = BACK_END_URL + "/devices/last-value/" + this.deviceName
+            var url = BACK_END_URL + "/devices/" + this.deviceName + "/last-value?"
             console.log(url)
             axios.get(
                     url,
@@ -98,15 +98,13 @@ export default {
                     }
                 )
                 .then(response => {
-                    alert(response)
-                    console.log(response.data)
+                    console.log(response)
                     var lastValue = response.data
                     this.lastDate = lastValue.rows[0].timestamp
                     this.lastTemperature = lastValue.rows[0].temperature + "°C"
                     this.lastMoisture = lastValue.rows[0].moisture + "%"
                 })
                 .catch(err => {
-                    alert(err)
                     if(err.response && err.response.status == 401) {
                         console.log('Failed to login')
                         this.sendAuthenticationFailed();
@@ -114,7 +112,7 @@ export default {
                 });
         },
         getTimeseriesData() {
-            var url = BACK_END_URL + "/devices/timeseries/" + this.deviceName + this.getQueryParams()
+            var url = BACK_END_URL + "/devices/" + this.deviceName + "/timeseries" + this.getQueryParams()
             console.log(url)
             axios.get(
                     url,

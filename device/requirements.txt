@@ -1,2 +1,5 @@
 setuptools
 paho-mqtt==1.4.0
+RPi.GPIO==0.7.0
+Adafruit-Blinka==4.7.0
+adafruit-circuitpython-seesaw==1.6.1

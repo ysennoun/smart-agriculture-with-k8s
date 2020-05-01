@@ -60,23 +60,23 @@ This project offers the possibility to use a GItlab CI/CD to test, create the cl
 
 To deploy all application either with the Gitlab CICD pipeline (see the following picture to know where) or  with `deploy/deployer.sh` cli , you have to set the following environment variables:
 
-    PROJECT_ID="your-project-id"
-    COMPUTE_ZONE="your-selected-zone"  # for instance europe-west1-b
-    COMPUTE_REGION="your-selected-region"  # for instance europe-west1
-    CONTAINER_REPOSITORY="your docker repository"  # for instance eu.gcr.io
-    PROJECT_NAME="your project name on gcp"  # for instance my-iot-platform
-    PROJECT_ID="your project id on gcp"  # for instance my-iot-platform
-    CLUSTER_NAME="name for the cluster" # for instance smart-agriculture-cluster
-    COMPUTE_ZONE="your-selected-zone" # for instance europe-west2-b
-    COMPUTE_REGION="your-selected-region" # for instance europe-west2
-    CONTAINER_REPOSITORY="your docker repository" # for instance eu.gcr.io/my-iot-platform
-    S3A_ACCESS_KEY="access-key-for-minio" # for instance AKIAIOSFODNN7EXBMJLE
-    S3A_SECRET_KEY="access-key-for-minio" # for instance wHalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-    MQTT_INDEXER_PASS="password-for-user-indexer-into-vernemq" # for instance 3ywbCs2uB4
-    MQTT_DEVICE_PASS="password-for-user-device-into-vernemq"  # for instance 9Fex2nqdqe
-    ES_TRUSTORE_PASS="password-for-trustore-generated-for-spark-elasticsearch"  # for instance ChI2OfIpGuq0be5X
-    MINIO_TRUSTORE_PASS="password-for-trustore-generated-for-spark-minio"  # for instance vkM8ssfK5fv4JQ9k
-    BACK_END_USER_PASS="passwor-for-back-end-api" # for instance 4hxGaN34KQ
+    PROJECT_ID: "your-project-id"
+    COMPUTE_ZONE: "your-selected-zone"  # for instance europe-west1-b
+    COMPUTE_REGION: "your-selected-region"  # for instance europe-west1
+    CONTAINER_REPOSITORY: "your docker repository"  # for instance eu.gcr.io
+    PROJECT_NAME: "your project name on gcp"  # for instance my-iot-platform
+    PROJECT_ID: "your project id on gcp"  # for instance my-iot-platform
+    CLUSTER_NAME: "name for the cluster" # for instance smart-agriculture-cluster
+    COMPUTE_ZONE:"your-selected-zone" # for instance europe-west2-b
+    COMPUTE_REGION: "your-selected-region" # for instance europe-west2
+    CONTAINER_REPOSITORY: "your docker repository" # for instance eu.gcr.io/my-iot-platform
+    S3A_ACCESS_KEY: "access-key-for-minio" # for instance AKIAIOSFODNN7EXBMJLE
+    S3A_SECRET_KEY: "access-key-for-minio" # for instance wHalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    MQTT_INDEXER_PASS: "password-for-user-indexer-into-vernemq" # for instance 3ywbCs2uB4
+    MQTT_DEVICE_PASS: "password-for-user-device-into-vernemq"  # for instance 9Fex2nqdqe
+    ES_TRUSTORE_PASS: "password-for-trustore-generated-for-spark-elasticsearch"  # for instance ChI2OfIpGuq0be5X
+    MINIO_TRUSTORE_PASS: "password-for-trustore-generated-for-spark-minio"  # for instance vkM8ssfK5fv4JQ9k
+    BACK_END_USER_PASS: "passwor-for-back-end-api" # for instance 4hxGaN34KQ
 
 ![Set environment variables in Gitlab](documents/set_environment_variables_in_gitlab.png)
 
@@ -134,7 +134,7 @@ In the login page, enter:
  
 Raspberry Pi is used as smart device. The architecture image above shows how this device retrieves code within a docker image in order to compute data and sent it to the platform.
 
-To configure Raspberry pi, first run the following command to create a service account to let device to access to Google Docker registry.
+To configure Raspberry pi, first run the following command to create a service account to let device to access to Google Docker Registry.
 The role associated to this service account has only read policy on this registry.
 
     ./deploy/deployer.sh create-device-service-account-and-roles

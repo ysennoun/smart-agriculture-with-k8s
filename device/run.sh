@@ -3,7 +3,36 @@
 set -e
 
 ## FUNCTIONS
-function configure_device(){
+usage() {
+    echo "Run the script in current shell with . (dot) before. Usage:"
+    echo " ." `basename "$0"` "<ACTION>"
+    echo ""
+    echo "ACTION:"
+    echo "  - install-docker: install docker"
+    echo "  - configure-device: configure device"
+}
+
+functon install-docker(){
+    sudo apt-get update
+    sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+    sudo add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/debian \
+    $(lsb_release -cs) \
+    stable"
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    sudo groupadd docker
+    sudo usermod -aG docker $USER
+    newgrp docker 
+}
+
+function configure-device(){
     # Configure credentials
     mkdir -p "/home/$USER/credentials"
 
@@ -32,4 +61,27 @@ function configure_device(){
 }
 
 ## RUN
-configure_device
+fn_exists() {
+  [[ `type -t $1`"" == 'function' ]]
+}
+
+main() {
+
+    if [[ -n "$ACTION" ]]; then
+        echo
+    else
+        usage
+        exit 1
+    fi
+
+    if ! fn_exists "$ACTION"; then
+        echo "Error: $ACTION is not a valid ACTION"
+        usage
+        exit 2
+    fi
+
+    # Execute action
+    ${ACTION} "$@"
+}
+
+main "$@"

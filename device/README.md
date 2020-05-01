@@ -15,7 +15,7 @@ Follow these steps for Raspberry Pi configuration.
 - Get a Raspberry Pi (we use version 3) and a SSD card (8G at least)
 - [Install Raspbian OS](https://www.raspberrypi.org/documentation/installation/installing-images/) in your SSD card
 - [Set up Wifi connection](https://www.raspberrypi.org/documentation/configuration/wireless/) either through `Desktop` or `Command line`
-- [Install Docker Engine](https://docs.docker.com/engine/install/debian/). Docker Engine is installed as root, do not forget to create a `docker group`
+
 
 ## Hardware configuration
 
@@ -36,4 +36,5 @@ Here is the final stage to configure source code into the Raspberry Pi, fulfill 
 
 - Copy `key.json` file into `/home/pi`
 - Copy `run.sh`file into `/home/pi`
-- Run command `sh run.sh`. A password for vernemq will be asked, you need to put the same value specified for variable `MQTT_DEVICE_PASS`
+- Run command `sh run.sh install-docker` to install [docker](https://docs.docker.com/engine/install/debian/)
+- Run command `sh run.sh configure-device`. A password for vernemq will be asked, you need to put the same value specified for variable `MQTT_DEVICE_PASS`

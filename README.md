@@ -134,7 +134,7 @@ In the login page, enter:
  
 Raspberry Pi is used as smart device. The architecture image above shows how this device retrieves code within a docker image in order to compute data and sent it to the platform.
 
-To configure Raspberry pi, first run the following command to create a service account to let device to access to Google Docker Registry.
+To configure Raspberry Pi, first run the following command to create a service account to let device to access to Google Docker Registry.
 The role associated to this service account has only read policy on this registry.
 
     ./deploy/deployer.sh create-device-service-account-and-roles

@@ -11,7 +11,7 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 # IMPORTS
 . "$BASE_PATH/deploy/cluster/deployer_cluster.sh"
 . "$BASE_PATH/deploy/infrastructure/deployer_infrastructure.sh"
-. "$BASE_PATH/deploy/code/deployer_code.sh"
+. "$BASE_PATH/deploy/code/deployer_platform.sh"
 
 
 ACTION=$1
@@ -46,6 +46,8 @@ usage() {
     echo "  - delete-cluster: delete cluster"
     echo "  - delete-namespace <ENVIRONMENT>: delete namespace"
     echo "  - delete-modules <ENVIRONMENT>: delete all modules"
+    echo "  - create-device-service-account-and-roles: create device service account and roles"
+    echo "  - get-device-service-account-key: get device service account key"
     echo "  - test-unit <ENVIRONMENT>: launch unit tests"
     echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
     echo "  - get-front-end-ip <ENVIRONMENT>: get front end ip"
@@ -129,6 +131,16 @@ function delete-modules(){
     # Delete Modules
     delete_modules_code "$ENVIRONMENT"
     delete_modules_infrastructure "$ENVIRONMENT"
+}
+
+function create-device-service-account-and-roles(){
+  # Create device service account and roles
+  create_device_service_account_and_roles "$PROJECT_NAME"
+}
+
+function get-device-service-account-key(){
+  # Get device service account key
+  get_device_service_account_key "$PROJECT_NAME"
 }
 
 function test-unit(){

@@ -90,6 +90,23 @@ function delete_k8s_cluster() {
   echo "End deletion"
 }
 
+function create_device_service_account_and_roles(){
+  projectId=$1
+  gcloud iam service-accounts create "smart-agriculture-devices" \
+     --description "Service Account for devices to pull docker images" \
+     --display-name "smart-agriculture-devices"
+  gcloud projects add-iam-policy-binding "$projectId" \
+      --member "serviceAccount:smart-agriculture-devices@$projectId.iam.gserviceaccount.com" \
+      --role roles/storage.objectViewer
+}
+
+function get_device_service_account_key(){
+  projectId=$1
+  gcloud iam service-accounts keys create ~/key.json \
+      --iam-account "smart-agriculture-devices@$projectId.iam.gserviceaccount.com"
+  echo $(cat ~/key.json)
+}
+
 function allocate_external_static_ip(){
   region=$1
   gcloud compute addresses create vernemq-ip --region "$region"

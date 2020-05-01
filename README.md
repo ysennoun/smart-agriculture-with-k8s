@@ -73,7 +73,6 @@ To deploy all application either with the Gitlab CICD pipeline (see the followin
     S3A_ACCESS_KEY="access-key-for-minio" # for instance AKIAIOSFODNN7EXBMJLE
     S3A_SECRET_KEY="access-key-for-minio" # for instance wHalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
     MQTT_INDEXER_PASS="password-for-user-indexer-into-vernemq" # for instance 3ywbCs2uB4
-    MQTT_NOTIFIER_PASS="password-for-user-notifier-into-vernemq"  # for instance qvQsSpg3tk
     MQTT_DEVICE_PASS="password-for-user-device-into-vernemq"  # for instance 9Fex2nqdqe
     ES_TRUSTORE_PASS="password-for-trustore-generated-for-spark-elasticsearch"  # for instance ChI2OfIpGuq0be5X
     MINIO_TRUSTORE_PASS="password-for-trustore-generated-for-spark-minio"  # for instance vkM8ssfK5fv4JQ9k
@@ -130,3 +129,18 @@ In the login page, enter:
 ![Login page](documents/login-page.png)
 
 ![Content page](documents/content-page.png)
+
+### Device
+ 
+Raspberry Pi is used as smart device. The architecture image above shows how this device retrieves code within a docker image in order to compute data and sent it to the platform.
+
+To configure Raspberry pi, first run the following command to create a service account to let device to access to Google Docker registry.
+The role associated to this service account has only read policy on this registry.
+
+    ./deploy/deployer.sh create-device-service-account-and-roles
+    
+Then run the command below to generate a key to store as `key.json` file. This file will be installed in the Raspberry Pi.
+
+    ./deploy/deployer.sh get-device-service-account-key
+    
+Finally, follow instructions indicated in `device/README.md`.

@@ -1,0 +1,39 @@
+# Device
+
+This section aims to show how to configure a Rapsberry Pi in order to compute and send data to the IoT platform.
+
+## Prototype
+
+Here is an image of the device we search to build. ([source](https://learn.adafruit.com/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor/python-circuitpython-test))
+
+![Device](../documents/device.png)
+
+## Raspberry Pi configuration
+
+Follow these steps for Raspberry Pi configuration.
+
+- Get a Raspberry Pi (3 or 4) and a SSD card (8G at least)
+- [Install Raspbian OS](https://www.raspberrypi.org/documentation/installation/installing-images/) in your SSD card
+- [Set up Wifi connection](https://www.raspberrypi.org/documentation/configuration/wireless/) either through `Desktop` or `Command line`
+- [Install Docker Engine](https://docs.docker.com/engine/install/debian/). Docker Engine is installed as root, do not forget to create a `docker group`
+
+## Hardware configuration
+
+To measure temperature and moisture we use `Adafruit STEMMA Soil Sensor`. All information can be found in this [link](https://learn.adafruit.com/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor/overview).
+Wire this sensor to the Raspeberry Pi like below:
+
+![Wiring](../documents/hardware-configuration.png)
+
+
+- Pi 3V3 to sensor VIN
+- Pi GND to sensor GND
+- Pi SCL to sensor SCL
+- Pi SDA to sensor SDA
+
+## Code configuration
+
+Here is the final stage to configure source code into the Raspberry Pi, fulfill the three following steps:
+
+- Copy `key.json` file into `/home/pi`
+- Copy `run.sh`file into `/home/pi`
+- Run command `sh run.sh`. A password for vernemq will be asked, you need to put the same value specified for variable `MQTT_DEVICE_PASS`

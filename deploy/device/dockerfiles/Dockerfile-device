@@ -1,0 +1,27 @@
+FROM python:3.7
+
+WORKDIR /app
+ENV PYTHONPATH /app
+
+ARG MQTT_HOST_IP
+ARG MQTT_HOST_PORT
+ARG MQTT_TOPIC
+ARG LOCAL_CERT_PATH
+
+ENV PUBLISHING_FREQUENCY 15
+ENV MQTT_HOST_IP ${MQTT_HOST_IP}
+ENV MQTT_HOST_PORT ${MQTT_HOST_PORT}
+ENV MQTT_TOPIC ${MQTT_TOPIC}
+ENV MQTT_CA_FILE /app/tls.crt
+ENV MQTT_USERNAME_PATH /etc/credentials/username
+ENV MQTT_PASSWORD_PATH /etc/credentials/password
+ENV MQTT_CLIENT_ID_PATH /etc/credentials/clientId
+
+COPY ${LOCAL_CERT_PATH} ./tls.crt
+COPY device-code/requirements.txt ./
+COPY device-code/src/ ./
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+CMD [ "python", "device_main.py" ]

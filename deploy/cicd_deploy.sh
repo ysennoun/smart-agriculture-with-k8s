@@ -3,8 +3,8 @@
 set -eax
 
 source deploy/infrastructure/deployer_infrastructure.sh
-source deploy/code/deployer_code.sh
-source deploy/front-end-code/deployer_front_end_code.sh
+source deploy/code/deployer_platform.sh
+source deploy/front-end-code/deployer_front_end.sh
 
 
 ## Create Namespace

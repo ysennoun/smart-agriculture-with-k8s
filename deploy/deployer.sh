@@ -11,7 +11,7 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 # IMPORTS
 . "$BASE_PATH/deploy/cluster/deployer_cluster.sh"
 . "$BASE_PATH/deploy/infrastructure/deployer_infrastructure.sh"
-. "$BASE_PATH/deploy/code/deployer_platform.sh"
+. "$BASE_PATH/deploy/platform/deployer_platform.sh"
 
 
 ACTION=$1

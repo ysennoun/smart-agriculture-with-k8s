@@ -34,7 +34,8 @@ Wire this sensor to the Raspeberry Pi like below:
 
 Here is the final stage to configure source code into the Raspberry Pi, fulfill the three following steps:
 
-- Copy `key.json` file into `/home/pi`
+- Copy `key.json` file into `/home/pi/credentials`
 - Copy `run.sh`file into `/home/pi`
-- Run command `sh run.sh install-docker` to install [docker](https://docs.docker.com/engine/install/debian/)
-- Run command `sh run.sh configure-device`. A password for vernemq will be asked, you need to put the same value specified for variable `MQTT_DEVICE_PASS`
+- Run command `chmod 755 run.sh`
+- Run command `./run.sh install-docker` to install docker
+- Run command `./run.sh configure-device`. A password for vernemq will be asked, you need to put the same value specified for variable `MQTT_DEVICE_PASS`

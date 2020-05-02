@@ -2,6 +2,8 @@
 
 set -e
 
+ACTION=$1
+
 ## FUNCTIONS
 usage() {
     echo "Run the script in current shell with . (dot) before. Usage:"
@@ -12,24 +14,12 @@ usage() {
     echo "  - configure-device: configure device"
 }
 
-functon install-docker(){
-    sudo apt-get update
-    sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
-    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-    sudo add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/debian \
-    $(lsb_release -cs) \
-    stable"
-    sudo apt-get update
-    sudo apt-get install docker-ce docker-ce-cli containerd.io
+function install-docker(){
+    curl -sSL get.docker.com -o get-docker.sh
+    sh get-docker.sh && rm get-docker.sh
     sudo groupadd docker
     sudo usermod -aG docker $USER
-    newgrp docker 
+    newgrp docker
 }
 
 function configure-device(){

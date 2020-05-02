@@ -84,6 +84,8 @@ export default {
             this.deviceName =  deviceName;
             this.getLastValueData();
             this.getTimeseriesData();
+            setInterval(this.getLastValueData, 5000)
+            setInterval(this.getTimeseriesData, 5000)
         },
         getLastValueData() {
             var url = BACK_END_URL + "/devices/" + this.deviceName + "/lastValue"

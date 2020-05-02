@@ -38,14 +38,15 @@ function configure-device(){
 
     # Set cron job
     rm -f "/home/$USER/cron_job.sh"
-    echo '#!/bin/bash' >> "/home/$USER/cron_job.sh"
+    echo '#!/bin/sh' >> "/home/$USER/cron_job.sh"
     echo 'set -e' >> "/home/$USER/cron_job.sh"
+    echo 'PATH=/usr/local/bin:/usr/local/sbin:~/bin:/usr/bin:/bin:/usr/sbin:/sbin' >> "/home/$USER/cron_job.sh"
     echo 'docker login -u _json_key -p "$(cat /home/$USER/credentials/key.json)" https://eu.gcr.io && \' >> "/home/$USER/cron_job.sh"
     echo 'docker pull eu.gcr/ysennoun-iot/device:latest && \' >> "/home/$USER/cron_job.sh"
     echo 'docker stop device-container || true && docker rm device-container || true && \' >> "/home/$USER/cron_job.sh"
     echo 'docker run --name device-container --device=/dev/gpiomem:/dev/gpiomem -v /home/$USER/credentials:/etc/credentials -it -d -p 8883:8883 device:latest' >> "/home/$USER/cron_job.sh"
     chmod 755 "/home/$USER/cron_job.sh"
-    echo "0 2 * * * /home/$USER/cron_job.sh" > crontab.txt # every day at 2 am
+    echo "0 2 * * * /bin/sh /home/$USER/cron_job.sh" > crontab.txt # every day at 2 am
     crontab crontab.txt
     rm -f crontab.txt
 }

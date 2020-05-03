@@ -18,8 +18,8 @@ ENV MQTT_PASSWORD_PATH /etc/credentials/password
 ENV MQTT_CLIENT_ID_PATH /etc/credentials/clientId
 
 COPY ${LOCAL_CERT_PATH} ./tls.crt
-COPY device-code/requirements.txt ./
-COPY device-code/src/ ./
+COPY device/requirements.txt ./
+COPY device/src/ ./
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt

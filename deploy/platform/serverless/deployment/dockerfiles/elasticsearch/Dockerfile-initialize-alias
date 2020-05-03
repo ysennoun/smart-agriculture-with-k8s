@@ -4,9 +4,9 @@ WORKDIR /app
 ENV PYTHONPATH /app
 
 
-COPY code/serverless/requirements.txt ./
-COPY code/serverless/src/common /app/common
-COPY code/serverless/src/deployment/elasticsearch /app/deployment/elasticsearch
+COPY platform/serverless/requirements.txt ./
+COPY platform/serverless/src/common /app/common
+COPY platform/serverless/src/deployment/elasticsearch /app/deployment/elasticsearch
 
 
 RUN pip install --upgrade pip

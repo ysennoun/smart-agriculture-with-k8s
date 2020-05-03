@@ -7,13 +7,13 @@ RUN npm install -g http-server
 WORKDIR /app
 
 # copy 'package.json' and 'package-lock.json' (if available)
-COPY front-end-code/package*.json ./
+COPY front-end/package*.json ./
 
 # install all dependancies of the project
 RUN npm install
 
 # copy files and folders of the project in workdir
-COPY front-end-code/ .
+COPY front-end/ .
 
 # build app for production by minifying it
 RUN npm run build

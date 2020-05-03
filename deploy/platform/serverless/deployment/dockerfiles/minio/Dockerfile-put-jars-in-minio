@@ -4,10 +4,10 @@ WORKDIR /app
 ENV PYTHONPATH /app
 
 
-COPY code/historical-jobs/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ./
-COPY code/serverless/requirements.txt ./
-COPY code/serverless/src/common /app/common
-COPY code/serverless/src/deployment/minio /app/deployment/minio
+COPY platform/historical-jobs/target/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ./
+COPY platform/serverless/requirements.txt ./
+COPY platform/serverless/src/common /app/common
+COPY platform/serverless/src/deployment/minio /app/deployment/minio
 
 
 RUN pip install --upgrade pip

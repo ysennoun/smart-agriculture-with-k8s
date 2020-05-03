@@ -6,7 +6,6 @@ ENV PYTHONPATH /app
 ARG MQTT_HOST_IP
 ARG MQTT_HOST_PORT
 ARG MQTT_TOPIC
-ARG LOCAL_CERT_PATH
 
 ENV PUBLISHING_FREQUENCY 15
 ENV MQTT_HOST_IP ${MQTT_HOST_IP}
@@ -17,7 +16,7 @@ ENV MQTT_USERNAME_PATH /etc/credentials/username
 ENV MQTT_PASSWORD_PATH /etc/credentials/password
 ENV MQTT_CLIENT_ID_PATH /etc/credentials/clientId
 
-COPY ${LOCAL_CERT_PATH} ./tls.crt
+COPY tls.crt ./tls.crt
 COPY device/requirements.txt ./
 COPY device/src/ ./
 

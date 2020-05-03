@@ -31,11 +31,15 @@ function deploy_device_images(){
     dockerVersion=$3
 
     # Deploy docker images
-    docker build -f "$BASE_PATH/deploy/device/dockerfiles/Dockerfile-device" \
+    cp "$BASE_PATH/deploy/cluster/certificates/vernemq/tls.crt" .
+    cd "$BASE_PATH/deploy/device/dockerfiles/"
+    docker build -f Dockerfile-device \
       --build-arg MQTT_HOST_IP=$(get_vernemq_ip "$region") \
       --build-arg MQTT_HOST_PORT="8883" \
       --build-arg MQTT_TOPIC="/iot/farming" \
       --build-arg LOCAL_CERT_PATH="$BASE_PATH/deploy/cluster/certificates/vernemq/tls.crt" \
       -t "$containerRepository/device:$dockerVersion" .
     docker push "$containerRepository/device:$dockerVersion"
+    rm -f tls.crt
+    cd "$BASE_PATH/"
 }

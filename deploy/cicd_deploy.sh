@@ -3,7 +3,7 @@
 set -eax
 
 source deploy/infrastructure/deployer_infrastructure.sh
-source deploy/code/deployer_platform.sh
+source deploy/platform/deployer_platform.sh
 source deploy/front-end-code/deployer_front_end.sh
 
 

@@ -3,7 +3,7 @@
 set -eax
 
 source deploy/infrastructure/deployer_infrastructure.sh
-source deploy/code/deployer_platform.sh
+source deploy/platform/deployer_platform.sh
 
 # Install python requirements
 install_python_requirements

@@ -31,7 +31,7 @@ def step_impl(context, endpoint_type, device):
 def step_impl(context, device, temperature):
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
-    back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/device/last-value/{device}")
+    back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/devices/{device}/lastValue")
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     result = json.loads(raw_result.replace("\'", "\""))
     utils.delete_pod(core_v1, back_end_pod_name)
@@ -43,7 +43,7 @@ def step_impl(context, device, temperature):
 def step_impl(context, device, number_of_elements):
     core_v1 = utils.get_core_v1()
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
-    timeseries_uri = f"/device/timeseries/{device}?from_date={utils.get_past_timestamp(15)}&to_date={utils.get_current_timestamp()}"
+    timeseries_uri = f"/devices/{device}/timeseries?from_date={utils.get_past_timestamp(15)}&to_date={utils.get_current_timestamp()}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, timeseries_uri)
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
     utils.delete_pod(core_v1, back_end_pod_name)

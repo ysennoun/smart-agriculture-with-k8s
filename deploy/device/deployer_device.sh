@@ -31,8 +31,8 @@ function deploy_device_images(){
     dockerVersion=$3
 
     # Deploy docker images
-    cp "$BASE_PATH/deploy/cluster/certificates/vernemq/tls.crt" .
     cd "$BASE_PATH/deploy/device/dockerfiles/"
+    cp "$BASE_PATH/deploy/cluster/certificates/vernemq/tls.crt" .
     docker build -f Dockerfile-device \
       --build-arg MQTT_HOST_IP=$(get_vernemq_ip "$region") \
       --build-arg MQTT_HOST_PORT="8883" \

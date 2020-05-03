@@ -59,7 +59,7 @@ function create-certificates(){
 }
 
 function delete-external-static-ip-addresses(){
-  # Delete external static ip address
+  # Delete external static ip addresses
   deallocate_external_static_ip "$COMPUTE_REGION"
 }
 

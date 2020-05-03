@@ -47,7 +47,7 @@ deploy_historical_jobs_docker_images_and_release \
   "$S3A_ACCESS_KEY" \
   "$S3A_SECRET_KEY" \
   "$ES_TRUSTORE_PASS" \
-  "$MINIO_TRUSTORE_PASS"
+  "$MINIO_TRUSTSTORE_PASS"
 
 # Deploy front-end image and release
 deploy_front_end_images_and_release \

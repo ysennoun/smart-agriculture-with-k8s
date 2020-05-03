@@ -30,7 +30,7 @@ MQTT_INDEXER_PASS="3ywbCs2uB4"
 MQTT_DEVICE_PASS="9Fex2nqdqe"
 BACK_END_USER_PASS="4hxGaN34KQ"
 ES_TRUSTORE_PASS="ChI2OfIpGuq0be5X"
-MINIO_TRUSTORE_PASS="vkM8ssfK5fv4JQ9k"
+MINIO_TRUSTSTORE_PASS="vkM8ssfK5fv4JQ9k"
 
 
 ######## FUNCTIONS ########
@@ -114,7 +114,7 @@ function deploy-modules(){
       "$S3A_ACCESS_KEY" \
       "$S3A_SECRET_KEY" \
       "$ES_TRUSTORE_PASS" \
-      "$MINIO_TRUSTORE_PASS"
+      "$MINIO_TRUSTSTORE_PASS"
 }
 
 function delete-cluster(){

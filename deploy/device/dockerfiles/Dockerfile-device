@@ -16,7 +16,7 @@ ENV MQTT_USERNAME_PATH /etc/credentials/username
 ENV MQTT_PASSWORD_PATH /etc/credentials/password
 ENV MQTT_CLIENT_ID_PATH /etc/credentials/clientId
 
-COPY tls.crt ./tls.crt
+COPY device/tls.crt ./
 COPY device/requirements.txt ./
 COPY device/src/ ./
 

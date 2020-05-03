@@ -55,3 +55,9 @@ deploy_front_end_images_and_release \
   "$COMPUTE_REGION" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION"
+
+# Deploy device image
+deploy_device_images \
+  "$COMPUTE_REGION" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION"

@@ -11,14 +11,14 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 
 ## FUNCTIONS
-function install_python_requirements(){
+function install_device_python_requirements(){
     cd "$BASE_PATH/device/"
     pip install -r requirements.txt
     pip install -r test_requirements.txt
     cd ../../
 }
 
-function launch_python_unit_tests(){
+function launch_device_python_unit_tests(){
     # Run unit tests (for python)
     cd "$BASE_PATH/device/"
     python setup.py test

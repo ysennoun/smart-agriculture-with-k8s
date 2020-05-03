@@ -24,7 +24,7 @@ source deploy/device/deployer_device.sh
 #  "$BACK_END_USER_PASS"
 #
 ### Set Docker login
-#set_docker "$HOSTNAME"
+set_docker "$HOSTNAME"
 #
 ## Deploy Put Jars in Minio image and release And alias in Elasticsearch
 #deploy_jars_alias_deployment_image_and_release \

@@ -3,7 +3,7 @@
 set -eax
 
 source deploy/platform/deployer_platform.sh
-source deploy/front-end-code/deployer_front_end.sh
+source deploy/front-end/deployer_front_end.sh
 
 # Install python, maven and nodejs requirements
 install_python_requirements

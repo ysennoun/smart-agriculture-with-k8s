@@ -19,7 +19,7 @@ def step_impl(context, device, temperature, topic):
     core_v1 = utils.get_core_v1()
     mqtt_pod_manifest = utils.get_mqtt_pod_manifest(mqtt_pod_name, iot_data, topic)
     utils.run_pod(core_v1, mqtt_pod_name, mqtt_pod_manifest)
-    #utils.delete_pod(core_v1, mqtt_pod_name)
+    utils.delete_pod(core_v1, mqtt_pod_name)
 
 
 @when('Request through API the {endpoint_type} for device {device}')
@@ -33,9 +33,8 @@ def step_impl(context, device, temperature):
     back_end_pod_name = f"back-end-pod-{randint(0, 10000)}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, f"/devices/{device}/lastValue")
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
-    print(f"raw_result : {raw_result}")
     result = json.loads(raw_result.replace("\'", "\""))
-    #utils.delete_pod(core_v1, back_end_pod_name)
+    utils.delete_pod(core_v1, back_end_pod_name)
     assert (result["rows"][0]["temperature"] == int(temperature))
 
 
@@ -47,7 +46,6 @@ def step_impl(context, device, number_of_elements):
     timeseries_uri = f"/devices/{device}/timeseries?from_date={utils.get_past_timestamp(15)}&to_date={utils.get_current_timestamp()}"
     back_end_pod_manifest = utils.get_back_end_pod_manifest(back_end_pod_name, timeseries_uri)
     raw_result = utils.run_pod(core_v1, back_end_pod_name, back_end_pod_manifest)
-    print(f"raw_result : {raw_result}")
     utils.delete_pod(core_v1, back_end_pod_name)
     result = json.loads(raw_result.replace("\'", "\""))
     temperatures = [element["temperature"] for element in result["rows"]]

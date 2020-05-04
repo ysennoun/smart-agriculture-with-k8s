@@ -41,12 +41,12 @@ In case you want to use project CLI, you need to install:
  
 ### Requirements for Gitlab CI/CD
 
-This project offers the possibility to use a GItlab CI/CD to test, create the cluster, deploy applications. See file `gitlab-ci.yaml`. 
+This project offers the possibility to use a Gitlab CI/CD to test, create the cluster, deploy applications. See file `gitlab-ci.yaml`. 
    
 #### Get private key file
 - Go to `IAM and Administration/quota/` (as indicated below)
 - Create a service account if it is not already done
-- Download private key file to be used in gitlab CICD. Indeed, store the content as global environment variable `PRIVATE_KEY_FILE_CONTENT`
+- Download private key file to be used in gitlab CI/CD. Indeed, store the content as global environment variable `PRIVATE_KEY_FILE_CONTENT`
 
 ![Private key file](documents/get-private-key-file.png)
 
@@ -58,7 +58,7 @@ This project offers the possibility to use a GItlab CI/CD to test, create the cl
 
 #### Environment variables 
 
-To deploy all application either with the Gitlab CICD pipeline (see the following picture to know where) or  with `deploy/deployer.sh` cli , you have to set the following environment variables:
+To deploy all application either with the Gitlab CI/CD pipeline (see the following picture to know where) or  with `deploy/deployer.sh` cli , you have to set the following environment variables:
 
     PROJECT_ID: "your-project-id"
     COMPUTE_ZONE: "your-selected-zone"  # for instance europe-west1-b

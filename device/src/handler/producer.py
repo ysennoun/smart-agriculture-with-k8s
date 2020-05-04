@@ -1,7 +1,4 @@
 import json
-import busio
-from board import SCL, SDA
-from adafruit_seesaw.seesaw import Seesaw
 from common.utils.logger import Logger
 from common.utils.date import get_current_date
 from handler import env
@@ -16,6 +13,9 @@ logger = Logger().get_logger()
 class Producer:
 
     def __init__(self):
+        import busio
+        from board import SCL, SDA
+        from adafruit_seesaw.seesaw import Seesaw
         i2c_bus = busio.I2C(SCL, SDA)
         self.seesaw = Seesaw(i2c_bus, addr=0x36)
         self.client_id = env.get_mqtt_client_id()

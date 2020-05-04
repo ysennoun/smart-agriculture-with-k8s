@@ -14,7 +14,6 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 function install_device_python_requirements(){
     cd "$BASE_PATH/device/"
     pip install -r requirements.txt
-    pip install -r test_requirements.txt
     cd ../../
 }
 

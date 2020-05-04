@@ -5,14 +5,10 @@ from handler import env
 
 logger = Logger().get_logger()
 
-#https://docs.aws.amazon.com/fr_fr/iot/latest/developerguide/iot-moisture-raspi-setup.html
-#https://learn.adafruit.com/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor/python-circuitpython-test
-#https://www.planete-domotique.com/hat-gsm-gprs-gnss-bluetooth-pour-raspberry-pi-waveshare.html
-#https://wiki.metropolia.fi/display/sensor/Capacitive+Humidity+Sensors
-
 class Producer:
 
     def __init__(self):
+        # add imports here to run unit tests in none Raspberry Pi environment 
         import busio
         from board import SCL, SDA
         from adafruit_seesaw.seesaw import Seesaw

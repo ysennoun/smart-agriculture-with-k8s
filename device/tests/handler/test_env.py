@@ -1,6 +1,5 @@
 import os
 import pathlib
-import json
 import unittest
 from handler import env
 

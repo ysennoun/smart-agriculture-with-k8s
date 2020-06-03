@@ -31,7 +31,7 @@ function deploy_device_images(){
 
     # Deploy docker images
     cp "$BASE_PATH/deploy/cluster/certificates/vernemq/tls.crt" "$BASE_PATH/device/"
-    docker build -f "$BASE_PATH/deploy/device/dockerfiles/Dockerfile-device" \
+    docker build -f "$BASE_PATH/deploy/device/dockerfiles/Dockerfile" \
       --build-arg MQTT_HOST_IP=$(get_vernemq_ip "$region") \
       --build-arg MQTT_HOST_PORT="8883" \
       --build-arg MQTT_TOPIC="/iot/farming" \

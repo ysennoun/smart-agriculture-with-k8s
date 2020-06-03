@@ -23,11 +23,10 @@ function launch_vue_unit_tests(){
     cd ../../
 }
 
-function deploy_front_end_images_and_release(){
-    namespace=$1
-    region=$2
-    containerRepository=$3
-    dockerVersion=$4
+function deploy_front_end_images(){
+    region=$1
+    containerRepository=$2
+    dockerVersion=$3
 
     # Create environment variables file for vue.js
     echo "VUE_APP_BACK_END_URL=https://$(get_back_end_ip "$region"):443" > "$BASE_PATH/front-end/.env"
@@ -35,11 +34,18 @@ function deploy_front_end_images_and_release(){
     # Deploy docker images
     cp -r "$BASE_PATH/front-end/" "$BASE_PATH/deploy/front-end/dockerfiles/front-end/"
     cd "$BASE_PATH/deploy/front-end/dockerfiles/"
-    docker build -f "Dockerfile-front-end" \
+    docker build -f "Dockerfile" \
       -t "$containerRepository/front-end:$dockerVersion" .
     docker push "$containerRepository/front-end:$dockerVersion"
     cd "$BASE_PATH"
     rm -rf "$BASE_PATH/deploy/front-end/dockerfiles/front-end/"
+}
+
+function deploy_front_end_release(){
+    namespace=$1
+    region=$2
+    containerRepository=$3
+    dockerVersion=$4
 
     # Deploy release
     helm upgrade --install --debug \

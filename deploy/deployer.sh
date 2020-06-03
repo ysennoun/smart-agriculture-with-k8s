@@ -94,20 +94,37 @@ function deploy-modules(){
     set_docker "$HOSTNAME"
 
     # Deploy Put Jars in Minio image and release And alias in Elasticsearch
-    deploy_jars_alias_deployment_image_and_release \
+    deploy_jars_alias_deployment_image \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION"
+    deploy_jars_alias_deployment_release \
       "$ENVIRONMENT" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION"
 
     # Deploy Application images and release
-    deploy_application_images_and_release \
+    deploy_application_images \
+      "$ENVIRONMENT" \
+      "$COMPUTE_REGION" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION"
+    deploy_application_release \
       "$ENVIRONMENT" \
       "$COMPUTE_REGION" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION"
 
     # Deploy Spark and Historical jobs images and release
-    deploy_historical_jobs_docker_images_and_release \
+    deploy_historical_jobs_docker_images \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION" \
+      "$S3A_ACCESS_KEY" \
+      "$S3A_SECRET_KEY" \
+      "$ES_TRUSTORE_PASS" \
+      "$MINIO_TRUSTSTORE_PASS"
+    deploy_historical_jobs_docker_release \
       "$ENVIRONMENT" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION" \

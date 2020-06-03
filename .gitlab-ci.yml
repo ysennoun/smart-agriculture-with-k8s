@@ -11,6 +11,7 @@ services:
 stages:
   - setup_cluster_deploy
   - unit_test
+  - dev_images
   - dev_deploy
   - dev_e2e_test
 
@@ -67,6 +68,20 @@ setup_cluster:deploy:
 ########################################################################################################################
 # DEV and MASTER
 ########################################################################################################################
+dev:images:
+  variables:
+    ENVIRONMENT: dev
+    DOCKER_VERSION: $CI_COMMIT_SHA
+  stage: dev_images
+  allow_failure: false
+  only:
+    - dev
+    - master
+  script:
+    ## Execute deployment of images
+    - chmod +x deploy/cicd_images.sh
+    - ./deploy/cicd_images.sh
+
 dev:deploy:
   variables:
     ENVIRONMENT: dev

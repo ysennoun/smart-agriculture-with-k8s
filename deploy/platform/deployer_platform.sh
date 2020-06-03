@@ -52,7 +52,7 @@ function launch_e2e_tests(){
     export DOCKER_IMAGE="$containerRepository/features:$dockerVersion"
 
     ## Deplopy docker image
-    docker build -f "$BASE_PATH/deploy/platform/features/dockerfiles/Dockerfile-features" \
+    docker build -f "$BASE_PATH/deploy/platform/features/dockerfiles/Dockerfile" \
       -t "$containerRepository/features:$dockerVersion" .
     docker push "$containerRepository/features:$dockerVersion"
 
@@ -61,7 +61,7 @@ function launch_e2e_tests(){
     cd ../../
 }
 
-function deploy_jars_alias_deployment_image_and_release(){
+function deploy_jars_alias_deployment_image(){
     namespace=$1
     containerRepository=$2
     dockerVersion=$3
@@ -72,13 +72,19 @@ function deploy_jars_alias_deployment_image_and_release(){
     cd ../../
 
     ## Deplopy docker image
-    docker build -f "$BASE_PATH/deploy/platform/serverless/deployment/dockerfiles/minio/Dockerfile-put-jars-in-minio" \
+    docker build -f "$BASE_PATH/deploy/platform/serverless/deployment/dockerfiles/minio/Dockerfile" \
       -t "$containerRepository/put-jars-in-minio:$dockerVersion" .
     docker push "$containerRepository/put-jars-in-minio:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/platform/serverless/deployment/dockerfiles/elasticsearch/Dockerfile-initialize-alias" \
+    docker build -f "$BASE_PATH/deploy/platform/serverless/deployment/dockerfiles/elasticsearch/Dockerfile" \
       -t "$containerRepository/initialize-alias:$dockerVersion" .
     docker push "$containerRepository/initialize-alias:$dockerVersion"
+}
+
+function deploy_jars_alias_deployment_release(){
+    namespace=$1
+    containerRepository=$2
+    dockerVersion=$3
 
     # Deploy release
     helm upgrade --install --debug \
@@ -94,20 +100,27 @@ function deploy_jars_alias_deployment_image_and_release(){
     sleep 30
 }
 
-function deploy_application_images_and_release(){
+function deploy_application_images(){
     namespace=$1
     region=$2
     containerRepository=$3
     dockerVersion=$4
 
     # Deploy docker images
-    docker build -f "$BASE_PATH/deploy/platform/serverless/application/dockerfiles/back_end/Dockerfile-back-end" \
+    docker build -f "$BASE_PATH/deploy/platform/serverless/application/dockerfiles/back_end/Dockerfile" \
       -t "$containerRepository/back-end:$dockerVersion" .
     docker push "$containerRepository/back-end:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/platform/serverless/application/dockerfiles/indexer/Dockerfile-indexer" \
+    docker build -f "$BASE_PATH/deploy/platform/serverless/application/dockerfiles/indexer/Dockerfile" \
       -t "$containerRepository/indexer:$dockerVersion" .
     docker push "$containerRepository/indexer:$dockerVersion"
+}
+
+function deploy_application_release(){
+    namespace=$1
+    region=$2
+    containerRepository=$3
+    dockerVersion=$4
 
     # Deploy release
     helm upgrade --install --debug \
@@ -120,7 +133,7 @@ function deploy_application_images_and_release(){
       --set dockerVersion="$dockerVersion"
 }
 
-function deploy_historical_jobs_docker_images_and_release(){
+function deploy_historical_jobs_docker_images(){
     namespace=$1
     containerRepository=$2
     dockerVersion=$3
@@ -167,6 +180,18 @@ function deploy_historical_jobs_docker_images_and_release(){
     cd "$BASE_PATH/"
 
     rm "$BASE_PATH/deploy/platform/historical-jobs/dockerfiles/tls.crt"
+}
+
+function deploy_historical_jobs_docker_release(){
+    namespace=$1
+    containerRepository=$2
+    dockerVersion=$3
+    s3aAccessKey=$4
+    s3aSecretKey=$5
+    esTruststorePass=$6
+    minioTruststorePass=$7
+    esTruststoreContent=$(get_elasticsearch_truststore_content_in_base64 "$namespace" "$esTruststorePass")
+    esUserPass=$(get_elastic_user_password "$namespace")
 
     # Deploy release
     helm upgrade --install --debug \

@@ -23,24 +23,21 @@ install_infrastructure \
   "$MQTT_DEVICE_PASS" \
   "$BACK_END_USER_PASS"
 
-## Set Docker login
-set_docker "$HOSTNAME"
-
-# Deploy Put Jars in Minio image and release And alias in Elasticsearch
-deploy_jars_alias_deployment_image_and_release \
+# Deploy Put Jars in Minio release And alias in Elasticsearch
+deploy_jars_alias_deployment_release \
   "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION"
 
-# Deploy Application images and release
-deploy_application_images_and_release \
+# Deploy Application release
+deploy_application_release \
   "$ENVIRONMENT" \
   "$COMPUTE_REGION" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION"
 
-# Deploy Spark and Historical jobs images and release
-deploy_historical_jobs_docker_images_and_release \
+# Deploy Spark and Historical jobs release
+deploy_historical_jobs_docker_release \
   "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION" \
@@ -49,15 +46,9 @@ deploy_historical_jobs_docker_images_and_release \
   "$ES_TRUSTORE_PASS" \
   "$MINIO_TRUSTSTORE_PASS"
 
-# Deploy front-end image and release
-deploy_front_end_images_and_release \
+# Deploy front-end release
+deploy_front_end_release \
   "$ENVIRONMENT" \
-  "$COMPUTE_REGION" \
-  "$CONTAINER_REPOSITORY" \
-  "$DOCKER_VERSION"
-
-# Deploy device image
-deploy_device_images \
   "$COMPUTE_REGION" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION"

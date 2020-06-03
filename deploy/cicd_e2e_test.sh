@@ -2,7 +2,7 @@
 
 set -eax
 
-source deploy/infrastructure/deployer_infrastructure.sh
+source deploy/cluster/deployer_cluster.sh
 source deploy/platform/deployer_platform.sh
 
 # Install python requirements

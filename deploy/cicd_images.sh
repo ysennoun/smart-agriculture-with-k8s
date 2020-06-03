@@ -2,7 +2,7 @@
 
 set -eax
 
-source deploy/infrastructure/deployer_infrastructure.sh
+source deploy/cluster/deployer_cluster.sh
 source deploy/platform/deployer_platform.sh
 source deploy/front-end/deployer_front_end.sh
 source deploy/device/deployer_device.sh

@@ -2,7 +2,7 @@
 
 set -eax
 
-source deploy/infrastructure/deployer_infrastructure.sh
+source deploy/cluster/deployer_cluster.sh
 
 # Enable APIs
 enable_apis

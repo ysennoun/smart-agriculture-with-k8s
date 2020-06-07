@@ -19,7 +19,3 @@ def get_mqtt_user() -> str:
 
 def get_mqtt_user_pass() -> str:
     return os.environ["MQTT_USER_PASS"]
-
-
-def get_docker_image() -> str:
-    return os.environ["DOCKER_IMAGE"]

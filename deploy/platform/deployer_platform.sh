@@ -26,6 +26,11 @@ function install_deps() {
     apk add jq
 }
 
+function install_e2e_deps() {
+    apk update
+    apk add mosquitto-clients
+}
+
 function launch_python_unit_tests(){
     # Run unit tests (for python)
     cd "$BASE_PATH/platform/serverless/"
@@ -43,19 +48,11 @@ function launch_spark_unit_tests(){
 function launch_e2e_tests(){
     # Run e2e tests
     export ENVIRONMENT=$1
-    containerRepository=$2
-    dockerVersion=$3
-    export BACK_END_USER=$4
-    export BACK_END_USER_PASS=$5
-    export MQTT_USER=$6
-    export MQTT_USER_PASS=$7
-    export DOCKER_IMAGE="$containerRepository/features:$dockerVersion"
-
-    ## Deplopy docker image
-    docker build -f "$BASE_PATH/deploy/platform/features/dockerfiles/Dockerfile" \
-      -t "$containerRepository/features:$dockerVersion" .
-    docker push "$containerRepository/features:$dockerVersion"
-
+    export BACK_END_USER=$2
+    export BACK_END_USER_PASS=$3
+    export MQTT_USER=$4
+    export MQTT_USER_PASS=$5
+    
     cd "$BASE_PATH/platform/features/"
     behave
     cd ../../

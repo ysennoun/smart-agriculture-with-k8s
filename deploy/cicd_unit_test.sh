@@ -11,10 +11,10 @@ install_python_requirements
 install_deps
 install_vue_deps
 install_device_deps
-install_device_python_requirements
+#install_device_python_requirements
 
 # Run python, spark and vue unit tests
 launch_python_unit_tests
 launch_spark_unit_tests
 launch_vue_unit_tests
-launch_device_python_unit_tests
+#launch_device_python_unit_tests

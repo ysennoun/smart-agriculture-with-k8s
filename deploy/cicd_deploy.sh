@@ -3,7 +3,6 @@
 set -eax
 
 source deploy/cluster/deployer_cluster.sh
-source deploy/infrastructure/deployer_infrastructure.sh
 source deploy/platform/deployer_platform.sh
 source deploy/front-end/deployer_front_end.sh
 
@@ -13,31 +12,31 @@ create_namespace "$ENVIRONMENT"
 ## Set helm repos
 set_helm_repos
 
-# Create Secrets, Elasticsearch, VerneMQ and Minio clusters
-install_infrastructure \
+# Create Roles and Secrets
+deploy_roles_secrets_release \
   "$ENVIRONMENT" \
   "$COMPUTE_REGION" \
   "$S3A_ACCESS_KEY" \
   "$S3A_SECRET_KEY" \
   "$MQTT_INDEXER_PASS" \
   "$MQTT_DEVICE_PASS" \
-  "$BACK_END_USER_PASS"
+  "$API_USER_PASS"
 
-# Deploy Put Jars in Minio release And alias in Elasticsearch
-deploy_jars_alias_deployment_release \
-  "$ENVIRONMENT" \
-  "$CONTAINER_REPOSITORY" \
-  "$DOCKER_VERSION"
-
-# Deploy Application release
-deploy_application_release \
+# Deploy device management releases
+deploy_device_management_releases \
   "$ENVIRONMENT" \
   "$COMPUTE_REGION" \
+  "$MQTT_INDEXER_PASS" \
+  "$MQTT_DEVICE_PASS"
+
+# Deploy data indexing releases
+deploy_data_indexing_releases \
+  "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION"
 
-# Deploy Spark and Historical jobs release
-deploy_historical_jobs_docker_release \
+# Deploy data processing releases
+deploy_data_processing_releases \
   "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION" \
@@ -45,6 +44,19 @@ deploy_historical_jobs_docker_release \
   "$S3A_SECRET_KEY" \
   "$ES_TRUSTORE_PASS" \
   "$MINIO_TRUSTSTORE_PASS"
+
+# Deploy initialization release
+deploy_initialization_release \
+  "$ENVIRONMENT" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION"
+
+# Deploy data access releases
+deploy_data_access_releases \
+  "$ENVIRONMENT" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION" \
+  "$COMPUTE_REGION"
 
 # Deploy front-end release
 deploy_front_end_release \

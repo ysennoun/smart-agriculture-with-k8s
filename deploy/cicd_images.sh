@@ -10,21 +10,8 @@ source deploy/device/deployer_device.sh
 ## Set Docker login
 set_docker "$HOSTNAME"
 
-# Deploy Put Jars in Minio image
-deploy_jars_alias_deployment_image \
-  "$ENVIRONMENT" \
-  "$CONTAINER_REPOSITORY" \
-  "$DOCKER_VERSION"
-
-# Deploy Application images
-deploy_application_images \
-  "$ENVIRONMENT" \
-  "$COMPUTE_REGION" \
-  "$CONTAINER_REPOSITORY" \
-  "$DOCKER_VERSION"
-
-# Deploy Spark and Historical jobs images
-deploy_historical_jobs_docker_images \
+# Deploy platform images
+deploy_platform_images \
   "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION" \

@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: {{ .Values.containerRepository }}/api:{{ .Values.dockerVersion }}
+          env:
+            - name: ELASTICSEARCH_ENDPOINT
+              value: https://data-indexing-elasticsearch-es-http:9200
+            - name: ELASTICSEARCH_CA_FILE
+              value: "/etc/ssl/elasticsearch/tls.crt"
+            - name: ELASTICSEARCH_USER
+              value: "elastic"
+            - name: ELASTICSEARCH_PASSWORD_PATH
+              value: "/etc/credentials/elasticsearch/elastic"
+            - name: ES_ALIAS_RAW_DATA
+              value: "iot--farming"
+            - name: BASIC_AUTH_USERNAME_PATH
+              value: "/etc/credentials/api/username"
+            - name: BASIC_AUTH_PASSWORD_PATH
+              value: "/etc/credentials/api/password"
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+          volumeMounts:
+            - name: api-certificates
+              mountPath: /etc/ssl/api/
+              readOnly: true
+            - name: api-credentials
+              mountPath: /etc/credentials/api/
+              readOnly: true
+            - name: elasticsearch-certificates
+              mountPath: /etc/ssl/elasticsearch/tls.crt
+              subPath: tls.crt
+              readOnly: true
+            - name: elasticsearch-credentials
+              mountPath: /etc/credentials/elasticsearch/
+              readOnly: true
+      volumes:
+        - name: api-certificates
+          secret:
+            secretName: api-certificates-secret
+        - name: api-credentials
+          secret:
+            secretName: api-credentials
+        - name: elasticsearch-certificates
+          secret:
+            secretName: data-indexing-elasticsearch-es-http-certs-public
+        - name: elasticsearch-credentials
+          secret:
+            secretName: data-indexing-elasticsearch-es-elastic-user
+
+---
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: {{ .Values.namespace }}
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.apiIp }}
+  selector:
+    app: api
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443

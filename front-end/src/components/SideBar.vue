@@ -28,7 +28,7 @@
 import axios from "axios";
 const https = require('https');
 
-const BACK_END_URL = process.env.VUE_APP_BACK_END_URL
+const API_URL = process.env.VUE_APP_API_URL
 
 export default {
     data() {
@@ -62,9 +62,9 @@ export default {
             })
         },         
         getDevices() {
-            console.log(BACK_END_URL + "/devices")
+            console.log(API_URL + "/devices")
             axios.get(
-                    BACK_END_URL + "/devices",
+                    API_URL + "/devices",
                     {
                         httpsAgent: new https.Agent({rejectUnauthorized: false})
                     }

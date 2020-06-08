@@ -29,7 +29,7 @@ function deploy_front_end_images(){
     dockerVersion=$3
 
     # Create environment variables file for vue.js
-    echo "VUE_APP_BACK_END_URL=https://$(get_back_end_ip "$region"):443" > "$BASE_PATH/front-end/.env"
+    echo "VUE_APP_API_URL=https://$(get_api_ip "$region"):443" > "$BASE_PATH/front-end/.env"
 
     # Deploy docker images
     cp -r "$BASE_PATH/front-end/" "$BASE_PATH/deploy/front-end/dockerfiles/front-end/"

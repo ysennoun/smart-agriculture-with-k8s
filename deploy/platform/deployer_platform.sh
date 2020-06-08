@@ -48,8 +48,8 @@ function launch_spark_unit_tests(){
 function launch_e2e_tests(){
     # Run e2e tests
     export ENVIRONMENT=$1
-    export BACK_END_USER=$2
-    export BACK_END_USER_PASS=$3
+    export API_USER_PASS=$2
+    export API_USER_PASS=$3
     export MQTT_USER=$4
     export MQTT_USER_PASS=$5
     
@@ -58,79 +58,7 @@ function launch_e2e_tests(){
     cd ../../
 }
 
-function deploy_jars_alias_deployment_image(){
-    namespace=$1
-    containerRepository=$2
-    dockerVersion=$3
-
-    ## Generate jars
-    cd "$BASE_PATH/platform/historical-jobs/"
-    mvn clean package
-    cd ../../
-
-    ## Deplopy docker image
-    docker build -f "$BASE_PATH/deploy/platform/serverless/deployment/dockerfiles/minio/Dockerfile" \
-      -t "$containerRepository/put-jars-in-minio:$dockerVersion" .
-    docker push "$containerRepository/put-jars-in-minio:$dockerVersion"
-
-    docker build -f "$BASE_PATH/deploy/platform/serverless/deployment/dockerfiles/elasticsearch/Dockerfile" \
-      -t "$containerRepository/initialize-alias:$dockerVersion" .
-    docker push "$containerRepository/initialize-alias:$dockerVersion"
-}
-
-function deploy_jars_alias_deployment_release(){
-    namespace=$1
-    containerRepository=$2
-    dockerVersion=$3
-
-    # Deploy release
-    helm upgrade --install --debug \
-      "smart-agriculture-jars-alias-deployment" \
-      "$BASE_PATH/deploy/platform/serverless/deployment" \
-      --namespace "$namespace" \
-      --set namespace="$namespace" \
-      --set containerRepository="$containerRepository" \
-      --set dockerVersion="$dockerVersion" \
-      --set timestamp="$(date +%s)"
-
-    # Wait 30 seconds for deployment
-    sleep 30
-}
-
-function deploy_application_images(){
-    namespace=$1
-    region=$2
-    containerRepository=$3
-    dockerVersion=$4
-
-    # Deploy docker images
-    docker build -f "$BASE_PATH/deploy/platform/serverless/application/dockerfiles/back_end/Dockerfile" \
-      -t "$containerRepository/back-end:$dockerVersion" .
-    docker push "$containerRepository/back-end:$dockerVersion"
-
-    docker build -f "$BASE_PATH/deploy/platform/serverless/application/dockerfiles/indexer/Dockerfile" \
-      -t "$containerRepository/indexer:$dockerVersion" .
-    docker push "$containerRepository/indexer:$dockerVersion"
-}
-
-function deploy_application_release(){
-    namespace=$1
-    region=$2
-    containerRepository=$3
-    dockerVersion=$4
-
-    # Deploy release
-    helm upgrade --install --debug \
-      "smart-agriculture-serverless" \
-      "$BASE_PATH/deploy/platform/serverless/application" \
-      --namespace "$namespace" \
-      --set namespace="$namespace" \
-      --set backEndIp=$(get_back_end_ip "$region") \
-      --set containerRepository="$containerRepository" \
-      --set dockerVersion="$dockerVersion"
-}
-
-function deploy_historical_jobs_docker_images(){
+function deploy_platform_images(){
     namespace=$1
     containerRepository=$2
     dockerVersion=$3
@@ -140,17 +68,39 @@ function deploy_historical_jobs_docker_images(){
     minioTruststorePass=$7
     k8ApiserverUrl=$(get_k8_apiserver_url)
     s3PreparedDataPath="s3://bucket/prepared/"
-    esNodes="https://smart-agriculture-elasticsearch-es-http"
+    esNodes="https://data-indexing-elasticsearch-es-http"
     esPort=9200
-    fsS3aEndpoint="smart-agriculture-minio:9000"
+    fsS3aEndpoint="data-processing-minio:9000"
     esAliasIncomingData="iot-farming"
-    esAliasForHistoricalJobs="iot-farming-historical-jobs"
+    esAliasForHistoricalJobs="iot-farming-spark-jobs"
     esTruststoreContent=$(get_elasticsearch_truststore_content_in_base64 "$namespace" "$esTruststorePass")
     esUserPass=$(get_elastic_user_password "$namespace")
 
-    # Deploy docker images
-    cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/platform/historical-jobs/dockerfiles/"
-    cd "$BASE_PATH/deploy/platform/historical-jobs/dockerfiles/"
+    ## Generate jars
+    cd "$BASE_PATH/platform/spark-jobs/"
+    mvn clean package
+    cd ../../
+
+    ## Deploy python images
+    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/minio/Dockerfile" \
+      -t "$containerRepository/put-jars-in-minio:$dockerVersion" .
+    docker push "$containerRepository/put-jars-in-minio:$dockerVersion"
+
+    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/elasticsearch/Dockerfile" \
+      -t "$containerRepository/initialize-alias:$dockerVersion" .
+    docker push "$containerRepository/initialize-alias:$dockerVersion"
+
+    docker build -f "$BASE_PATH/deploy/platform/data-access/api/dockerfiles/Dockerfile" \
+      -t "$containerRepository/api:$dockerVersion" .
+    docker push "$containerRepository/api:$dockerVersion"
+
+    docker build -f "$BASE_PATH/deploy/platform/data-indexing/indexer/dockerfiles/Dockerfile" \
+      -t "$containerRepository/indexer:$dockerVersion" .
+    docker push "$containerRepository/indexer:$dockerVersion"
+
+    # Deploy spark images
+    cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
+    cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
     docker build \
       -f Dockerfile-spark \
       --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
@@ -158,7 +108,7 @@ function deploy_historical_jobs_docker_images(){
     docker push "$containerRepository/spark:2.4.5"
     cd "$BASE_PATH/"
 
-    cd "$BASE_PATH/deploy/platform/historical-jobs/dockerfiles/"
+    cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
     docker build \
       --build-arg CONTAINER_REPOSITORY="$containerRepository" \
       --build-arg DOCKER_VERSION="$dockerVersion" \
@@ -176,10 +126,107 @@ function deploy_historical_jobs_docker_images(){
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
     cd "$BASE_PATH/"
 
-    rm "$BASE_PATH/deploy/platform/historical-jobs/dockerfiles/tls.crt"
+    rm "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/tls.crt"
 }
 
-function deploy_historical_jobs_docker_release(){
+
+function deploy_roles_secrets_release(){
+   namespace=$1
+   region=$2
+   s3aAccessKey=$3
+   s3aSecretKey=$4
+   mqttIndexerPass=$5
+   mqttDevicePass=$6
+   apiUserPass=$7
+
+   echo "Get certificates from local or secrets if exists"
+   mqttCA=$(get_ssl_certificates_in_base64 "vernemq" "ca.crt")
+   mqttTLS=$(get_ssl_certificates_in_base64 "vernemq" "tls.crt")
+   mqttKey=$(get_ssl_certificates_in_base64 "vernemq" "tls.key")
+   apiTLS=$(get_ssl_certificates_in_base64 "api" "tls.crt")
+   apiKey=$(get_ssl_certificates_in_base64 "api" "tls.key")
+   minioTLS=$(get_ssl_certificates_in_base64 "minio" "tls.crt")
+   minioKey=$(get_ssl_certificates_in_base64 "minio" "tls.key")
+
+   echo "Install roles and secrets"
+   helm upgrade --install --debug \
+     "roles-secrets" \
+     "$BASE_PATH/deploy/platform/configuration/roles-secrets" \
+     --namespace "$namespace" \
+     --set namespace="$namespace" \
+     --set mqttCA="$mqttCA" \
+     --set mqttTLS="$mqttTLS" \
+     --set mqttKey="$mqttKey" \
+     --set minioTLS="$minioTLS" \
+     --set minioKey="$minioKey" \
+     --set apiTLS="$apiTLS" \
+     --set apiKey="$apiKey" \
+     --set s3aAccessKey="$s3aAccessKey" \
+     --set s3aSecretKey="$s3aSecretKey" \
+     --set mqttIndexerPassBase64="$(echo "$mqttIndexerPass" | base64)" \
+     --set apiUserPassBase64="$(echo "$apiUserPass" | base64)"
+}
+
+function deploy_initialization_release(){
+    namespace=$1
+    containerRepository=$2
+    dockerVersion=$3
+
+    # Deploy release
+    helm upgrade --install --debug \
+      "configuration" \
+      "$BASE_PATH/deploy/platform/configuration/initialization" \
+      --namespace "$namespace" \
+      --set namespace="$namespace" \
+      --set containerRepository="$containerRepository" \
+      --set dockerVersion="$dockerVersion" \
+      --set timestamp="$(date +%s)"
+
+    # Wait 30 seconds for deployment
+    sleep 30
+}
+
+function deploy_device_management_releases(){
+    namespace=$1
+    region=$2
+    mqttIndexerPass=$3
+    mqttDevicePass=$4
+
+    # Deploy releases
+    echo "Install VerneMQ"
+    helm upgrade --install --namespace "$namespace" "smart-agriculture-vernemq" vernemq/vernemq \
+      -f "$BASE_PATH/deploy/platform/device-management/vernemq/values.yaml" \
+      --set service.loadBalancerIP=$(get_vernemq_ip "$region") \
+      --set additionalEnv[0].name=DOCKER_VERNEMQ_USER_indexer \
+      --set additionalEnv[0].value="$mqttIndexerPass" \
+      --set additionalEnv[1].name=DOCKER_VERNEMQ_USER_device \
+      --set additionalEnv[1].value="$mqttDevicePass"
+}
+
+function deploy_data_indexing_releases(){
+    namespace=$1
+    containerRepository=$2
+    dockerVersion=$3
+
+    # Deploy releases
+    echo "Install/Update Elasticsearch"
+    kubectl apply -f https://download.elastic.co/downloads/eck/1.0.1/all-in-one.yaml
+    helm upgrade --install --debug \
+    "data-indexing-elasticsearch" \
+    "$BASE_PATH/deploy/platform/data-indexing/elasticsearch" \
+    --namespace "$namespace" \
+    --set namespace="$namespace"
+
+    helm upgrade --install --debug \
+      "data-indexing-indexer" \
+      "$BASE_PATH/deploy/platform/data-indexing/indexer" \
+      --namespace "$namespace" \
+      --set namespace="$namespace" \
+      --set containerRepository="$containerRepository" \
+      --set dockerVersion="$dockerVersion"
+}
+
+function deploy_data_processing_releases(){
     namespace=$1
     containerRepository=$2
     dockerVersion=$3
@@ -191,33 +238,60 @@ function deploy_historical_jobs_docker_release(){
     esUserPass=$(get_elastic_user_password "$namespace")
 
     # Deploy release
+    echo "Install Minio" # No need of values file for Minio here
+    helm upgrade --install --namespace "$namespace" "data-processing-minio" stable/minio \
+        -f "$BASE_PATH/deploy/platform/data-processing/minio/values.yaml" \
+        --set accessKey="$s3aAccessKey" \
+        --set secretKey="$s3aSecretKey"
+
     helm upgrade --install --debug \
-    "smart-agriculture-historical-jobs" \
-    "$BASE_PATH/deploy/platform/historical-jobs" \
-    --namespace "$namespace" \
-    --set namespace="$namespace" \
-    --set containerRepository="$containerRepository" \
-    --set dockerVersion="$dockerVersion" \
-    --set esTruststoreContent="$esTruststoreContent" \
-    --set s3aAccessKey="$s3aAccessKey" \
-    --set s3aSecretKey="$s3aSecretKey" \
-    --set esUserPass="$esUserPass" \
-    --set esTruststorePass="$esTruststorePass" \
-    --set minioTruststorePass="$minioTruststorePass"
+        "data-processing-spark-jobs" \
+        "$BASE_PATH/deploy/platform/spark-jobs" \
+        --namespace "$namespace" \
+        --set namespace="$namespace" \
+        --set containerRepository="$containerRepository" \
+        --set dockerVersion="$dockerVersion" \
+        --set esTruststoreContent="$esTruststoreContent" \
+        --set s3aAccessKey="$s3aAccessKey" \
+        --set s3aSecretKey="$s3aSecretKey" \
+        --set esUserPass="$esUserPass" \
+        --set esTruststorePass="$esTruststorePass" \
+        --set minioTruststorePass="$minioTruststorePass"
 }
 
-function delete_modules_code(){
+function deploy_data_access_releases(){
+    namespace=$1
+    containerRepository=$2
+    dockerVersion=$3
+    region=$4
+
+    # Deploy releases
+    helm upgrade --install --debug \
+      "data-access-api" \
+      "$BASE_PATH/deploy/platform/data-access/api" \
+      --namespace "$namespace" \
+      --set namespace="$namespace" \
+      --set apiIp=$(get_api_ip "$region") \
+      --set containerRepository="$containerRepository" \
+      --set dockerVersion="$dockerVersion"
+}
+
+function delete_releases(){
   env=$1
-  echo "Delete Modules code"
-  helm del "smart-agriculture-serverless" --namespace "$env"
-  helm del "smart-agriculture-historical-jobs" --namespace "$env"
+  echo "Delete releases"
+  helm del "data-processing-spark-jobs" --namespace "$env"
+  helm del "data-processing-minio" --namespace "$env"
+  helm del "data-access-api" --namespace "$env"
+  helm del "data-indexing-indexer" --namespace "$env"
+  helm del "data-indexing-elasticsearch" --namespace "$env"
+  helm del "device-management-vernemq" --namespace "$env"
 }
 
 function get_elasticsearch_truststore_content_in_base64(){
   env=$1
   esTruststorePass=$2
 
-  kubectl get secret "smart-agriculture-elasticsearch-es-http-certs-public" -n "$env" \
+  kubectl get secret "data-indexing-elasticsearch-es-http-certs-public" -n "$env" \
     -o go-template='{{index .data "tls.crt" | base64decode }}' > tls.crt
   keytool -import \
     -alias tls \
@@ -236,6 +310,6 @@ function get_elasticsearch_truststore_content_in_base64(){
 function get_elastic_user_password(){
   env=$1
 
-  echo $(kubectl get secret smart-agriculture-elasticsearch-es-elastic-user -n "$env" \
+  echo $(kubectl get secret data-indexing-elasticsearch-es-elastic-user -n "$env" \
   -o=jsonpath='{.data.elastic}' | base64 --decode)
 }

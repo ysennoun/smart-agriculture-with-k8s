@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: initialize-alias-{{ .Values.timestamp }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: initialize-alias
+spec:
+  containers:
+    - name: initialize-alias-{{ .Values.timestamp }}
+      image: {{ .Values.containerRepository }}/initialize-alias:{{ .Values.dockerVersion }}
+      env:
+         - name: ELASTICSEARCH_ENDPOINT
+           value: https://data-indexing-elasticsearch-es-http:9200
+         - name: ELASTICSEARCH_CA_FILE
+           value: "/etc/ssl/elasticsearch/tls.crt"
+         - name: ELASTICSEARCH_USER
+           value: "elastic"
+         - name: ELASTICSEARCH_PASSWORD_PATH
+           value: "/etc/credentials/elasticsearch/elastic"
+         - name: ES_ALIAS_LIST
+           value: "iot-farming,iot-farming-spark-jobs"
+      volumeMounts:
+       - name: elasticsearch-certificates
+         mountPath: /etc/ssl/elasticsearch/tls.crt
+         subPath: tls.crt
+         readOnly: true
+       - name: elasticsearch-credentials
+         mountPath: /etc/credentials/elasticsearch/
+         readOnly: true
+  volumes:
+    - name: elasticsearch-certificates
+      secret:
+        secretName: data-indexing-elasticsearch-es-http-certs-public
+    - name: elasticsearch-credentials
+      secret:
+        secretName: data-indexing-elasticsearch-es-elastic-user
+  restartPolicy: Never

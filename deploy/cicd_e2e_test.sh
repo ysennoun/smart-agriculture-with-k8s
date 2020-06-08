@@ -18,6 +18,6 @@ set_docker "$HOSTNAME"
 launch_e2e_tests \
   "$ENVIRONMENT" \
   "back-end" \
-  "$BACK_END_USER_PASS" \
+  "$API_USER_PASS" \
   "indexer" \
   "$MQTT_INDEXER_PASS"

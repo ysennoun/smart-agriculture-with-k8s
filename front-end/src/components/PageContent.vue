@@ -55,7 +55,7 @@
 import axios from "axios";
 import LineChart from './../mixins/LineChart.js'
 
-const BACK_END_URL = process.env.VUE_APP_BACK_END_URL
+const API_URL = process.env.VUE_APP_API_URL
 
 export default {
     components: {
@@ -88,7 +88,7 @@ export default {
             setInterval(this.getTimeseriesData, 5000)
         },
         getLastValueData() {
-            var url = BACK_END_URL + "/devices/" + this.deviceName + "/lastValue"
+            var url = API_URL + "/devices/" + this.deviceName + "/lastValue"
             console.log(url)
             axios.get(
                     url,
@@ -114,7 +114,7 @@ export default {
                 });
         },
         getTimeseriesData() {
-            var url = BACK_END_URL + "/devices/" + this.deviceName + "/timeseries" + this.getQueryParams()
+            var url = API_URL + "/devices/" + this.deviceName + "/timeseries" + this.getQueryParams()
             console.log(url)
             axios.get(
                     url,

@@ -10,7 +10,6 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 # IMPORTS
 . "$BASE_PATH/deploy/cluster/deployer_cluster.sh"
-. "$BASE_PATH/deploy/infrastructure/deployer_infrastructure.sh"
 . "$BASE_PATH/deploy/platform/deployer_platform.sh"
 
 
@@ -28,7 +27,7 @@ S3A_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE"
 S3A_SECRET_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 MQTT_INDEXER_PASS="3ywbCs2uB4"
 MQTT_DEVICE_PASS="9Fex2nqdqe"
-BACK_END_USER_PASS="4hxGaN34KQ"
+API_USER_PASS="4hxGaN34KQ"
 ES_TRUSTORE_PASS="ChI2OfIpGuq0be5X"
 MINIO_TRUSTSTORE_PASS="vkM8ssfK5fv4JQ9k"
 
@@ -42,10 +41,10 @@ usage() {
     echo "  - create-certificates <ENVIRONMENT>: create certificates with external statis ip addresses"
     echo "  - delete-external-static-ip-addresses: delete external static ip address"
     echo "  - setup-cluster: create k8s cluster"
-    echo "  - deploy-modules <ENVIRONMENT>: deploy all modules (infrastructure, docker images, applications)"
+    echo "  - deploy-platform <ENVIRONMENT>: deploy platforme (docker images, releases)"
     echo "  - delete-cluster: delete cluster"
     echo "  - delete-namespace <ENVIRONMENT>: delete namespace"
-    echo "  - delete-modules <ENVIRONMENT>: delete all modules"
+    echo "  - delete-releases <ENVIRONMENT>: delete all releases"
     echo "  - create-device-service-account-and-roles: create device service account and roles"
     echo "  - get-device-service-account-key: get device service account key"
     echo "  - test-unit <ENVIRONMENT>: launch unit tests"
@@ -73,50 +72,51 @@ function setup-cluster(){
     create_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"
 }
 
-function deploy-modules(){
+function deploy-platform(){
+    ## Set Docker login
+    set_docker "$HOSTNAME"
+
+    # Deploy platform images
+    deploy_platform_images \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION" \
+      "$S3A_ACCESS_KEY" \
+      "$S3A_SECRET_KEY" \
+      "$ES_TRUSTORE_PASS" \
+      "$MINIO_TRUSTSTORE_PASS"
+
     ## Create Namespace
     create_namespace "$ENVIRONMENT"
 
     ## Set helm repos
     set_helm_repos
 
-    # Create Secrets, Elasticsearch, VerneMQ and Minio clusters
-    install_infrastructure \
+    # Create Roles and Secrets
+    deploy_roles_secrets_release \
       "$ENVIRONMENT" \
       "$COMPUTE_REGION" \
       "$S3A_ACCESS_KEY" \
       "$S3A_SECRET_KEY" \
       "$MQTT_INDEXER_PASS" \
       "$MQTT_DEVICE_PASS" \
-      "$BACK_END_USER_PASS"
+      "$API_USER_PASS"
 
-    ## Set Docker login
-    set_docker "$HOSTNAME"
-
-    # Deploy Put Jars in Minio image and release And alias in Elasticsearch
-    deploy_jars_alias_deployment_image \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION"
-    deploy_jars_alias_deployment_release \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION"
-
-    # Deploy Application images and release
-    deploy_application_images \
+    # Deploy device management releases
+    deploy_device_management_releases \
       "$ENVIRONMENT" \
       "$COMPUTE_REGION" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION"
-    deploy_application_release \
+      "$MQTT_INDEXER_PASS" \
+      "$MQTT_DEVICE_PASS"
+
+    # Deploy data indexing releases
+    deploy_data_indexing_releases \
       "$ENVIRONMENT" \
-      "$COMPUTE_REGION" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION"
 
-    # Deploy Spark and Historical jobs images and release
-    deploy_historical_jobs_docker_images \
+    # Deploy data processing releases
+    deploy_data_processing_releases \
       "$ENVIRONMENT" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION" \
@@ -124,14 +124,19 @@ function deploy-modules(){
       "$S3A_SECRET_KEY" \
       "$ES_TRUSTORE_PASS" \
       "$MINIO_TRUSTSTORE_PASS"
-    deploy_historical_jobs_docker_release \
+
+    # Deploy initialization release
+    deploy_initialization_release \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION"
+
+    # Deploy data access releases
+    deploy_data_access_releases \
       "$ENVIRONMENT" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION" \
-      "$S3A_ACCESS_KEY" \
-      "$S3A_SECRET_KEY" \
-      "$ES_TRUSTORE_PASS" \
-      "$MINIO_TRUSTSTORE_PASS"
+      "$COMPUTE_REGION"
 }
 
 function delete-cluster(){
@@ -144,10 +149,9 @@ function delete-namespace(){
     delete_namespace "$ENVIRONMENT"
 }
 
-function delete-modules(){
-    # Delete Modules
-    delete_modules_code "$ENVIRONMENT"
-    delete_modules_infrastructure "$ENVIRONMENT"
+function delete-releases(){
+    # Delete releases
+    delete_releases "$ENVIRONMENT"
 }
 
 function create-device-service-account-and-roles(){
@@ -175,7 +179,7 @@ function test-e2e(){
     launch_e2e_tests \
       "$env" \
       "back-end" \
-      "$BACK_END_USER_PASS" \
+      "$API_USER_PASS" \
       "indexer" \
       "$MQTT_INDEXER_PASS"
 }

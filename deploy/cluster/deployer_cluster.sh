@@ -49,9 +49,9 @@ function create_certificates(){
   allocate_external_static_ip "$region"
 
   echo "Create certificates"
-  create_ssl_certificates "back-end" "back-end.$env.svc.cluster.local" $(get_back_end_ip "$region")
-  create_ssl_certificates "vernemq" "smart-agriculture-vernemq.$env.svc.cluster.local" $(get_vernemq_ip "$region")
-  create_ssl_certificates "minio" "smart-agriculture-minio.$env.svc.cluster.local"
+  create_ssl_certificates "api" "api.$env.svc.cluster.local" $(get_api_ip "$region")
+  create_ssl_certificates "vernemq" "device-management-vernemq.$env.svc.cluster.local" $(get_vernemq_ip "$region")
+  create_ssl_certificates "minio" "data-processing-minio.$env.svc.cluster.local"
 }
 
 function create_k8s_cluster() {
@@ -90,6 +90,25 @@ function delete_k8s_cluster() {
   echo "End deletion"
 }
 
+function create_namespace(){
+  env=$1
+  namespace_exit=$(kubectl get namespace -o name | grep -i "$env" | tr -d '\n')
+  echo "$namespace_exit"
+  if [ -z "$namespace_exit" ]
+  then
+        echo "Create namespace"
+        kubectl create namespace "$env"
+  else
+        echo "Namespace already exists"
+  fi
+}
+
+function delete_namespace(){
+  env=$1
+  echo "Delete Namespace"
+  kubectl delete namespace "$env"
+}
+
 function create_device_service_account_and_roles(){
   projectId=$1
   gcloud iam service-accounts create "smart-agriculture-devices" \
@@ -110,14 +129,14 @@ function get_device_service_account_key(){
 function allocate_external_static_ip(){
   region=$1
   gcloud compute addresses create vernemq-ip --region "$region"
-  gcloud compute addresses create back-end-ip --region "$region"
+  gcloud compute addresses create api-ip --region "$region"
   gcloud compute addresses create front-end-ip --region "$region"
 }
 
 function deallocate_external_static_ip(){
   region=$1
   gcloud compute addresses delete vernemq-ip --region "$region" --quiet
-  gcloud compute addresses delete back-end-ip --region "$region" --quiet
+  gcloud compute addresses delete api-ip --region "$region" --quiet
   gcloud compute addresses delete front-end-ip --region "$region" --quiet
 }
 
@@ -126,9 +145,9 @@ function get_vernemq_ip(){
   echo "$(gcloud compute addresses describe vernemq-ip --region "$region" | head -1 | awk '{print $2}')"
 }
 
-function get_back_end_ip(){
+function get_api_ip(){
   region=$1
-  echo "$(gcloud compute addresses describe back-end-ip --region "$region" | head -1 | awk '{print $2}')"
+  echo "$(gcloud compute addresses describe api-ip --region "$region" | head -1 | awk '{print $2}')"
 }
 
 function get_front_end_ip(){

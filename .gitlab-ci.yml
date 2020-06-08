@@ -1,12 +1,41 @@
-image: docker:stable
+default:
+  image: docker:stable
+
+  services:
+    - docker:dind
+
+  # Pip's cache doesn't store the python packages https://pip.pypa.io/en/stable/reference/pip_install/#caching
+  # If you want to also cache the installed packages, you have to install them in a virtualenv and cache it as well.
+  cache:
+    # Cache per branch
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/pip
+      - venv/
+
+  before_script:
+    - apk update && apk fetch openjdk8
+    - apk add --update coreutils # To update base64 in order to use option --decode
+    - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
+    - pip3 install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+    - curl https://sdk.cloud.google.com > install.sh # Download gcloud installer
+    - bash install.sh --disable-prompts # Install gcloud
+    - export PATH=$PATH:/root/google-cloud-sdk/bin # Add gcloud to PATH
+    - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
+    - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
+    - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
+    - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+    - gcloud components install kubectl
+
+  after_script:
+    - rm /tmp/$CI_PIPELINE_ID.json
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
   NO_PROXY: docker
   DOCKER_DRIVER: overlay2
-
-services:
-  - docker:dind
 
 stages:
   - setup_cluster_deploy
@@ -14,34 +43,6 @@ stages:
   - dev_images
   - dev_deploy
   - dev_e2e_test
-
-# Pip's cache doesn't store the python packages https://pip.pypa.io/en/stable/reference/pip_install/#caching
-# If you want to also cache the installed packages, you have to install them in a virtualenv and cache it as well.
-cache:
-  # Cache per branch
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .cache/pip
-    - venv/
-
-before_script:
-  - apk update && apk fetch openjdk8
-  - apk add --update coreutils # To update base64 in order to use option --decode
-  - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
-  - pip3 install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - curl https://sdk.cloud.google.com > install.sh # Download gcloud installer
-  - bash install.sh --disable-prompts # Install gcloud
-  - export PATH=$PATH:/root/google-cloud-sdk/bin # Add gcloud to PATH
-  - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
-  - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
-  - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
-  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-  - gcloud components install kubectl
-
-after_script:
-  - rm /tmp/$CI_PIPELINE_ID.json
 
 # Run on all branches except setup-cluster
 build:unit-test:

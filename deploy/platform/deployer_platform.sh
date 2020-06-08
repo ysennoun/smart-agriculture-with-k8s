@@ -11,7 +11,7 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 ## FUNCTIONS
 function install_python_requirements(){
-    cd "$BASE_PATH/platform/serverless/"
+    cd "$BASE_PATH/platform/controllers/"
     pip install -r requirements.txt
     pip install -r setup_requirements.txt
     pip install -r test_requirements.txt
@@ -33,14 +33,14 @@ function install_e2e_deps() {
 
 function launch_python_unit_tests(){
     # Run unit tests (for python)
-    cd "$BASE_PATH/platform/serverless/"
+    cd "$BASE_PATH/platform/controllers/"
     python setup.py test
     cd ../../
 }
 
 function launch_spark_unit_tests(){
     # Run unit tests (for spark scala)
-    cd "$BASE_PATH/platform/historical-jobs/"
+    cd "$BASE_PATH/platform/spark-jobs/"
     mvn clean test
     cd ../../
 }

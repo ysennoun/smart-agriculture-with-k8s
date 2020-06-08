@@ -66,6 +66,6 @@ CMD ls -al /opt/spark/conf/ && bin/spark-submit \
     --name spark-es-to-parquet \
     --class com.xebia.iot.MainEsToParquet \
     --conf spark.kubernetes.container.image=${CONTAINER_REPOSITORY}/spark:${SPARK_VERSION} \
-    s3a://bucket/jars/historical-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${S3_PREPARED_DATA_PATH}
+    s3a://bucket/jars/spark-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ${ES_ALIAS_INCOMING_DATA} ${ES_ALIAS_FOR_HISTORICAL_JOBS} ${S3_PREPARED_DATA_PATH}
 
 #    --packages com.amazonaws:aws-java-sdk:1.11.534,org.apache.hadoop:hadoop-aws:${HADOOP_VERSION} \

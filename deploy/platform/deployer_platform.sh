@@ -62,10 +62,7 @@ function deploy_platform_images(){
     namespace=$1
     containerRepository=$2
     dockerVersion=$3
-    s3aAccessKey=$4
-    s3aSecretKey=$5
-    esTruststorePass=$6
-    minioTruststorePass=$7
+    minioTruststorePass=$4
     k8ApiserverUrl=$(get_k8_apiserver_url)
     s3PreparedDataPath="s3://bucket/prepared/"
     esNodes="https://data-indexing-elasticsearch-es-http"
@@ -73,8 +70,6 @@ function deploy_platform_images(){
     fsS3aEndpoint="data-processing-minio:9000"
     esAliasIncomingData="iot-farming"
     esAliasForHistoricalJobs="iot-farming-spark-jobs"
-    esTruststoreContent=$(get_elasticsearch_truststore_content_in_base64 "$namespace" "$esTruststorePass")
-    esUserPass=$(get_elastic_user_password "$namespace")
 
     ## Generate jars
     cd "$BASE_PATH/platform/spark-jobs/"
@@ -194,7 +189,7 @@ function deploy_device_management_releases(){
 
     # Deploy releases
     echo "Install VerneMQ"
-    helm upgrade --install --namespace "$namespace" "smart-agriculture-vernemq" vernemq/vernemq \
+    helm upgrade --install --namespace "$namespace" "device-management-vernemq" vernemq/vernemq \
       -f "$BASE_PATH/deploy/platform/device-management/vernemq/values.yaml" \
       --set service.loadBalancerIP=$(get_vernemq_ip "$region") \
       --set additionalEnv[0].name=DOCKER_VERNEMQ_USER_indexer \

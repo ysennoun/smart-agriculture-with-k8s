@@ -15,7 +15,7 @@ def get_past_timestamp(minutes: int) -> str:
 
 
 def send_mqtt_payload(mqtt_topic: str, mqtt_payload: dict):
-    result = os.popen(f'kubectl get service smart-agriculture-vernemq -n {var.get_environment()} -o json').read()
+    result = os.popen(f'kubectl get service device-management-vernemq -n {var.get_environment()} -o json').read()
     mqtt_broker_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
 
     mqtt_cmd = f"mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 " \

@@ -81,9 +81,6 @@ function deploy-platform(){
       "$ENVIRONMENT" \
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION" \
-      "$S3A_ACCESS_KEY" \
-      "$S3A_SECRET_KEY" \
-      "$ES_TRUSTORE_PASS" \
       "$MINIO_TRUSTSTORE_PASS"
 
     ## Create Namespace

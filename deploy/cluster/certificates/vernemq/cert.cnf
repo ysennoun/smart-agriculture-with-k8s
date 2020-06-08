@@ -18,5 +18,5 @@ subjectAltName = @alt_names
 
 [ alt_names ]
 DNS.1 = device-management-vernemq.dev.svc.cluster.local
-DNS.2 = smart-agriculture-vernemq
+DNS.2 = device-management-vernemq
 IP.1 = 35.246.144.224

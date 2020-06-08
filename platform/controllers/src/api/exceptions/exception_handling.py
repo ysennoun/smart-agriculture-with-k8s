@@ -1,6 +1,6 @@
 from flask import (make_response, jsonify)
 from common.utils.logger import Logger
-from application.back_end.exceptions.api_exceptions import APIError
+from api.exceptions.api_exceptions import APIError
 
 logger = Logger().get_logger()
 

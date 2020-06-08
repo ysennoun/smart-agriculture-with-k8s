@@ -5,9 +5,9 @@ from flask_httpauth import HTTPBasicAuth
 from common.utils.logger import Logger
 from common.env import get_port
 from common.storage.elasticsearch_client import get_elasticsearch_client
-from application.back_end.exceptions import exception_handling
-from application.back_end.handlers import back_end_controller
-from application.back_end.handlers.back_end_service import BackEndService
+from api.exceptions import exception_handling
+from api.handlers import api_controller
+from api.handlers.api_service import ApiService
 
 logger = Logger().get_logger()
 
@@ -55,10 +55,10 @@ def create_app():
         logger.info("APP CONTEXT")
         es_client = get_elasticsearch_client()
         es_alias_raw_data = get_es_alias_raw_data()
-        context.back_end_service = BackEndService(es_client, es_alias_raw_data)
+        context.api_service = ApiService(es_client, es_alias_raw_data)
 
     # Routes
-    back_end_controller.register_routes(app, auth, context.back_end_service)
+    api_controller.register_routes(app, auth, context.api_service)
 
     return app
 

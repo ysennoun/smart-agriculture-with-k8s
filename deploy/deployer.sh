@@ -178,7 +178,7 @@ function test-e2e(){
     env=$2
     launch_e2e_tests \
       "$env" \
-      "back-end" \
+      "api" \
       "$API_USER_PASS" \
       "indexer" \
       "$MQTT_INDEXER_PASS"

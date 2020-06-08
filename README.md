@@ -111,7 +111,7 @@ Run the following script to delete the IoT platform on your GCP Account:
 
 #### Add certificate to Chrome
 
-Open chrome and go to `chrome://settings/`. Then, search for HTTPS/SSL in order to add certificate `deploy/cluster/certificates/back-end/tls.crt`.
+Open chrome and go to `chrome://settings/`. Then, search for HTTPS/SSL in order to add certificate `deploy/cluster/certificates/api/tls.crt`.
 
 #### Access to front end (see images below)
 
@@ -123,8 +123,8 @@ In chrome go to the following URL `http://<front-end-ip>:8080`.
 
 In the login page, enter:
 
-    login="back-end"
-    password=<BACK_END_USER_PASS>
+    login="api"
+    password=<API_USER_PASS>
 
 ![Login page](documents/login-page.png)
 

@@ -17,5 +17,5 @@ metadata:
   namespace: {{ .Values.namespace }}
 type: Opaque
 data:
-  username: YmFjay1lbmQK #back-end in base64
+  username: YXBpCg== #api in base64
   password: {{ .Values.apiUserPassBase64 }}

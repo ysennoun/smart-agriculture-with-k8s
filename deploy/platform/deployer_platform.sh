@@ -48,7 +48,7 @@ function launch_spark_unit_tests(){
 function launch_e2e_tests(){
     # Run e2e tests
     export ENVIRONMENT=$1
-    export API_USER_PASS=$2
+    export API_USER=$2
     export API_USER_PASS=$3
     export MQTT_USER=$4
     export MQTT_USER_PASS=$5

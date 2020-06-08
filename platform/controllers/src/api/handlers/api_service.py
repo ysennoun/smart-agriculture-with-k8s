@@ -29,7 +29,7 @@ class QueryArguments:
         return QueryArguments(offset=offset, max_results=max_results, from_date=from_date, to_date=to_date)
 
 
-class BackEndService:
+class ApiService:
 
     def __init__(self, es_client: Elasticsearch, es_alias: str):
         self.es_client = es_client

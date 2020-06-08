@@ -24,11 +24,11 @@ def send_mqtt_payload(mqtt_topic: str, mqtt_payload: dict):
     logging.info(f"Result for senfing message: {mqtt_result}")
 
 
-def get_back_end_response(uri: str) -> str:
-    result = os.popen(f'kubectl get service back-end -n {var.get_environment()} -o json').read()
-    back_end_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
-    back_end_cmd = f'curl -s --cacert /etc/ssl/back-end/tls.crt -u "{var.get_back_end_user()}:{var.get_back_end_user_pass()}" ' \
-                   f'"https://{back_end_ip}:443{uri}"'
-    back_end_response = os.popen(back_end_cmd).read()
-    logging.info(f"Response from back end: {back_end_response}")
-    return back_end_response
+def get_api_response(uri: str) -> str:
+    result = os.popen(f'kubectl get service api -n {var.get_environment()} -o json').read()
+    api_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
+    api_cmd = f'curl -s --cacert /etc/ssl/api/tls.crt -u "{var.get_api_user()}:{var.get_api_user_pass()}" ' \
+                   f'"https://{api_ip}:443{uri}"'
+    api_response = os.popen(api_cmd).read()
+    logging.info(f"Response from api: {api_response}")
+    return api_response

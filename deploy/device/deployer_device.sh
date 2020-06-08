@@ -11,6 +11,10 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 
 ## FUNCTIONS
+function install_device_deps(){
+  apk add build-base
+}
+
 function install_device_python_requirements(){
     cd "$BASE_PATH/device/"
     pip install -r requirements.txt

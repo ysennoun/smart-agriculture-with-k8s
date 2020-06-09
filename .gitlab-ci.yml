@@ -50,6 +50,7 @@ build:unit-test:
   allow_failure: false
   except:
     - setup-cluster
+    - dev
   script:
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
@@ -62,7 +63,6 @@ setup_cluster:deploy:
   allow_failure: false
   only:
     - setup-cluster
-    - dev
   script:
     - chmod +x deploy/cicd_setup_cluster_deploy.sh
     - ./deploy/cicd_setup_cluster_deploy.sh

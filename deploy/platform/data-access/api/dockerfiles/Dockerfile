@@ -10,4 +10,6 @@ COPY platform/controllers/src/api /app/api
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD exec gunicorn --access-logfile - --certfile=/etc/ssl/api/tls.crt --keyfile=/etc/ssl/api/tls.key --ssl-version TLS --bind :443 --workers 1 --threads 8 'api.api_main:create_app()'
+
+
+CMD cat /etc/ssl/api/tls.crt && cat /etc/ssl/api/tls.key && exec gunicorn --access-logfile - --certfile=/etc/ssl/api/tls.crt --keyfile=/etc/ssl/api/tls.key --ssl-version TLS --bind :443 --workers 1 --threads 8 'api.api_main:create_app()'

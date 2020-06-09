@@ -74,57 +74,57 @@ function deploy_platform_images(){
     esAliasIncomingData="iot-farming"
     esAliasForHistoricalJobs="iot-farming-spark-jobs"
 
-    ## Generate jars
-    cd "$BASE_PATH/platform/spark-jobs/"
-    mvn clean package
-    cd ../../
-
-    ## Deploy python images
-    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/minio/Dockerfile" \
-      -t "$containerRepository/put-jars-in-minio:$dockerVersion" .
-    docker push "$containerRepository/put-jars-in-minio:$dockerVersion"
-
-    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/elasticsearch/Dockerfile" \
-      -t "$containerRepository/initialize-alias:$dockerVersion" .
-    docker push "$containerRepository/initialize-alias:$dockerVersion"
+#    ## Generate jars
+#    cd "$BASE_PATH/platform/spark-jobs/"
+#    mvn clean package
+#    cd ../../
+#
+#    ## Deploy python images
+#    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/minio/Dockerfile" \
+#      -t "$containerRepository/put-jars-in-minio:$dockerVersion" .
+#    docker push "$containerRepository/put-jars-in-minio:$dockerVersion"
+#
+#    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/elasticsearch/Dockerfile" \
+#      -t "$containerRepository/initialize-alias:$dockerVersion" .
+#    docker push "$containerRepository/initialize-alias:$dockerVersion"
 
     docker build -f "$BASE_PATH/deploy/platform/data-access/api/dockerfiles/Dockerfile" \
       -t "$containerRepository/api:$dockerVersion" .
     docker push "$containerRepository/api:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/platform/data-indexing/indexer/dockerfiles/Dockerfile" \
-      -t "$containerRepository/indexer:$dockerVersion" .
-    docker push "$containerRepository/indexer:$dockerVersion"
-
-    # Deploy spark images
-    cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
-    cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
-    docker build \
-      -f Dockerfile-spark \
-      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
-      -t "$containerRepository/spark:2.4.5" .
-    docker push "$containerRepository/spark:2.4.5"
-    cd "$BASE_PATH/"
-
-    cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
-    docker build \
-      --build-arg CONTAINER_REPOSITORY="$containerRepository" \
-      --build-arg DOCKER_VERSION="$dockerVersion" \
-      --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
-      --build-arg ES_NODES="$esNodes" \
-      --build-arg ES_PORT="$esPort" \
-      --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
-      --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
-      --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
-      --build-arg S3_PREPARED_DATA_PATH="$s3PreparedDataPath" \
-      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
-      --build-arg ENVIRONMENT="$namespace" \
-      -f "Dockerfile-es-to-parquet" \
-      -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
-    docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
-    cd "$BASE_PATH/"
-
-    rm "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/tls.crt"
+#    docker build -f "$BASE_PATH/deploy/platform/data-indexing/indexer/dockerfiles/Dockerfile" \
+#      -t "$containerRepository/indexer:$dockerVersion" .
+#    docker push "$containerRepository/indexer:$dockerVersion"
+#
+#    # Deploy spark images
+#    cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
+#    cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
+#    docker build \
+#      -f Dockerfile-spark \
+#      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
+#      -t "$containerRepository/spark:2.4.5" .
+#    docker push "$containerRepository/spark:2.4.5"
+#    cd "$BASE_PATH/"
+#
+#    cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
+#    docker build \
+#      --build-arg CONTAINER_REPOSITORY="$containerRepository" \
+#      --build-arg DOCKER_VERSION="$dockerVersion" \
+#      --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
+#      --build-arg ES_NODES="$esNodes" \
+#      --build-arg ES_PORT="$esPort" \
+#      --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
+#      --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
+#      --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
+#      --build-arg S3_PREPARED_DATA_PATH="$s3PreparedDataPath" \
+#      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
+#      --build-arg ENVIRONMENT="$namespace" \
+#      -f "Dockerfile-es-to-parquet" \
+#      -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
+#    docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
+#    cd "$BASE_PATH/"
+#
+#    rm "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/tls.crt"
 }
 
 

@@ -42,7 +42,7 @@ usage() {
     echo "  - delete-external-static-ip-addresses: delete external static ip address"
     echo "  - setup-cluster: create k8s cluster"
     echo "  - deploy-platform <ENVIRONMENT>: deploy platforme (docker images, releases)"
-    echo "  - delete-cluster: delete cluster"
+    echo "  - delete-releases-cluster <ENVIRONMENT>: delete releases and cluster"
     echo "  - delete-namespace <ENVIRONMENT>: delete namespace"
     echo "  - delete-releases <ENVIRONMENT>: delete all releases"
     echo "  - create-device-service-account-and-roles: create device service account and roles"
@@ -73,15 +73,15 @@ function setup-cluster(){
 }
 
 function deploy-platform(){
-    ## Set Docker login
-    set_docker "$HOSTNAME"
-
-    # Deploy platform images
-    deploy_platform_images \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION" \
-      "$MINIO_TRUSTSTORE_PASS"
+#    ## Set Docker login
+#    set_docker "$HOSTNAME"
+#
+#    # Deploy platform images
+#    deploy_platform_images \
+#      "$ENVIRONMENT" \
+#      "$CONTAINER_REPOSITORY" \
+#      "$DOCKER_VERSION" \
+#      "$MINIO_TRUSTSTORE_PASS"
 
     ## Create Namespace
     create_namespace "$ENVIRONMENT"
@@ -136,8 +136,9 @@ function deploy-platform(){
       "$COMPUTE_REGION"
 }
 
-function delete-cluster(){
+function delete-releases-cluster(){
     # Delete Kubernetes Cluster
+    delete_releases "$ENVIRONMENT"
     delete_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"
 }
 

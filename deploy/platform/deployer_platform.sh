@@ -241,7 +241,7 @@ function deploy_data_processing_releases(){
 
     helm upgrade --install --debug \
         "data-processing-spark-jobs" \
-        "$BASE_PATH/deploy/platform/spark-jobs" \
+        "$BASE_PATH/deploy/platform/data-processing/spark-jobs" \
         --namespace "$namespace" \
         --set namespace="$namespace" \
         --set containerRepository="$containerRepository" \

@@ -7,7 +7,7 @@ ENV PYTHONPATH /app
 COPY platform/spark-jobs/target/spark-jobs-1.0-SNAPSHOT-jar-with-dependencies.jar ./
 COPY platform/controllers/requirements.txt ./
 COPY platform/controllers/src/common /app/common
-COPY platform/controllers/src/initialization/minio /app/deployment/minio
+COPY platform/controllers/src/initialization/minio /app/initialization/minio
 
 
 RUN pip install --upgrade pip

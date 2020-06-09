@@ -49,7 +49,7 @@ function deploy_front_end_release(){
 
     # Deploy release
     helm upgrade --install --debug \
-      "smart-agriculture-front-end" \
+      "front-end" \
       "$BASE_PATH/deploy/front-end/" \
       --namespace "$namespace" \
       --set namespace="$namespace" \
@@ -61,5 +61,5 @@ function deploy_front_end_release(){
 function delete_modules_front_end(){
   env=$1
   echo "Delete Modules front end code"
-  helm del "smart-agriculture-front-end" --namespace "$env"
+  helm del "front-end" --namespace "$env"
 }

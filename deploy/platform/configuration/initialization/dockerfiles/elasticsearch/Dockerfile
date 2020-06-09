@@ -6,7 +6,7 @@ ENV PYTHONPATH /app
 
 COPY platform/controllers/requirements.txt ./
 COPY platform/controllers/src/common /app/common
-COPY platform/controllers/src/initialization/elasticsearch /app/deployment/elasticsearch
+COPY platform/controllers/src/initialization/elasticsearch /app/initialization/elasticsearch
 
 
 RUN pip install --upgrade pip

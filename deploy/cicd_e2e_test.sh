@@ -17,7 +17,7 @@ set_docker "$HOSTNAME"
 # Run e2e tests
 launch_e2e_tests \
   "$ENVIRONMENT" \
-  "back-end" \
+  "api" \
   "$API_USER_PASS" \
   "indexer" \
   "$MQTT_INDEXER_PASS"

@@ -18,7 +18,7 @@ spec:
           image: {{ .Values.containerRepository }}/indexer:{{ .Values.dockerVersion }}
           env:
             - name: SERVICE_NAME
-              value: vernemq
+              value: device-management-vernemq
             - name: NAMESPACE_NAME
               value: {{ .Values.namespace }}
             - name: MQTT_CA_FILE

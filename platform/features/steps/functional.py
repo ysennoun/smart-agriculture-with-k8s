@@ -1,6 +1,5 @@
 import json
 import logging
-from random import randint
 from behave import *
 from steps import utils
 

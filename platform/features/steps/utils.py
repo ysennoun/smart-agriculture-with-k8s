@@ -1,6 +1,5 @@
 import os
 import json
-import time
 import datetime
 import logging
 from steps import variables as var

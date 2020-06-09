@@ -62,6 +62,7 @@ setup_cluster:deploy:
   allow_failure: false
   only:
     - setup-cluster
+    - dev
   script:
     - chmod +x deploy/cicd_setup_cluster_deploy.sh
     - ./deploy/cicd_setup_cluster_deploy.sh
@@ -76,7 +77,7 @@ dev:images:
   stage: dev_images
   allow_failure: false
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Execute deployment of images
@@ -90,7 +91,7 @@ dev:deploy:
   stage: dev_deploy
   allow_failure: false
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Get credentials for kubectl and helm

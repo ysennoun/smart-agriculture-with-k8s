@@ -26,6 +26,9 @@ def step_impl(context, endpoint_type, device):
 @then('For device {device}, the temperature of the last value should be equal to {temperature}')
 def step_impl(context, device, temperature):
     api_response = utils.get_api_response(f"/devices/{device}/lastValue")
+
+    print(api_response)
+
     result = json.loads(api_response.replace("\'", "\""))
     assert (result["rows"][0]["temperature"] == int(temperature))
 
@@ -34,6 +37,9 @@ def step_impl(context, device, temperature):
 def step_impl(context, device, number_of_elements):
     timeseries_uri = f"/devices/{device}/timeseries?from_date={utils.get_past_timestamp(15)}&to_date={utils.get_current_timestamp()}"
     api_response = utils.get_api_response(timeseries_uri)
+
+    print(api_response)
+
     result = json.loads(api_response.replace("\'", "\""))
     temperatures = [element["temperature"] for element in result["rows"]]
     logging.info([int(row['temperatures']) for row in context.table])

@@ -19,8 +19,12 @@ def send_mqtt_payload(mqtt_topic: str, mqtt_payload: dict):
 
     mqtt_cmd = f"mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 " \
                f"-t '{mqtt_topic}' -m '{mqtt_payload}' --cafile vernemq-tls.crt"
+
+    print(mqtt_cmd)
+
     mqtt_result = os.popen(mqtt_cmd).read()
-    logging.info(f"Result for senfing message: {mqtt_result}")
+    print(mqtt_result)
+    logging.info(f"Result for sending message: {mqtt_result}")
 
 
 def get_api_response(uri: str) -> str:
@@ -29,5 +33,6 @@ def get_api_response(uri: str) -> str:
     api_cmd = f'curl -s --cacert api-tls.crt" -u "{var.get_api_user()}:{var.get_api_user_pass()}" ' \
                    f'"https://{api_ip}:443{uri}"'
     api_response = os.popen(api_cmd).read()
+    print(api_response)
     logging.info(f"Response from api: {api_response}")
     return api_response

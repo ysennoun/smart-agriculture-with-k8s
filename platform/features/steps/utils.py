@@ -30,7 +30,6 @@ def get_api_response(uri: str) -> str:
     ca_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "api-tls.crt")
     api_cmd = f'curl -s --cacert {ca_path} -u {var.get_api_user()}:{var.get_api_user_pass()} ' \
                    f'https://{api_ip}:443{uri}'
-    print(api_cmd)
     api_response = os.popen(api_cmd).read()
     logging.info(f"Response from api: {api_response}")
     return api_response

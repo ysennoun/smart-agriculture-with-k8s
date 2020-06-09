@@ -73,15 +73,15 @@ function setup-cluster(){
 }
 
 function deploy-platform(){
-#    ## Set Docker login
-#    set_docker "$HOSTNAME"
-#
-#    # Deploy platform images
-#    deploy_platform_images \
-#      "$ENVIRONMENT" \
-#      "$CONTAINER_REPOSITORY" \
-#      "$DOCKER_VERSION" \
-#      "$MINIO_TRUSTSTORE_PASS"
+    ## Set Docker login
+    set_docker "$HOSTNAME"
+
+    # Deploy platform images
+    deploy_platform_images \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION" \
+      "$MINIO_TRUSTSTORE_PASS"
 
     ## Create Namespace
     create_namespace "$ENVIRONMENT"

@@ -54,7 +54,10 @@ function launch_e2e_tests(){
     export MQTT_USER_PASS=$5
     
     cd "$BASE_PATH/platform/features/"
+    cp "$BASE_PATH/deploy/cluster/certificates/vernemq/tls.crt" "steps/vernemq-tls.crt"
+    cp "$BASE_PATH/deploy/cluster/certificates/api/tls.crt" "steps/api-tls.crt"
     behave
+    rm -f "steps/vernemq-tls.crt" "steps/api-tls.crt"
     cd ../../
 }
 
@@ -211,6 +214,8 @@ function deploy_data_indexing_releases(){
     "$BASE_PATH/deploy/platform/data-indexing/elasticsearch" \
     --namespace "$namespace" \
     --set namespace="$namespace"
+    # Wait 30 seconds for deployment
+    sleep 30
 
     helm upgrade --install --debug \
       "data-indexing-indexer" \

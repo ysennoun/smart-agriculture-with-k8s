@@ -26,7 +26,7 @@ spec:
             - name: ELASTICSEARCH_PASSWORD_PATH
               value: "/etc/credentials/elasticsearch/elastic"
             - name: ES_ALIAS_RAW_DATA
-              value: "iot--farming"
+              value: "iot-farming"
             - name: BASIC_AUTH_USERNAME_PATH
               value: "/etc/credentials/api/username"
             - name: BASIC_AUTH_PASSWORD_PATH

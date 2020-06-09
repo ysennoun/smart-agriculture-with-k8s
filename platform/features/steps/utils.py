@@ -1,4 +1,5 @@
 import os
+import pathlib
 import json
 import datetime
 import logging
@@ -16,9 +17,10 @@ def get_past_timestamp(minutes: int) -> str:
 def send_mqtt_payload(mqtt_topic: str, mqtt_payload: dict):
     result = os.popen(f'kubectl get service device-management-vernemq -n {var.get_environment()} -o json').read()
     mqtt_broker_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
-
+    tls_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "vernemq-tls.crt")
+    print(tls_path)
     mqtt_cmd = f"mosquitto_pub  -d -u {var.get_mqtt_user()} -P {var.get_mqtt_user_pass()} -h {mqtt_broker_ip} -p 8883 " \
-               f"-t '{mqtt_topic}' -m '{mqtt_payload}' --cafile vernemq-tls.crt"
+               f"-t '{mqtt_topic}' -m '{mqtt_payload}' --cafile {tls_path}"
 
     print(mqtt_cmd)
 
@@ -30,7 +32,9 @@ def send_mqtt_payload(mqtt_topic: str, mqtt_payload: dict):
 def get_api_response(uri: str) -> str:
     result = os.popen(f'kubectl get service api -n {var.get_environment()} -o json').read()
     api_ip = json.loads(result)["status"]["loadBalancer"]["ingress"][0]["ip"]
-    api_cmd = f'curl -s --cacert api-tls.crt" -u "{var.get_api_user()}:{var.get_api_user_pass()}" ' \
+    tls_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "api-tls.crt")
+    print(tls_path)
+    api_cmd = f'curl -s --cacert {tls_path}" -u "{var.get_api_user()}:{var.get_api_user_pass()}" ' \
                    f'"https://{api_ip}:443{uri}"'
     api_response = os.popen(api_cmd).read()
     print(api_response)

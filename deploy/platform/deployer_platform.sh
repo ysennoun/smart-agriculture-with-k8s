@@ -65,7 +65,6 @@ function deploy_platform_images(){
     namespace=$1
     containerRepository=$2
     dockerVersion=$3
-    minioTruststorePass=$4
     k8ApiserverUrl=$(get_k8_apiserver_url)
     s3PreparedDataPath="s3://bucket/prepared/"
     esAliasIncomingData="iot-farming"
@@ -98,7 +97,6 @@ function deploy_platform_images(){
     cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
     docker build \
       -f Dockerfile-spark \
-      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
       -t "$containerRepository/spark:2.4.5" .
     docker push "$containerRepository/spark:2.4.5"
 
@@ -108,7 +106,6 @@ function deploy_platform_images(){
       --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
       --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
       --build-arg S3_PREPARED_DATA_PATH="$s3PreparedDataPath" \
-      --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
       -f "Dockerfile-es-to-parquet" \
       -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"

@@ -80,8 +80,7 @@ function deploy-platform(){
     deploy_platform_images \
       "$ENVIRONMENT" \
       "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION" \
-      "$MINIO_TRUSTSTORE_PASS"
+      "$DOCKER_VERSION"
 
     ## Create Namespace
     create_namespace "$ENVIRONMENT"

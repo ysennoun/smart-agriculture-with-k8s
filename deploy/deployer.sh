@@ -29,7 +29,7 @@ MQTT_INDEXER_PASS="3ywbCs2uB4"
 MQTT_DEVICE_PASS="9Fex2nqdqe"
 API_USER_PASS="4hxGaN34KQ"
 ES_TRUSTORE_PASS="ChI2OfIpGuq0be5X"
-MINIO_TRUSTSTORE_PASS="vkM8ssfK5fv4JQ9k"
+MINIO_TRUSTSTORE_PASS="changeit" # default password for keystore
 
 
 ######## FUNCTIONS ########

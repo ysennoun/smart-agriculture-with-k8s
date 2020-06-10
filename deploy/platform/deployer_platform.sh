@@ -68,9 +68,6 @@ function deploy_platform_images(){
     minioTruststorePass=$4
     k8ApiserverUrl=$(get_k8_apiserver_url)
     s3PreparedDataPath="s3://bucket/prepared/"
-    esNodes="https://data-indexing-elasticsearch-es-http"
-    esPort=9200
-    fsS3aEndpoint="data-processing-minio:9000"
     esAliasIncomingData="iot-farming"
     esAliasForHistoricalJobs="iot-farming-spark-jobs"
 
@@ -107,16 +104,11 @@ function deploy_platform_images(){
 
     docker build \
       --build-arg CONTAINER_REPOSITORY="$containerRepository" \
-      --build-arg DOCKER_VERSION="$dockerVersion" \
       --build-arg K8S_APISERVER_URL="$k8ApiserverUrl" \
-      --build-arg ES_NODES="$esNodes" \
-      --build-arg ES_PORT="$esPort" \
-      --build-arg FS_S3A_ENDPOINT="$fsS3aEndpoint" \
       --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
       --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
       --build-arg S3_PREPARED_DATA_PATH="$s3PreparedDataPath" \
       --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
-      --build-arg ENVIRONMENT="$namespace" \
       -f "Dockerfile-es-to-parquet" \
       -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"

@@ -66,6 +66,7 @@ function deploy_platform_images(){
     containerRepository=$2
     dockerVersion=$3
     k8ApiserverUrl=$(get_k8_apiserver_url)
+    hostName="data-processing-minio"
     s3PreparedDataPath="s3://bucket/prepared/"
     esAliasIncomingData="iot-farming"
     esAliasForHistoricalJobs="iot-farming-spark-jobs"
@@ -93,10 +94,11 @@ function deploy_platform_images(){
     docker push "$containerRepository/indexer:$dockerVersion"
 
     # Deploy spark images
-    cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
+    cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/$hostName.crt"
     cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
     docker build \
       -f Dockerfile-spark \
+      --build-arg HOST_NAME="$hostName" \
       -t "$containerRepository/spark:2.4.5" .
     docker push "$containerRepository/spark:2.4.5"
 
@@ -106,6 +108,7 @@ function deploy_platform_images(){
       --build-arg ES_ALIAS_INCOMING_DATA="$esAliasIncomingData" \
       --build-arg ES_ALIAS_FOR_HISTORICAL_JOBS="$esAliasForHistoricalJobs" \
       --build-arg S3_PREPARED_DATA_PATH="$s3PreparedDataPath" \
+      --build-arg HOST_NAME="$hostName" \
       -f "Dockerfile-es-to-parquet" \
       -t "$containerRepository/spark-es-to-parquet:$dockerVersion" .
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"

@@ -6,6 +6,7 @@ ARG CONTAINER_REPOSITORY
 ARG ES_ALIAS_INCOMING_DATA
 ARG ES_ALIAS_FOR_HISTORICAL_JOBS
 ARG S3_PREPARED_DATA_PATH
+ARG HOST_NAME
 
 ENV SPARK_VERSION="2.4.5"
 ENV SPARK_HOME="/opt/spark"
@@ -16,13 +17,14 @@ ENV CONTAINER_REPOSITORY=${CONTAINER_REPOSITORY}
 ENV ES_ALIAS_INCOMING_DATA=${ES_ALIAS_INCOMING_DATA}
 ENV ES_ALIAS_FOR_HISTORICAL_JOBS=${ES_ALIAS_FOR_HISTORICAL_JOBS}
 ENV S3_PREPARED_DATA_PATH=${S3_PREPARED_DATA_PATH}
+ENV HOST_NAME=${HOST_NAME}
 
 # spark - Minio self-signed certificate: https://github.com/minio/cookbook/blob/master/docs/apache-spark-with-minio.md
 # JVM which runs Hadoop needs a custom ca certificate
-COPY tls.crt .
+COPY ${HOST_NAME}.crt .
 #RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/jssecacerts -storepass changeit -noprompt -alias tls -file tls.crt
 #RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias tls -file tls.crt
-RUN keytool -import -keystore $JAVA_HOME/jre/lib/security/jssecacerts -noprompt -alias tls -file tls.crt
+RUN keytool -import -keystore $JAVA_HOME/jre/lib/security/jssecacerts -alias "${HOST_NAME}" -file ${HOST_NAME}.crt
 
 #https://issues.apache.org/jira/browse/SPARK-26995
 #ln -s /lib /lib64 && \

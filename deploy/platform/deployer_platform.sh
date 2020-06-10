@@ -104,9 +104,7 @@ function deploy_platform_images(){
       --build-arg MINIO_TRUSTSTORE_PASS="$minioTruststorePass" \
       -t "$containerRepository/spark:2.4.5" .
     docker push "$containerRepository/spark:2.4.5"
-    cd "$BASE_PATH/"
 
-    cd "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/"
     docker build \
       --build-arg CONTAINER_REPOSITORY="$containerRepository" \
       --build-arg DOCKER_VERSION="$dockerVersion" \

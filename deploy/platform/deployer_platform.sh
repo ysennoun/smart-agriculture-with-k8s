@@ -114,7 +114,7 @@ function deploy_platform_images(){
     docker push "$containerRepository/spark-es-to-parquet:$dockerVersion"
     cd "$BASE_PATH/"
 
-    rm "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/tls.crt"
+    rm "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/$hostName.crt"
 }
 
 

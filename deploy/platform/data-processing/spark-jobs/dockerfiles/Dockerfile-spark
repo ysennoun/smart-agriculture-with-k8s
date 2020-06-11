@@ -14,7 +14,8 @@ ENV HOST_NAME=${HOST_NAME}
 COPY ${HOST_NAME}.crt .
 #RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/jssecacerts -storepass changeit -noprompt -alias tls -file tls.crt
 #RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias tls -file tls.crt
-RUN keytool -importcert -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt  -alias "${HOST_NAME}" -file ${HOST_NAME}.crt
+RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias mycert -file ${HOST_NAME}.crt
+
 
 #https://issues.apache.org/jira/browse/SPARK-26995
 #ln -s /lib /lib64 && \

@@ -42,8 +42,7 @@ deploy_data_processing_releases \
   "$DOCKER_VERSION" \
   "$S3A_ACCESS_KEY" \
   "$S3A_SECRET_KEY" \
-  "$ES_TRUSTORE_PASS" \
-  "$MINIO_TRUSTSTORE_PASS"
+  "$ES_TRUSTORE_PASS"
 
 # Deploy initialization release
 deploy_initialization_release \

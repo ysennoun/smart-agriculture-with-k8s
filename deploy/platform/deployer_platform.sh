@@ -81,17 +81,17 @@ function deploy_platform_images(){
       -t "$containerRepository/put-jars-in-minio:$dockerVersion" .
     docker push "$containerRepository/put-jars-in-minio:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/elasticsearch/Dockerfile" \
-      -t "$containerRepository/initialize-alias:$dockerVersion" .
-    docker push "$containerRepository/initialize-alias:$dockerVersion"
+#    docker build -f "$BASE_PATH/deploy/platform/configuration/initialization/dockerfiles/elasticsearch/Dockerfile" \
+#      -t "$containerRepository/initialize-alias:$dockerVersion" .
+#    docker push "$containerRepository/initialize-alias:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/platform/data-access/api/dockerfiles/Dockerfile" \
-      -t "$containerRepository/api:$dockerVersion" .
-    docker push "$containerRepository/api:$dockerVersion"
+#    docker build -f "$BASE_PATH/deploy/platform/data-access/api/dockerfiles/Dockerfile" \
+#      -t "$containerRepository/api:$dockerVersion" .
+#    docker push "$containerRepository/api:$dockerVersion"
 
-    docker build -f "$BASE_PATH/deploy/platform/data-indexing/indexer/dockerfiles/Dockerfile" \
-      -t "$containerRepository/indexer:$dockerVersion" .
-    docker push "$containerRepository/indexer:$dockerVersion"
+#    docker build -f "$BASE_PATH/deploy/platform/data-indexing/indexer/dockerfiles/Dockerfile" \
+#      -t "$containerRepository/indexer:$dockerVersion" .
+#    docker push "$containerRepository/indexer:$dockerVersion"
 
     # Deploy spark images
     cp "$BASE_PATH/deploy/cluster/certificates/minio/tls.crt" "$BASE_PATH/deploy/platform/data-processing/spark-jobs/dockerfiles/$hostName.crt"
@@ -223,7 +223,6 @@ function deploy_data_processing_releases(){
     s3aAccessKey=$4
     s3aSecretKey=$5
     esTruststorePass=$6
-    minioTruststorePass=$7
     esTruststoreContent=$(get_elasticsearch_truststore_content_in_base64 "$namespace" "$esTruststorePass")
     esUserPass=$(get_elastic_user_password "$namespace")
 
@@ -245,8 +244,7 @@ function deploy_data_processing_releases(){
         --set s3aAccessKey="$s3aAccessKey" \
         --set s3aSecretKey="$s3aSecretKey" \
         --set esUserPass="$esUserPass" \
-        --set esTruststorePass="$esTruststorePass" \
-        --set minioTruststorePass="$minioTruststorePass"
+        --set esTruststorePass="$esTruststorePass"
 }
 
 function deploy_data_access_releases(){

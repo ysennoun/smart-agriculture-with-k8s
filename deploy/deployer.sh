@@ -21,7 +21,7 @@ export COMPUTE_REGION="europe-west3" #"your-selected-region"
 export HOSTNAME="eu.gcr.io"
 export CONTAINER_REPOSITORY="$HOSTNAME/$PROJECT_ID" #"your docker repository"
 export PROJECT_NAME="ysennoun-iot" #"your project name on gcp"
-export DOCKER_VERSION="latest"
+export DOCKER_VERSION="d204721de681ac4185a63a33c8be57be5048d31d" #"latest"
 CLUSTER_NAME="smart-agriculture-cluster"
 S3A_ACCESS_KEY="AKIAIOSFODNN7EXAMPLE"
 S3A_SECRET_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
@@ -42,6 +42,7 @@ usage() {
     echo "  - delete-external-static-ip-addresses: delete external static ip address"
     echo "  - setup-cluster: create k8s cluster"
     echo "  - deploy-platform <ENVIRONMENT>: deploy platforme (docker images, releases)"
+    echo "  - delete-cluster: delete cluster"
     echo "  - delete-releases-cluster <ENVIRONMENT>: delete releases and cluster"
     echo "  - delete-namespace <ENVIRONMENT>: delete namespace"
     echo "  - delete-releases <ENVIRONMENT>: delete all releases"
@@ -99,17 +100,17 @@ function deploy-platform(){
       "$API_USER_PASS"
 
     # Deploy device management releases
-    deploy_device_management_releases \
-      "$ENVIRONMENT" \
-      "$COMPUTE_REGION" \
-      "$MQTT_INDEXER_PASS" \
-      "$MQTT_DEVICE_PASS"
+#    deploy_device_management_releases \
+#      "$ENVIRONMENT" \
+#      "$COMPUTE_REGION" \
+#      "$MQTT_INDEXER_PASS" \
+#      "$MQTT_DEVICE_PASS"
 
     # Deploy data indexing releases
-    deploy_data_indexing_releases \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION"
+#    deploy_data_indexing_releases \
+#      "$ENVIRONMENT" \
+#      "$CONTAINER_REPOSITORY" \
+#      "$DOCKER_VERSION"
 
     # Deploy data processing releases
     deploy_data_processing_releases \
@@ -118,8 +119,7 @@ function deploy-platform(){
       "$DOCKER_VERSION" \
       "$S3A_ACCESS_KEY" \
       "$S3A_SECRET_KEY" \
-      "$ES_TRUSTORE_PASS" \
-      "$MINIO_TRUSTSTORE_PASS"
+      "$ES_TRUSTORE_PASS"
 
     # Deploy initialization release
     deploy_initialization_release \
@@ -128,15 +128,20 @@ function deploy-platform(){
       "$DOCKER_VERSION"
 
     # Deploy data access releases
-    deploy_data_access_releases \
-      "$ENVIRONMENT" \
-      "$CONTAINER_REPOSITORY" \
-      "$DOCKER_VERSION" \
-      "$COMPUTE_REGION"
+#    deploy_data_access_releases \
+#      "$ENVIRONMENT" \
+#      "$CONTAINER_REPOSITORY" \
+#      "$DOCKER_VERSION" \
+#      "$COMPUTE_REGION"
+}
+
+function delete-cluster(){
+    # Delete Kubernetes Cluster
+    delete_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"
 }
 
 function delete-releases-cluster(){
-    # Delete Kubernetes Cluster
+    # Delete Kubernetes Releases and Cluster
     delete_releases "$ENVIRONMENT"
     delete_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"
 }

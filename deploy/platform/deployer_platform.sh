@@ -204,8 +204,8 @@ function deploy_data_indexing_releases(){
     "$BASE_PATH/deploy/platform/data-indexing/elasticsearch" \
     --namespace "$namespace" \
     --set namespace="$namespace"
-    # Wait 30 seconds for deployment
-    sleep 30
+    # Wait 60 seconds for deployment
+    sleep 60
 
     helm upgrade --install --debug \
       "data-indexing-indexer" \
@@ -232,6 +232,8 @@ function deploy_data_processing_releases(){
         -f "$BASE_PATH/deploy/platform/data-processing/minio/values.yaml" \
         --set accessKey="$s3aAccessKey" \
         --set secretKey="$s3aSecretKey"
+    # Wait 60 seconds for deployment
+    sleep 60
 
     helm upgrade --install --debug \
         "data-processing-spark-jobs" \

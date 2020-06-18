@@ -7,7 +7,7 @@ setup(
     author_email="ysennoun@xebia.fr",
     description=("An IoT platform built on Kubernetes"),
     license="BSD",
-    keywords="IoT, Kubernetes, Knative",
+    keywords="IoT, Kubernetes",
     url="https://gitlab.com/ysennoun/smart-agriculture-with-k8s",
     packages=find_packages('src'),
     package_dir={'': 'src'},

@@ -11,7 +11,7 @@ class TestEnv(unittest.TestCase):
         return os.path.normpath(os.path.join(pathlib.Path(__file__).parent.absolute(), "..", "resources"))
 
     def setUp(self):
-        os.environ["MQTT_CLIENT_ID_PATH"] = f"{self.get_resources_path()}/clientID"
+        os.environ["MQTT_CLIENT_ID_PATH"] = f"{self.get_resources_path()}/clientId"
 
     def test_should_get_client_id(self):
         # Given/When

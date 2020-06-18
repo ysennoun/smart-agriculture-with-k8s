@@ -12,7 +12,7 @@ BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
 ## FUNCTIONS
 function install_device_deps(){
-  apk add build-base
+  apk add python3-dev build-base libffi-dev openssl-dev libgcc
 }
 
 function install_device_python_requirements(){

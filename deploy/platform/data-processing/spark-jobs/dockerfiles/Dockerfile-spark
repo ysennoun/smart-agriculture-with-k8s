@@ -12,9 +12,6 @@ ENV HOST_NAME=${HOST_NAME}
 # spark - Minio self-signed certificate: https://github.com/minio/cookbook/blob/master/docs/apache-spark-with-minio.md
 # JVM which runs Hadoop needs a custom ca certificate
 COPY ${HOST_NAME}.crt .
-#RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/jssecacerts -storepass changeit -noprompt -alias tls -file tls.crt
-#RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias tls -file tls.crt
-#RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/jssecacerts -storepass changeit -noprompt -alias tls -file ${HOST_NAME}.crt
 RUN keytool -import -trustcacerts -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit -noprompt -alias tls -file ${HOST_NAME}.crt
 
 #https://issues.apache.org/jira/browse/SPARK-26995

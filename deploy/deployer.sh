@@ -74,7 +74,7 @@ function setup-cluster(){
 }
 
 function deploy-platform(){
-    ## Set Docker login
+    # Set Docker login
     set_docker "$HOSTNAME"
 
     # Deploy platform images
@@ -83,7 +83,7 @@ function deploy-platform(){
       "$CONTAINER_REPOSITORY" \
       "$DOCKER_VERSION"
 
-    ## Create Namespace
+    # Create Namespace
     create_namespace "$ENVIRONMENT"
 
     ## Set helm repos
@@ -100,17 +100,17 @@ function deploy-platform(){
       "$API_USER_PASS"
 
     # Deploy device management releases
-#    deploy_device_management_releases \
-#      "$ENVIRONMENT" \
-#      "$COMPUTE_REGION" \
-#      "$MQTT_INDEXER_PASS" \
-#      "$MQTT_DEVICE_PASS"
+   deploy_device_management_releases \
+     "$ENVIRONMENT" \
+     "$COMPUTE_REGION" \
+     "$MQTT_INDEXER_PASS" \
+      "$MQTT_DEVICE_PASS"
 
     # Deploy data indexing releases
-#    deploy_data_indexing_releases \
-#      "$ENVIRONMENT" \
-#      "$CONTAINER_REPOSITORY" \
-#      "$DOCKER_VERSION"
+    deploy_data_indexing_releases \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION"
 
     # Deploy data processing releases
     deploy_data_processing_releases \
@@ -128,11 +128,11 @@ function deploy-platform(){
       "$DOCKER_VERSION"
 
     # Deploy data access releases
-#    deploy_data_access_releases \
-#      "$ENVIRONMENT" \
-#      "$CONTAINER_REPOSITORY" \
-#      "$DOCKER_VERSION" \
-#      "$COMPUTE_REGION"
+    deploy_data_access_releases \
+      "$ENVIRONMENT" \
+      "$CONTAINER_REPOSITORY" \
+      "$DOCKER_VERSION" \
+      "$COMPUTE_REGION"
 }
 
 function delete-cluster(){

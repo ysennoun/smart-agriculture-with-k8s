@@ -36,13 +36,13 @@ class ApiService:
         self.es_alias = es_alias
 
     @staticmethod
-    def get_devices_query(query_arguments: QueryArguments) -> dict:
+    def get_devices_query() -> dict:
         return {
             "aggs": {
                 "devices": {
                     "terms": {
                         "field": "device",
-                        "size": query_arguments.max_results
+                        "size": MAX_RESULTS_DEFAULT
                     }
                 }
             }
@@ -91,9 +91,8 @@ class ApiService:
             }
         }
 
-    def get_devices(self, arguments: dict) -> dict:
-        query_arguments = QueryArguments.fromDict(arguments)
-        body_for_search = self.get_devices_query(query_arguments)
+    def get_devices(self) -> dict:
+        body_for_search = self.get_devices_query()
         res = self.es_client.search(index=self.es_alias, body=body_for_search, ignore=[404])
         result = {"rows": [hit["key"] for hit in res['aggregations']['devices']['buckets']]}
         logger.debug("Get devices", extra={"result": result})

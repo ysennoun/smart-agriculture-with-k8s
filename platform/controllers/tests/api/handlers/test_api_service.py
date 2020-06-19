@@ -81,10 +81,6 @@ class TestApiService(unittest.TestCase):
 
     def test_get_devices(self):
         ######### Given #########
-        arguments = {
-            "next_token": 0,
-            "max_results": 2
-        }
         aggregations = {
             "aggregations": {
                 "devices": {
@@ -107,7 +103,7 @@ class TestApiService(unittest.TestCase):
         api_service = ApiService(self.es_client, "es_alias")
 
         ######### When #########
-        devices = api_service.get_devices(arguments)
+        devices = api_service.get_devices()
 
         ######### Then #########
         self.assertEqual(devices, {"rows": ["Device A", "Device B"]})

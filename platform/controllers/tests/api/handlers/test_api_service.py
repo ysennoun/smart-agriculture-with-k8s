@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 from common.utils.date import get_current_date, get_date_at_midnight
-from api.handlers.api_service import ApiService, QueryArguments
+from api.handlers.api_service import ApiService, QueryArguments, MAX_RESULTS_DEFAULT
 
 
 class TestApiService(unittest.TestCase):
@@ -23,19 +23,11 @@ class TestApiService(unittest.TestCase):
         self.assertEqual(query_arguments.max_results, 11)
 
     def test_get_devices_query(self):
-        ######### Given #########
-        query_arguments = QueryArguments(
-            offset=0,
-            max_results=2,
-            from_date=get_date_at_midnight(),
-            to_date=get_current_date()
-        )
-
         ######### When #########
-        result = ApiService.get_devices_query(query_arguments)
+        result = ApiService.get_devices_query()
 
         ######### Then #########
-        self.assertEqual(result["aggs"]["devices"]["terms"]["size"], query_arguments.max_results)
+        self.assertEqual(result["aggs"]["devices"]["terms"]["size"], MAX_RESULTS_DEFAULT)
 
     def test_get_last_value_query(self):
         ######### Given #########

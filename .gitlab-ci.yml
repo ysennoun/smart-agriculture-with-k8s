@@ -28,6 +28,8 @@ default:
     - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
     - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
     - gcloud components install kubectl
+    ## Get credentials for kubectl
+    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
 
   after_script:
     - rm /tmp/$CI_PIPELINE_ID.json
@@ -50,7 +52,6 @@ build:unit-test:
   allow_failure: false
   except:
     - setup-cluster
-    - test
   script:
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
@@ -79,10 +80,7 @@ dev:images:
   only:
     - dev
     - master
-    - test
   script:
-    ## Get credentials for kubectl
-    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     ## Execute deployment of images
     - chmod +x deploy/cicd_images.sh
     - ./deploy/cicd_images.sh
@@ -96,10 +94,7 @@ dev:deploy:
   only:
     - dev
     - master
-    - test
   script:
-    ## Get credentials for kubectl and helm
-    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     ## Install helm
     - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
     - chmod 700 get_helm.sh
@@ -116,9 +111,6 @@ dev:e2e-test:
   only:
     - dev
     - master
-    - test
   script:
-    ## Get credentials for kubectl
-    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     - chmod +x deploy/cicd_e2e_test.sh
     - ./deploy/cicd_e2e_test.sh

@@ -48,9 +48,9 @@ usage() {
     echo "  - delete-releases <ENVIRONMENT>: delete all releases"
     echo "  - create-device-service-account-and-roles: create device service account and roles"
     echo "  - get-device-service-account-key: get device service account key"
+    echo "  - get-front-end-ip <ENVIRONMENT>: get front end ip"
     echo "  - test-unit <ENVIRONMENT>: launch unit tests"
     echo "  - test-e2e <ENVIRONMENT>: launch e2e tests"
-    echo "  - get-front-end-ip <ENVIRONMENT>: get front end ip"
 }
 
 function create-certificates(){

@@ -15,6 +15,9 @@ RUN npm install
 # copy files and folders of the project in workdir
 COPY front-end/ .
 
+# remove env local
+RUN rm -f .env.local
+
 # build app for production by minifying it
 RUN npm run build
 

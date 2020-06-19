@@ -51,5 +51,5 @@ def register_routes(app: Flask, auth: HTTPBasicAuth, api_service: ApiService):
     def handle_get_timeseries(device):
         logger.debug(f"GET request for device: {device}", extra={"arguments": request.args})
         validate_request(request.args, QUERY_SCHEMA)
-        timeseries = api_service.get_timeseries(device, , extra={"arguments": request.args})
+        timeseries = api_service.get_timeseries(device, request.args)
         return Response(json.dumps(timeseries), mimetype='application/json')

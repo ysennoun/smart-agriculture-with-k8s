@@ -14,8 +14,7 @@ set_docker "$HOSTNAME"
 deploy_platform_images \
   "$ENVIRONMENT" \
   "$CONTAINER_REPOSITORY" \
-  "$DOCKER_VERSION" \
-  "$MINIO_TRUSTSTORE_PASS"
+  "$DOCKER_VERSION"
 
 # Deploy front-end image
 deploy_front_end_images \

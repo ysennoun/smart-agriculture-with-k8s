@@ -22,12 +22,16 @@ def get_es_alias_raw_data():
 
 def get_basic_auth_username():
     username_path = os.environ["BASIC_AUTH_USERNAME_PATH"]
-    return open(username_path, 'r').read().rstrip('\n')
+    username = open(username_path, 'r').read().rstrip('\n')
+    logger.debug(f"username_path: {username_path} and username: {username}")
+    return username
 
 
 def get_basic_auth_password():
     password_path = os.environ["BASIC_AUTH_PASSWORD_PATH"]
-    return open(password_path, 'r').read().rstrip('\n')
+    password = open(password_path, 'r').read().rstrip('\n')
+    logger.debug(f"password_path: {password_path} and password: {password}")
+    return password
 
 
 def verify_password(username, password):

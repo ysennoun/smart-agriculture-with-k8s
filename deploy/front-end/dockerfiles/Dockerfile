@@ -15,8 +15,10 @@ RUN npm install
 # copy files and folders of the project in workdir
 COPY front-end/ .
 
-# remove env local
+# remove test files
 RUN rm -f .env.local
+RUN rm -rf tests/
+RUN rm -rf tests_mock_app/
 
 # build app for production by minifying it
 RUN npm run build

@@ -31,9 +31,7 @@ def get_basic_auth_password():
 
 
 def verify_password(username, password):
-    if username == get_basic_auth_username():
-        return password == get_basic_auth_password()
-    return False
+    return username == get_basic_auth_username() and password == get_basic_auth_password()
 
 
 def create_app():

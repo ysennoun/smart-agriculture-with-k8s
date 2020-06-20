@@ -66,7 +66,10 @@ export default {
             axios.get(
                     API_URL + "/devices",
                     {
-                        httpsAgent: new https.Agent({rejectUnauthorized: false})
+                        auth: {
+                            username: this.$store.getters.getCredentials.login,
+                            password: this.$store.getters.getCredentials.password
+                        }
                     }
                 )
                 .then(response => {

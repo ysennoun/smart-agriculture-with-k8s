@@ -17,7 +17,7 @@ def get_index_mappings() -> dict:
     return {
         "mappings": {
             "properties": {
-                "device":    {"type": "text"},
+                "device":    {"type": "text", "fielddata": True},
                 "timestamp":  {"type": "date"}
             }
         }

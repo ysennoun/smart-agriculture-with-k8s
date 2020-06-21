@@ -26,7 +26,6 @@
 </template>
 <script>
 import axios from "axios";
-const https = require('https');
 
 const API_URL = process.env.VUE_APP_API_URL
 

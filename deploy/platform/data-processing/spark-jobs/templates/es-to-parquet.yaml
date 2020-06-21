@@ -4,7 +4,7 @@ metadata:
   name: spark-es-to-parquet-cron
   namespace: {{ .Values.namespace }}
 spec:
-  schedule: "*/5 * * * *" #"0 6 * * *" # every day at 6am
+  schedule: "0 6 * * *" # every day at 6am
   jobTemplate:
     spec:
       template:

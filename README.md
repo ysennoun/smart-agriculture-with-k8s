@@ -75,7 +75,6 @@ To deploy all application either with the Gitlab CI/CD pipeline (see the followi
     MQTT_INDEXER_PASS: "password-for-user-indexer-into-vernemq" # for instance 3ywbCs2uB4
     MQTT_DEVICE_PASS: "password-for-user-device-into-vernemq"  # for instance 9Fex2nqdqe
     ES_TRUSTORE_PASS: "password-for-trustore-generated-for-spark-elasticsearch"  # for instance ChI2OfIpGuq0be5X
-    MINIO_TRUSTSTORE_PASS: "password-for-trustore-generated-for-spark-minio"  # for instance vkM8ssfK5fv4JQ9k
     API_USER_PASS: "passwor-for-api" # for instance 4hxGaN34KQ
 
 ![Set environment variables in Gitlab](documents/set_environment_variables_in_gitlab.png)

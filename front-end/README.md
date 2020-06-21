@@ -5,6 +5,8 @@
 ### Run local server
 
     ./run_local.sh
+    npm install
+    npm run test:unit
     
 ### Start application
 

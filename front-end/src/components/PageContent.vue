@@ -78,7 +78,7 @@ export default {
             var oneWeekAgo = new Date();
             var pastDate = oneWeekAgo.getDate() - 7;
             oneWeekAgo.setDate(pastDate);
-            return "?from_date=" + today.toISOString().slice(0,-5)+"Z" + "&to_date=" + oneWeekAgo.toISOString().slice(0,-5)+"Z"
+            return "?from_date=" + oneWeekAgo.toISOString().slice(0,-5)+"Z" + "&to_date=" + today.toISOString().slice(0,-5)+"Z"
         },
         setCharts: function(deviceName) {
             this.deviceName =  deviceName;

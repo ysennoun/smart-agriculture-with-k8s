@@ -8,10 +8,10 @@ First we divide our plateform into microservices, here below the representation:
 
 ![Architecture of IoT Project](documents/microservices.png)
 
-- Device management: manage reception of data from device
-- Storage: store data received in different data storages (Elasticsearch and Minio)
-- Data processing: Predefined Batch processes
-- Data Access: Expose data to users through API REST
+- Device Management: manage reception of data from device
+- Data Indexing: index data received
+- Data Processing: predefined Batch processes
+- Data Access: expose data to users through API REST
 
 The corresponding architecture we build to solve the previous representation is as below:
 

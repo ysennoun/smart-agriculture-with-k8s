@@ -18,9 +18,9 @@ self.seesaw = Seesaw(i2c_bus, addr=0x36)
 
     @classmethod
     def convert_capacitive_moisture(cls, capacitive_moisture: float) -> float:
-        # capacitive moisture in wet condition is 500 and capacitive moisture in dry condition is 300
-        # consider linear relation => y = a * x + b where a = 0.5 and b = -150
-        return 0.5 * capacitive_moisture - 150
+        # capacitive moisture in wet condition is 700 and capacitive moisture in dry condition is 300
+        # consider linear relation => y = a * x + b where a = 0.25 and b = -75
+        return 0.25 * capacitive_moisture - 75
 
     def get_temperature(self) -> float:
         return float(self.seesaw.get_temp())

@@ -46,7 +46,7 @@ function configure-device(){
     echo 'docker stop device-container || true && docker rm device-container || true && \' >> "/home/$USER/cron_job.sh"
     echo 'docker run --name device-container --device=/dev/gpiomem:/dev/gpiomem --device=/dev/i2c-1:/dev/i2c-1 -v /home/$USER/credentials:/etc/credentials -it -d -p 8883:8883 device:latest' >> "/home/$USER/cron_job.sh"
     chmod 755 "/home/$USER/cron_job.sh"
-    docker run --name device-container --:=/dev/gpiomem:/dev/gpiomem --device=/dev/i2c-1:/dev/i2c-1 -v /home/$USER/credentials:/etc/credentials -it -d -p 8883:8883 device:latest
+    docker run --name device-container --device=/dev/gpiomem:/dev/gpiomem --device=/dev/i2c-1:/dev/i2c-1 -v /home/$USER/credentials:/etc/credentials -it -d -p 8883:8883 device:latest
     echo "0 2 * * * /bin/sh /home/$USER/cron_job.sh" > crontab.txt # every day at 2 am
     crontab crontab.txt
     rm -f crontab.txt

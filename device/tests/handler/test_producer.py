@@ -12,4 +12,4 @@ class TestProducer(unittest.TestCase):
         percentage = Producer.convert_capacitive_moisture(capacitive_moisture)
 
         # Then
-        self.assertEqual(percentage, 22)
+        self.assertEqual(percentage, 11)

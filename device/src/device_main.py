@@ -9,9 +9,10 @@ logger = Logger().get_logger()
 if __name__ == "__main__":
     try:
         mqtt_client = mqtt.Client(protocol=mqtt.MQTTv311)
+        publisher = Publisher(mqtt_client=mqtt _client)
+        producer = Producer()
         while True:
-            publisher = Publisher(mqtt_client=mqtt_client)
-            publisher.publish_payload(paylaod=Producer().get_payload())
+            publisher.publish_payload(paylaod=producer.get_payload())
             publisher.wait()
 
     except Exception as ex:

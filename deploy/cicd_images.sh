@@ -26,4 +26,4 @@ deploy_front_end_images \
 deploy_device_images \
   "$COMPUTE_REGION" \
   "$CONTAINER_REPOSITORY" \
-  "$DOCKER_VERSION"
+  "latest"

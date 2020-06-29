@@ -15,7 +15,7 @@ Follow these steps for Raspberry Pi configuration.
 - Get a Raspberry Pi (we use version 3) and a SSD card (8G at least)
 - [Install Raspbian OS](https://www.raspberrypi.org/documentation/installation/installing-images/) in your SSD card
 - [Set up Wifi connection](https://www.raspberrypi.org/documentation/configuration/wireless/) either through `Desktop` or `Command line`
-
+- [Enable I2C](../documents/i2c.png) by executing command line `raspi-config`
 
 ## Hardware configuration
 

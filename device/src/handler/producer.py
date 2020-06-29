@@ -9,11 +9,11 @@ class Producer:
 
     def __init__(self):
         # add imports here to run unit tests in none Raspberry Pi environment 
-        import busio
-        from board import SCL, SDA
-        from adafruit_seesaw.seesaw import Seesaw
-        i2c_bus = busio.I2C(SCL, SDA)
-        self.seesaw = Seesaw(i2c_bus, addr=0x36)
+import busio
+from board import SCL, SDA
+from adafruit_seesaw.seesaw import Seesaw
+i2c_bus = busio.I2C(SCL, SDA)
+self.seesaw = Seesaw(i2c_bus, addr=0x36)
         self.client_id = env.get_mqtt_client_id()
 
     @classmethod

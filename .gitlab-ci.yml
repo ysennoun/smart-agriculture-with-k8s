@@ -50,6 +50,7 @@ build:unit-test:
   allow_failure: false
   except:
     - setup-cluster
+    - dev
   script:
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
@@ -90,7 +91,7 @@ dev:deploy:
   stage: dev_deploy
   allow_failure: false
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Get credentials for kubectl
@@ -109,7 +110,7 @@ dev:e2e-test:
   variables:
     ENVIRONMENT: dev
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Get credentials for kubectl

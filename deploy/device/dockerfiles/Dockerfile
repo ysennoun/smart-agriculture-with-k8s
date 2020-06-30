@@ -1,6 +1,6 @@
 FROM balenalib/raspberrypi3-debian-python:3.7
 
-RUN apt update && apt install -y build-essential gcc python-dev python-rpi.gpio
+RUN apt update && apt install -y build-essential gcc python-dev
 
 WORKDIR /app
 ENV PYTHONPATH /app

@@ -12,7 +12,7 @@ if __name__ == "__main__":
         publisher = Publisher(mqtt_client=mqtt_client)
         producer = Producer()
         while True:
-            publisher.publish_payload(paylaod=producer.get_payload())
+            publisher.publish_payload(payload=producer.get_payload())
             publisher.wait()
 
     except Exception as ex:

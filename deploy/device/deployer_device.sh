@@ -38,7 +38,7 @@ function deploy_device_images(){
     docker build -f "$BASE_PATH/deploy/device/dockerfiles/Dockerfile" \
       --build-arg MQTT_HOST_IP=$(get_vernemq_ip "$region") \
       --build-arg MQTT_HOST_PORT="8883" \
-      --build-arg MQTT_TOPIC="/iot/farming" \
+      --build-arg MQTT_TOPIC="iot/farming" \
       -t "$containerRepository/device:$dockerVersion" .
     docker push "$containerRepository/device:$dockerVersion"
 }

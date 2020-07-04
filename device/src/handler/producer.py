@@ -23,9 +23,9 @@ class Producer:
         # case 2: capacitive moisture in wet external condition is 1100 and capacitive moisture in dry condition is 300
         # consider linear relation => y = a * x + b where a = 0.125 and b = -37.5
         if capacitive_moisture >= 700:
-            moisture = 0.25 * capacitive_moisture - 75
-        else:
             moisture = 0.125 * capacitive_moisture - 37.5
+        else:
+            moisture = 0.25 * capacitive_moisture - 75
         return moisture
 
     def get_temperature(self) -> float:

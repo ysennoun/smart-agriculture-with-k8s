@@ -91,7 +91,7 @@ dev:deploy:
   stage: dev_deploy
   allow_failure: false
   only:
-    #- dev
+    - dev
     - master
   script:
     ## Get credentials for kubectl

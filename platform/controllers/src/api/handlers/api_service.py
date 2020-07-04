@@ -88,7 +88,14 @@ class ApiService:
                         }
                     ]
                 }
-            }
+            },
+            "sort": [
+                {
+                    "timestamp": {
+                        "order": "asc"
+                    }
+                }
+            ]
         }
 
     def get_devices(self) -> dict:

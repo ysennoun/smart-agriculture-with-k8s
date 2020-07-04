@@ -11,17 +11,17 @@ source deploy/device/deployer_device.sh
 set_docker "$HOSTNAME"
 
 # Deploy platform images
-#deploy_platform_images \
-#  "$ENVIRONMENT" \
-#  "$CONTAINER_REPOSITORY" \
-#  "$DOCKER_VERSION"
-#
+deploy_platform_images \
+  "$ENVIRONMENT" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION"
+
 ## Deploy front-end image
-#deploy_front_end_images \
-#  "$COMPUTE_REGION" \
-#  "$CONTAINER_REPOSITORY" \
-#  "$DOCKER_VERSION"
-#
+deploy_front_end_images \
+  "$COMPUTE_REGION" \
+  "$CONTAINER_REPOSITORY" \
+  "$DOCKER_VERSION"
+
 # Deploy device image
 deploy_device_images \
   "$COMPUTE_REGION" \

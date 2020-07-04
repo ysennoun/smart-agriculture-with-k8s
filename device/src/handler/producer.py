@@ -23,7 +23,7 @@ class Producer:
         return 0.25 * capacitive_moisture - 75
 
     def get_temperature(self) -> float:
-        return float(self.seesaw.get_temp())
+        return round(self.seesaw.get_temp(), 2)
 
     def get_moisture(self) -> float:
         return self.convert_capacitive_moisture(self.seesaw.moisture_read())

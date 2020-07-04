@@ -22,7 +22,7 @@ deploy_front_end_images \
   "$CONTAINER_REPOSITORY" \
   "$DOCKER_VERSION"
 
- Deploy device image
+# Deploy device image
 deploy_device_images \
   "$COMPUTE_REGION" \
   "$CONTAINER_REPOSITORY" \

@@ -77,7 +77,7 @@ dev:images:
   stage: dev_images
   allow_failure: false
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Execute deployment of images
@@ -91,7 +91,7 @@ dev:deploy:
   stage: dev_deploy
   allow_failure: false
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Get credentials for kubectl
@@ -110,7 +110,7 @@ dev:e2e-test:
   variables:
     ENVIRONMENT: dev
   only:
-    - dev
+    #- dev
     - master
   script:
     ## Get credentials for kubectl

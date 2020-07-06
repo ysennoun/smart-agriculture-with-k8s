@@ -50,7 +50,6 @@ build:unit-test:
   allow_failure: false
   except:
     - setup-cluster
-    - dev
   script:
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
@@ -80,6 +79,8 @@ dev:images:
     - dev
     - master
   script:
+    ## Get credentials for kubectl
+    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     ## Execute deployment of images
     - chmod +x deploy/cicd_images.sh
     - ./deploy/cicd_images.sh
@@ -110,7 +111,7 @@ dev:e2e-test:
   variables:
     ENVIRONMENT: dev
   only:
-    #- dev
+    - dev
     - master
   script:
     ## Get credentials for kubectl

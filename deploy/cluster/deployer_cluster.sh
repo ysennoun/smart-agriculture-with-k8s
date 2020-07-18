@@ -35,6 +35,19 @@ function create_docker_registries(){
   cd "$BASE_PATH"
 }
 
+function install_k8s_clients(){
+  echo "Install k8s clients"
+  projectId=$1
+  clusterName=$2
+  computeZone=$3
+
+  gcloud components install kubectl
+  gcloud container clusters get-credentials "$clusterName" --zone="$COMPUTE_ZONE" --project="$computeZone"
+  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  chmod 700 get_helm.sh
+  ./get_helm.sh
+}
+
 function set_helm_repos(){
     echo "Add Helm VerneMQ and stable repos"
     helm repo add vernemq https://vernemq.github.io/docker-vernemq

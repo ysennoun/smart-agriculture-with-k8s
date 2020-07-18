@@ -5,6 +5,12 @@ set -eax
 source deploy/cluster/deployer_cluster.sh
 source deploy/platform/deployer_platform.sh
 
+## Install k8s clients
+install_k8s_clients \
+  "$CLUSTER_NAME" \
+  "$COMPUTE_ZONE" \
+  "$PROJECT_ID"
+
 # Install dependencies
 install_e2e_deps
 

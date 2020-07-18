@@ -12,3 +12,7 @@ resource "google_compute_network" "front_end" {
   name = "front-end-ip2"
   region = var.region
 }
+
+output "vernemq_ip" {
+  value = google_compute_address.vernemq.address
+}

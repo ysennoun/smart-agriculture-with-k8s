@@ -72,7 +72,7 @@ resource "google_container_node_pool" "np" {
     update = "30m"
   }
 
-  version = latest
+  version = "1.16.9-gke.6"
 
   management {
     auto_repair = true

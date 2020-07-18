@@ -25,7 +25,7 @@ function enable_apis(){
   projectId=$1
 
   cd "$BASE_PATH/deploy/cluster/terraform/apis/"
-  terraform init && terraform plan && terraform apply -auto-approve -var "project_id=$projectId"
+  terraform init && terraform plan && terraform apply -auto-approve -var-file=variables.tf -var "project_id=$projectId"
   cd "$BASE_PATH"
 }
 
@@ -34,7 +34,7 @@ function create_docker_registries(){
   projectId=$1
 
   cd "$BASE_PATH/deploy/cluster/terraform/docker-registries/"
-  terraform init && terraform plan && terraform apply -auto-approve -var "project_id=$projectId"
+  terraform init && terraform plan && terraform apply -auto-approve -var-file=variables.tf -var "project_id=$projectId"
   cd "$BASE_PATH"
 }
 
@@ -70,8 +70,16 @@ function create_k8s_cluster() {
   computeRegion=$3
   computeZone=$4
 
+  cd "$BASE_PATH/deploy/cluster/terraform/ips/"
+  echo "let's create ips"
+  terraform init && terraform plan && terraform apply -auto-approve -var-file=variables.tf -var "region=$computeRegion"
+  echo "ips created"
+  cd "$BASE_PATH"
+  echo $(terraform output "vernemq_ip")
+
   cd "$BASE_PATH/deploy/cluster/terraform/gke/"
   terraform init && terraform plan && terraform apply -auto-approve \
+    -var-file=variables.tf \
     -var "project_id=$projectId" \
     -var "cluster_name=$clusterName" \
     -var "region=$computeRegion" \
@@ -82,11 +90,6 @@ function create_k8s_cluster() {
   kubectl create clusterrolebinding cluster-admin-binding \
     --clusterrole=cluster-admin \
     --user=$(gcloud config get-value core/account)
-
-  cd "$BASE_PATH/deploy/cluster/terraform/ips/"
-  terraform init && terraform plan && terraform apply -auto-approve -var "region=$computeRegion"
-  echo "ips created"
-  cd "$BASE_PATH"
 
   echo "End creation"
 }
@@ -105,6 +108,7 @@ function delete_k8s_cluster() {
 
   cd "$BASE_PATH/deploy/cluster/terraform/gke/"
   terraform destroy -auto-approve \
+    -var-file=variables.tf \
     -var "project_id=$projectId" \
     -var "cluster_name=$clusterName" \
     -var "region=$computeRegion" \

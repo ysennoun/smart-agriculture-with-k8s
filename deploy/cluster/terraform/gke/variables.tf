@@ -8,6 +8,12 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "gke_version" {
+  description = "Version of master node."
+  type        = string
+  default     = "1.16.9-gke.6"
+}
+
 variable "region" {
   description = "Google Cloud region"
   type        = string

@@ -11,6 +11,9 @@ resource "google_container_cluster" "primary" {
   name               = var.cluster_name
   location           = var.zone
 
+  master_version = var.gke_version
+  node_version = var.gke_version
+
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
@@ -65,7 +68,7 @@ resource "google_container_node_pool" "np" {
     update = "30m"
   }
 
-  version = "1.16.9-gke.6"
+  version = var.gke_version
 
   management {
     auto_repair = true

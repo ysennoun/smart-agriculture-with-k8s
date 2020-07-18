@@ -80,6 +80,9 @@ function create_k8s_cluster() {
   terraform init && terraform plan && terraform apply -auto-approve
   cd "$BASE_PATH"
 
+  ## Get credentials for kubectl
+  gcloud container clusters get-credentials "$clusterName" --zone="$computeZone" --project="$projectId"
+
   # Create an RBAC service account
   kubectl create clusterrolebinding cluster-admin-binding \
     --clusterrole=cluster-admin \

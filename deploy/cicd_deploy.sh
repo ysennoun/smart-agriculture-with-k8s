@@ -8,9 +8,9 @@ source deploy/front-end/deployer_front_end.sh
 
 ## Install k8s clients
 install_k8s_clients \
+  "$PROJECT_ID" \
   "$CLUSTER_NAME" \
-  "$COMPUTE_ZONE" \
-  "$PROJECT_ID"
+  "$COMPUTE_ZONE"
 
 ## Create Namespace
 create_namespace "$ENVIRONMENT"

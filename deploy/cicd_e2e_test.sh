@@ -7,9 +7,9 @@ source deploy/platform/deployer_platform.sh
 
 ## Install k8s clients
 install_k8s_clients \
+  "$PROJECT_ID" \
   "$CLUSTER_NAME" \
-  "$COMPUTE_ZONE" \
-  "$PROJECT_ID"
+  "$COMPUTE_ZONE"
 
 # Install dependencies
 install_e2e_deps

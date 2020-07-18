@@ -9,9 +9,9 @@ source deploy/device/deployer_device.sh
 
 ## Install k8s clients
 install_k8s_clients \
+  "$PROJECT_ID" \
   "$CLUSTER_NAME" \
-  "$COMPUTE_ZONE" \
-  "$PROJECT_ID"
+  "$COMPUTE_ZONE"
 
 ## Set Docker login
 set_docker "$HOSTNAME"

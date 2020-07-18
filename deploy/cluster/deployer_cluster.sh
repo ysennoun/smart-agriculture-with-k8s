@@ -42,7 +42,7 @@ function install_k8s_clients(){
   computeZone=$3
 
   gcloud components install kubectl
-  gcloud container clusters get-credentials "$clusterName" --zone="$COMPUTE_ZONE" --project="$computeZone"
+  gcloud container clusters get-credentials "$clusterName" --zone="$computeZone" --project="$projectId"
   curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
   chmod 700 get_helm.sh
   ./get_helm.sh

@@ -26,7 +26,7 @@ function enable_apis(){
 
   cd "$BASE_PATH/deploy/cluster/terraform/apis/"
   echo "project_id = \"$projectId\"" > terraform.tfvars
-  terraform init && terraform plan && terraform apply -auto-approve -var-file=variables.tf
+  terraform init && terraform plan && terraform apply -auto-approve
   cd "$BASE_PATH"
 }
 
@@ -36,7 +36,7 @@ function create_docker_registries(){
 
   cd "$BASE_PATH/deploy/cluster/terraform/docker-registries/"
   echo "project_id = \"$projectId\"" > terraform.tfvars
-  terraform init && terraform plan && terraform apply -auto-approve -var-file=variables.tf
+  terraform init && terraform plan && terraform apply -auto-approve
   cd "$BASE_PATH"
 }
 
@@ -75,7 +75,7 @@ function create_k8s_cluster() {
   cd "$BASE_PATH/deploy/cluster/terraform/ips/"
   echo "let's create ips"
   echo "region = \"$computeRegion\"" > terraform.tfvars
-  terraform init && terraform plan && terraform apply -auto-approve -var-file=variables.tf
+  terraform init && terraform plan && terraform apply -auto-approve
   echo "ips created"
   cd "$BASE_PATH"
   echo $(terraform output "vernemq_ip")
@@ -85,8 +85,7 @@ function create_k8s_cluster() {
   echo "cluster_name = \"$clusterName\"" >> terraform.tfvars
   echo "region = \"$computeRegion\"" >> terraform.tfvars
   echo "zone = \"$computeZone\"" >> terraform.tfvars
-  terraform init && terraform plan && terraform apply -auto-approve \
-    -var-file=variables.tf
+  terraform init && terraform plan && terraform apply -auto-approve
   cd "$BASE_PATH"
 
   # Create an RBAC service account
@@ -111,7 +110,6 @@ function delete_k8s_cluster() {
 
   cd "$BASE_PATH/deploy/cluster/terraform/gke/"
   terraform destroy -auto-approve \
-    -var-file=variables.tf \
     -var "project_id=$projectId" \
     -var "cluster_name=$clusterName" \
     -var "region=$computeRegion" \

@@ -1,4 +1,13 @@
+# Specify the GCP Provider
+provider "google-beta" {
+  project = var.project_id
+  region  = var.region
+  version = "~> 3.30"
+  alias   = "gb3"
+}
+
 resource "google_container_cluster" "primary" {
+  provider           = google-beta.gb3
   name               = var.cluster_name
   location           = var.zone
 

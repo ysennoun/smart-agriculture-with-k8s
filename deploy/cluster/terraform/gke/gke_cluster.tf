@@ -41,6 +41,7 @@ resource "google_container_cluster" "primary" {
   }
 
   logging_service = "logging.googleapis.com/kubernetes"
+  monitoring_service = "monitoring.googleapis.com/kubernetes"
 }
 
 resource "google_container_node_pool" "np" {

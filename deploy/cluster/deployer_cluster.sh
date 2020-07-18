@@ -72,15 +72,6 @@ function create_k8s_cluster() {
   computeRegion=$3
   computeZone=$4
 
-  cd "$BASE_PATH/deploy/cluster/terraform/ips/"
-  echo "let's create ips"
-  echo "region = \"$computeRegion\"" > terraform.tfvars
-  terraform init && terraform plan && terraform apply -auto-approve
-  echo "ips created"
-  echo $(terraform output "vernemq_ip")
-  cd "$BASE_PATH"
-  echo $(terraform output "vernemq_ip")
-
   cd "$BASE_PATH/deploy/cluster/terraform/gke/"
   echo "project_id = \"$projectId\"" >> terraform.tfvars
   echo "cluster_name = \"$clusterName\"" >> terraform.tfvars
@@ -110,11 +101,11 @@ function delete_k8s_cluster() {
   computeZone=$4
 
   cd "$BASE_PATH/deploy/cluster/terraform/gke/"
-  terraform destroy -auto-approve \
-    -var "project_id=$projectId" \
-    -var "cluster_name=$clusterName" \
-    -var "region=$computeRegion" \
-    -var "zone=$computeZone"
+  echo "project_id = \"$projectId\"" >> terraform.tfvars
+  echo "cluster_name = \"$clusterName\"" >> terraform.tfvars
+  echo "region = \"$computeRegion\"" >> terraform.tfvars
+  echo "zone = \"$computeZone\"" >> terraform.tfvars
+  terraform destroy -auto-approve
   cd "$BASE_PATH"
   echo "End deletion"
 }

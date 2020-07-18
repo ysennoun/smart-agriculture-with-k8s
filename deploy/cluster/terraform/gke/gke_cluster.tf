@@ -1,13 +1,4 @@
-# Specify the GCP Provider
-provider "google-beta" {
-  project = var.project_id
-  region  = var.region
-  version = "~> 3.30"
-  alias   = "gb3"
-}
-
 resource "google_container_cluster" "primary" {
-  provider           = google-beta.gb3
   name               = var.cluster_name
   location           = var.zone
 
@@ -44,7 +35,7 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "np" {
-  name       = "my-node-pool"
+  name       = "nodes-pool"
   location   = var.zone
   cluster    = google_container_cluster.primary.name
   node_count = var.num_nodes
@@ -60,10 +51,6 @@ resource "google_container_node_pool" "np" {
 
     metadata = {
       "disable-legacy-endpoints" = "true"
-    }
-
-    workload_metadata_config {
-      node_metadata = "GKE_METADATA_SERVER"
     }
   }
 

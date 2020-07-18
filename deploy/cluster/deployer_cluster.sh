@@ -7,26 +7,45 @@ SCRIPT_PATH=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
-MIN_NODES=1
-MAX_NODES=3
-NUM_NODES=1
-MACHINE_TYPE=n1-standard-4
-
 ## FUNCTIONS
 function activate_billing(){
-  PROJECT=$1
+  projectId=$1
   echo "Activate billing"
-  gcloud config set core/project "$PROJECT"
+  ## cannot be done through terraform
+  gcloud config set core/project "$projectId"
 }
 
 function enable_apis(){
   echo "Activate APIs"
-  gcloud services enable \
-       cloudapis.googleapis.com \
-       cloudbuild.googleapis.com \
-       container.googleapis.com \
-       containerregistry.googleapis.com \
-       --quiet
+  projectId=$1
+
+  cd "$BASE_PATH/deploy/cluster/terraform/apis/"
+  echo "project_id = \"$projectId\"" > terraform.tfvars
+  terraform init && terraform plan && terraform apply -auto-approve
+  cd "$BASE_PATH"
+}
+
+function create_docker_registries(){
+  echo "Create Docker Registries"
+  projectId=$1
+
+  cd "$BASE_PATH/deploy/cluster/terraform/docker-registries/"
+  echo "project_id = \"$projectId\"" > terraform.tfvars
+  terraform init && terraform plan && terraform apply -auto-approve
+  cd "$BASE_PATH"
+}
+
+function install_k8s_clients(){
+  echo "Install k8s clients"
+  projectId=$1
+  clusterName=$2
+  computeZone=$3
+
+  gcloud components install kubectl
+  gcloud container clusters get-credentials "$clusterName" --zone="$COMPUTE_ZONE" --project="$computeZone"
+  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  chmod 700 get_helm.sh
+  ./get_helm.sh
 }
 
 function set_helm_repos(){
@@ -56,23 +75,18 @@ function create_certificates(){
 
 function create_k8s_cluster() {
   echo "Let's create k8s cluster"
-  clusterName=$1
-  computeZone=$2
-  gcloud beta container clusters create "$clusterName" \
-    --addons=HorizontalPodAutoscaling,HttpLoadBalancing \
-    --machine-type="$MACHINE_TYPE" \
-    --cluster-version=latest --zone="$computeZone" \
-    --enable-stackdriver-kubernetes \
-    --enable-ip-alias \
-    --enable-autoscaling --min-nodes="$MIN_NODES" --num-nodes "$NUM_NODES" --max-nodes="$MAX_NODES" \
-    --enable-autorepair \
-    --scopes cloud-platform \
-     --quiet
+  projectId=$1
+  clusterName=$2
+  computeRegion=$3
+  computeZone=$4
 
-  # Create an RBAC service account
-  kubectl create clusterrolebinding cluster-admin-binding \
-    --clusterrole=cluster-admin \
-    --user=$(gcloud config get-value core/account)
+  cd "$BASE_PATH/deploy/cluster/terraform/gke/"
+  echo "project_id = \"$projectId\"" >> terraform.tfvars
+  echo "cluster_name = \"$clusterName\"" >> terraform.tfvars
+  echo "region = \"$computeRegion\"" >> terraform.tfvars
+  echo "zone = \"$computeZone\"" >> terraform.tfvars
+  terraform init && terraform plan && terraform apply -auto-approve
+  cd "$BASE_PATH"
 
   echo "End creation"
 }
@@ -84,9 +98,18 @@ function get_k8_apiserver_url() {
 
 function delete_k8s_cluster() {
   echo "Let's delete k8s cluster"
-  clusterName=$1
-  computeZone=$2
-  gcloud beta container clusters delete "$clusterName" --zone "$computeZone" --quiet
+  projectId=$1
+  clusterName=$2
+  computeRegion=$3
+  computeZone=$4
+
+  cd "$BASE_PATH/deploy/cluster/terraform/gke/"
+  echo "project_id = \"$projectId\"" >> terraform.tfvars
+  echo "cluster_name = \"$clusterName\"" >> terraform.tfvars
+  echo "region = \"$computeRegion\"" >> terraform.tfvars
+  echo "zone = \"$computeZone\"" >> terraform.tfvars
+  terraform destroy -auto-approve
+  cd "$BASE_PATH"
   echo "End deletion"
 }
 

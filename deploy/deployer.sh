@@ -63,16 +63,26 @@ function delete-external-static-ip-addresses(){
 }
 
 function setup-cluster(){
-    # Enable APIs
-    enable_apis
-    # Activate billing and enable APIs
+    # Activate billing
     activate_billing "$PROJECT_ID"
+
+    # Enable APIs
+    enable_apis "$PROJECT_ID"
+
+    # Create docker registry
+    create_docker_registries "$PROJECT_ID"
 
     # Create Kubernetes Cluster
     create_k8s_cluster "$CLUSTER_NAME" "$COMPUTE_ZONE"
 }
 
 function deploy-platform(){
+  ## Install k8s clients
+  install_k8s_clients \
+    "$CLUSTER_NAME" \
+    "$COMPUTE_ZONE" \
+    "$PROJECT_ID"
+
     # Set Docker login
     set_docker "$HOSTNAME"
 

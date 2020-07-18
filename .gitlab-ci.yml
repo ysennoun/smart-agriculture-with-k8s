@@ -16,8 +16,7 @@ default:
   before_script:
     - apk update && apk fetch openjdk8
     - apk add --update coreutils # To update base64 in order to use option --decode
-    - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
-    - pip3 install virtualenv
+    - apk add --no-cache curl bash jq python3 py3-pip py3-virtualenv && apk add openjdk8 maven openssl
     - virtualenv venv
     - source venv/bin/activate
     - curl https://sdk.cloud.google.com > install.sh # Download gcloud installer
@@ -27,7 +26,6 @@ default:
     - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
     - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
     - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-    - gcloud components install kubectl
 
   after_script:
     - rm /tmp/$CI_PIPELINE_ID.json
@@ -63,6 +61,8 @@ setup_cluster:deploy:
   only:
     - setup-cluster
   script:
+    ## Install terraform & Set GCP credentials to terraform
+    - apk add terraform && export GOOGLE_APPLICATION_CREDENTIALS="/tmp/$CI_PIPELINE_ID.json"
     - chmod +x deploy/cicd_setup_cluster_deploy.sh
     - ./deploy/cicd_setup_cluster_deploy.sh
 
@@ -79,8 +79,6 @@ dev:images:
     - dev
     - master
   script:
-    ## Get credentials for kubectl
-    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     ## Execute deployment of images
     - chmod +x deploy/cicd_images.sh
     - ./deploy/cicd_images.sh
@@ -95,12 +93,6 @@ dev:deploy:
     - dev
     - master
   script:
-    ## Get credentials for kubectl
-    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
-    ## Install helm
-    - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-    - chmod 700 get_helm.sh
-    - ./get_helm.sh
     ## Execute deployment
     - chmod +x deploy/cicd_deploy.sh
     - ./deploy/cicd_deploy.sh
@@ -114,7 +106,5 @@ dev:e2e-test:
     - dev
     - master
   script:
-    ## Get credentials for kubectl
-    - gcloud container clusters get-credentials "$CLUSTER_NAME" --zone="$COMPUTE_ZONE" --project="$PROJECT_ID"
     - chmod +x deploy/cicd_e2e_test.sh
     - ./deploy/cicd_e2e_test.sh

@@ -25,7 +25,7 @@ function enable_apis(){
   projectId=$1
 
   cd "$BASE_PATH/deploy/cluster/terraform/apis/"
-  terraform init && terraform plan && terraform apply -var "project_id=$projectId"
+  terraform init && terraform plan && terraform apply -auto-approve -var "project_id=$projectId"
   cd "$BASE_PATH"
 }
 
@@ -34,7 +34,7 @@ function create_docker_registries(){
   projectId=$1
 
   cd "$BASE_PATH/deploy/cluster/terraform/docker-registries/"
-  terraform init && terraform plan && terraform apply -var "project_id=$projectId"
+  terraform init && terraform plan && terraform apply -auto-approve -var "project_id=$projectId"
   cd "$BASE_PATH"
 }
 
@@ -71,7 +71,7 @@ function create_k8s_cluster() {
   computeZone=$4
 
   cd "$BASE_PATH/deploy/cluster/terraform/gke/"
-  terraform init && terraform plan && terraform apply \
+  terraform init && terraform plan && terraform apply -auto-approve \
     -var "project_id=$projectId" \
     -var "cluster_name=$clusterName" \
     -var "region=$computeRegion" \
@@ -84,7 +84,7 @@ function create_k8s_cluster() {
     --user=$(gcloud config get-value core/account)
 
   cd "$BASE_PATH/deploy/cluster/terraform/ips/"
-  terraform init && terraform plan && terraform apply -var "region=$computeRegion"
+  terraform init && terraform plan && terraform apply -auto-approve -var "region=$computeRegion"
   echo "ips created"
   cd "$BASE_PATH"
 
@@ -104,7 +104,7 @@ function delete_k8s_cluster() {
   computeZone=$4
 
   cd "$BASE_PATH/deploy/cluster/terraform/gke/"
-  terraform destroy \
+  terraform destroy -auto-approve \
     -var "project_id=$projectId" \
     -var "cluster_name=$clusterName" \
     -var "region=$computeRegion" \

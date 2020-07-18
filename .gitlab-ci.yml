@@ -20,12 +20,12 @@ default:
     - pip3 install virtualenv
     - virtualenv venv
     - source venv/bin/activate
-    - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
-    - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
-    - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
     - curl https://sdk.cloud.google.com > install.sh # Download gcloud installer
     - bash install.sh --disable-prompts # Install gcloud
     - export PATH=$PATH:/root/google-cloud-sdk/bin # Add gcloud to PATH
+    - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
+    - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
+    - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
     - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
 
   after_script:

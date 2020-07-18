@@ -14,19 +14,28 @@ MACHINE_TYPE=n1-standard-4
 
 ## FUNCTIONS
 function activate_billing(){
-  PROJECT=$1
+  projectId=$1
   echo "Activate billing"
-  gcloud config set core/project "$PROJECT"
+  ## cannot be done through terraform
+  gcloud config set core/project "$projectId"
 }
 
 function enable_apis(){
   echo "Activate APIs"
-  gcloud services enable \
-       cloudapis.googleapis.com \
-       cloudbuild.googleapis.com \
-       container.googleapis.com \
-       containerregistry.googleapis.com \
-       --quiet
+  projectId=$1
+
+  cd "$BASE_PATH/deploy/cluster/terraform/apis/"
+  terraform init && terraform plan && terraform apply -var "project_id=$projectId"
+  cd "$BASE_PATH"
+}
+
+function create_docker_registries(){
+  echo "Create Docker Registries"
+  projectId=$1
+
+  cd "$BASE_PATH/deploy/cluster/terraform/docker-registries/"
+  terraform init && terraform plan && terraform apply -var "project_id=$projectId"
+  cd "$BASE_PATH"
 }
 
 function set_helm_repos(){
@@ -56,23 +65,28 @@ function create_certificates(){
 
 function create_k8s_cluster() {
   echo "Let's create k8s cluster"
-  clusterName=$1
-  computeZone=$2
-  gcloud beta container clusters create "$clusterName" \
-    --addons=HorizontalPodAutoscaling,HttpLoadBalancing \
-    --machine-type="$MACHINE_TYPE" \
-    --cluster-version=latest --zone="$computeZone" \
-    --enable-stackdriver-kubernetes \
-    --enable-ip-alias \
-    --enable-autoscaling --min-nodes="$MIN_NODES" --num-nodes "$NUM_NODES" --max-nodes="$MAX_NODES" \
-    --enable-autorepair \
-    --scopes cloud-platform \
-     --quiet
+  projectId=$1
+  clusterName=$2
+  computeRegion=$3
+  computeZone=$4
+
+  cd "$BASE_PATH/deploy/cluster/terraform/gke/"
+  terraform init && terraform plan && terraform apply \
+    -var "project_id=$projectId" \
+    -var "cluster_name=$clusterName" \
+    -var "region=$computeRegion" \
+    -var "zone=$computeZone"
+  cd "$BASE_PATH"
 
   # Create an RBAC service account
   kubectl create clusterrolebinding cluster-admin-binding \
     --clusterrole=cluster-admin \
     --user=$(gcloud config get-value core/account)
+
+  cd "$BASE_PATH/deploy/cluster/terraform/ips/"
+  terraform init && terraform plan && terraform apply -var "region=$computeRegion"
+  echo "ips created"
+  cd "$BASE_PATH"
 
   echo "End creation"
 }
@@ -84,9 +98,18 @@ function get_k8_apiserver_url() {
 
 function delete_k8s_cluster() {
   echo "Let's delete k8s cluster"
-  clusterName=$1
-  computeZone=$2
-  gcloud beta container clusters delete "$clusterName" --zone "$computeZone" --quiet
+  projectId=$1
+  clusterName=$2
+  computeRegion=$3
+  computeZone=$4
+
+  cd "$BASE_PATH/deploy/cluster/terraform/gke/"
+  terraform destroy \
+    -var "project_id=$projectId" \
+    -var "cluster_name=$clusterName" \
+    -var "region=$computeRegion" \
+    -var "zone=$computeZone"
+  cd "$BASE_PATH"
   echo "End deletion"
 }
 

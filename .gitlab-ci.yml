@@ -47,7 +47,6 @@ build:unit-test:
   allow_failure: false
   except:
     - setup-cluster
-    - feature/deploy-infra-with-terraform
   script:
     - chmod +x deploy/cicd_unit_test.sh
     - ./deploy/cicd_unit_test.sh
@@ -60,7 +59,6 @@ setup_cluster:deploy:
   allow_failure: false
   only:
     - setup-cluster
-    - feature/deploy-infra-with-terraform
   script:
     ## Install terraform & Set GCP credentials to terraform
     - apk add terraform && export GOOGLE_APPLICATION_CREDENTIALS="/tmp/$CI_PIPELINE_ID.json"

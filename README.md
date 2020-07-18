@@ -29,20 +29,6 @@ Create a [GCP account](https://console.cloud.google.com/)
 Create a GCP project by given a project-id
 - example: my-iot-project
 
-### Requirements for project CLI
-
-This project offers its own CLI `./deploy/deployer.sh` to test, create the cluster, deploy applications or delete all.
-
-In case you want to use project CLI, you need to install:
-- [Google Cloud SDK](https://cloud.google.com/sdk/docs/quickstarts), then run: `gcloud auth login`
-- [helm](https://helm.sh/docs/intro/install/), the package manager for Kubernetes
-- [Docker](https://docs.docker.com/get-docker/), configure Docker for a specific repository
-    - Here we used GCP Container Repository: `gcloud auth configure-docker`
- 
-### Requirements for Gitlab CI/CD
-
-This project offers the possibility to use a Gitlab CI/CD to test, create the cluster, deploy applications. See file `gitlab-ci.yaml`. 
-   
 #### Get private key file
 - Go to `IAM and Administration/quota/` (as indicated below)
 - Create a service account if it is not already done
@@ -55,6 +41,19 @@ This project offers the possibility to use a Gitlab CI/CD to test, create the cl
 - Give role `owner` to your service account to be able to deploy with Gitlab CI/CD
 
 ![Admin role for service account](documents/give_admin_role_to_service_account.png)
+
+### Requirements for project CLI
+
+This project offers its own CLI `./deploy/deployer.sh` to test, create the cluster, deploy applications or delete all.
+
+In case you want to use project CLI, you need to install:
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/quickstarts), then run: `gcloud auth activate-service-account --key-file /path/to/private-key-file.json`
+- [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html), the tool for infra as code, then run: `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/private-key-file.json"`
+- [Docker](https://docs.docker.com/get-docker/)
+ 
+### Requirements for Gitlab CI/CD
+
+This project offers the possibility to use a Gitlab CI/CD to test, create the cluster, deploy applications. See file `gitlab-ci.yaml`. 
 
 #### Environment variables 
 

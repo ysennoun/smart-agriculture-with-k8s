@@ -7,6 +7,12 @@ source deploy/platform/deployer_platform.sh
 source deploy/front-end/deployer_front_end.sh
 source deploy/device/deployer_device.sh
 
+## Install k8s clients
+install_k8s_clients \
+  "$CLUSTER_NAME" \
+  "$COMPUTE_ZONE" \
+  "$PROJECT_ID"
+
 ## Set Docker login
 set_docker "$HOSTNAME"
 

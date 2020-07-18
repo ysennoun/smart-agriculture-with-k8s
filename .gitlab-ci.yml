@@ -14,7 +14,7 @@ default:
       - venv/
 
   before_script:
-    - apk update && apk fetch openjdk8 && apk add terraform
+    - apk update && apk fetch openjdk8
     - apk add --update coreutils # To update base64 in order to use option --decode
     - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
     - pip3 install virtualenv && virtualenv venv && source venv/bin/activate
@@ -24,7 +24,6 @@ default:
     - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
     - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
     - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"
-    - export GOOGLE_APPLICATION_CREDENTIALS="/tmp/$CI_PIPELINE_ID.json" # Set GCP credentials to terraform
     - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
     - gcloud components install kubectl
 
@@ -64,6 +63,8 @@ setup_cluster:deploy:
     - setup-cluster
     - feature/deploy-infra-with-terraform
   script:
+    ## Install terraform & Set GCP credentials to terraform
+    - apk add terraform && export GOOGLE_APPLICATION_CREDENTIALS="/tmp/$CI_PIPELINE_ID.json"
     - chmod +x deploy/cicd_setup_cluster_deploy.sh
     - ./deploy/cicd_setup_cluster_deploy.sh
 

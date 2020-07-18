@@ -80,3 +80,19 @@ resource "google_container_node_pool" "np" {
     min_node_count = var.min_num_nodes
   }
 }
+
+resource "kubernetes_cluster_role_binding" "role_binding" {
+  metadata {
+    name = "cluster-admin-role-binding"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "User"
+    name      = "admin"
+    api_group = "rbac.authorization.k8s.io"
+  }
+}

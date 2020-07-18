@@ -7,11 +7,6 @@ SCRIPT_PATH=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 BASE_PATH=$(realpath "$SCRIPT_DIR/../")
 
-MIN_NODES=1
-MAX_NODES=3
-NUM_NODES=1
-MACHINE_TYPE=n1-standard-4
-
 ## FUNCTIONS
 function activate_billing(){
   projectId=$1
@@ -79,14 +74,6 @@ function create_k8s_cluster() {
   echo "zone = \"$computeZone\"" >> terraform.tfvars
   terraform init && terraform plan && terraform apply -auto-approve
   cd "$BASE_PATH"
-
-  ## Get credentials for kubectl
-  gcloud container clusters get-credentials "$clusterName" --zone="$computeZone" --project="$projectId"
-
-  # Create an RBAC service account
-  kubectl create clusterrolebinding cluster-admin-binding \
-    --clusterrole=cluster-admin \
-    --user=$(gcloud config get-value core/account)
 
   echo "End creation"
 }

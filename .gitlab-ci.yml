@@ -17,7 +17,9 @@ default:
     - apk update && apk fetch openjdk8
     - apk add --update coreutils # To update base64 in order to use option --decode
     - apk add --no-cache curl bash jq python3 py3-pip && apk add openjdk8 maven openssl
-    - pip3 install virtualenv && virtualenv venv && source venv/bin/activate
+    - pip3 install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
     - echo $PRIVATE_KEY_FILE_CONTENT > /tmp/$CI_PIPELINE_ID.json
     - export CLOUDSDK_CORE_DISABLE_PROMPTS=1 # Equivalent to --quiet if does not work
     - export CLOUDSDK_CORE_PROJECT="$PROJECT_ID"

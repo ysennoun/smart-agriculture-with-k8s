@@ -80,7 +80,7 @@ resource "google_container_node_pool" "np" {
   }
 
   autoscaling {
-    max_node_count = max_num_nodes
-    min_node_count = min_num_nodes
+    max_node_count = var.max_num_nodes
+    min_node_count = var.min_num_nodes
   }
 }

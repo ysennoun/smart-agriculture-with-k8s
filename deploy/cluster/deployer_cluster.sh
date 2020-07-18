@@ -77,6 +77,7 @@ function create_k8s_cluster() {
   echo "region = \"$computeRegion\"" > terraform.tfvars
   terraform init && terraform plan && terraform apply -auto-approve
   echo "ips created"
+  echo $(terraform output "vernemq_ip")
   cd "$BASE_PATH"
   echo $(terraform output "vernemq_ip")
 

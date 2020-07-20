@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions.{col, dayofmonth, month, rank, year}
+import org.apache.spark.sql.functions.{col, dayofmonth, month, row_number, year}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import com.xebia.iot.utils.Logging
 import com.xebia.iot.exception.JobException.NoRecordsFoundDefinedException
@@ -73,7 +73,7 @@ object JobProcess extends Logging {
     val rankColumnName = "rank_column"
 
     dataFrame
-      .withColumn(rankColumnName, rank().over(windowSpec))
+      .withColumn(rankColumnName, row_number().over(windowSpec))
       .filter(col(rankColumnName) === 1)
       .drop(rankColumnName)
   }
